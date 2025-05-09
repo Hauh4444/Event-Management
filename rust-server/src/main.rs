@@ -1,16 +1,14 @@
-use actix_web::{web, App, HttpServer, Responder};
+use actix_web::{App, HttpServer};
+mod routes;
 
-async fn greet() -> impl Responder {
-    "Hello, world!"
-}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
-        App::new().route("/", web::get().to(greet)) // Define a GET route at "/"
+        App::new()
+            .configure(routes::auth_routes::configure_auth_routes)
     })
-    .bind("127.0.0.1:8080")? // Bind the server to localhost:8080
-    .run()
-    .await
+        .bind("127.0.0.1:8080")?
+        .run()
+        .await
 }
-
