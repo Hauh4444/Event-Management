@@ -1,6 +1,13 @@
+// External Libraries
 use rand::RngCore;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 
+
+/// Generates a secure, random session token encoded in URL-safe Base64 (without padding).
+///
+/// # Returns
+///
+/// A `String` containing the generated session token.
 pub fn generate_session_token() -> String {
     let mut bytes = [0u8; 32];
     rand::rng().fill_bytes(&mut bytes);

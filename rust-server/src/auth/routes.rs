@@ -5,7 +5,7 @@ use sqlx::SqlitePool;
 // Internal Modules
 use crate::auth::mapper::{get_user_by_username, create_user, update_user_password, delete_user, create_session, delete_session, get_session_by_token};
 use crate::auth::models::{AuthData, GetUserData, UpdatePasswordData, DeleteUserData, SessionData, GetSessionData, DeleteSessionData};
-use crate::auth::token::generate_session_token;
+use crate::auth::services::generate_session_token;
 
 
 /// Checks the authentication status of a user based on the provided session token.
