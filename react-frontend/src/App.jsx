@@ -13,7 +13,7 @@ const darkTheme = createTheme({ palette: { mode: "dark" } });
 const lightTheme = createTheme({ palette: { mode: "light" } });
 
 
-function App() {
+const App = () => {
     return (
       <ThemeProvider theme={ lightTheme }>
           <PublicRoutes />

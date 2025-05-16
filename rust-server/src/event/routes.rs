@@ -81,7 +81,7 @@ pub async fn remove_event(
 /// Configures the provided service with event routes.
 pub fn configure_event_routes(cfg: &mut web::ServiceConfig) {
     cfg
-        .route("/event/{id}", web::get().to(get_event))
-        .route("/event/{id}", web::post().to(register_event))
-        .route("/event/{id}", web::delete().to(remove_event));
+        .route("/event/{id}/", web::get().to(get_event))
+        .route("/event/{id}/", web::post().to(register_event))
+        .route("/event/{id}/", web::delete().to(remove_event));
 }

@@ -2,7 +2,7 @@
 use sqlx::SqlitePool;
 
 // Internal Modules
-use crate::auth::models::{User, AuthData, GetUserData, UpdatePasswordData, DeleteUserData, Session, SessionData, GetSessionData, DeleteSessionData};
+use crate::auth::models::{User, AuthData, GetUserData, GetUserIDData, UpdatePasswordData, DeleteUserData, Session, SessionData, GetSessionData, DeleteSessionData};
 
 
 /// Fetches a user from the database by their username.
@@ -18,8 +18,29 @@ use crate::auth::models::{User, AuthData, GetUserData, UpdatePasswordData, Delet
 pub async fn get_user_by_username(data: GetUserData, pool: &SqlitePool) -> Result<User, sqlx::Error> {
     sqlx::query_as!(
         User,
-        "SELECT id, username, password FROM users WHERE username = ?",
+        "SELECT * FROM users WHERE username = ?",
         data.username
+    )
+        .fetch_one(pool)
+        .await
+}
+
+
+/// Fetches a user from the database by their ID
+///
+/// # Arguments
+///
+/// * `data` - A struct containing the ID of the user to fetch.
+/// * `pool` - A reference to the SQLite connection pool.
+///
+/// # Returns
+///
+/// A `Result` containing either the `User` struct if found, or an error if the query fails.
+pub async fn get_user_by_id(data: GetUserIDData, pool: &SqlitePool) -> Result<User, sqlx::Error> {
+    sqlx::query_as!(
+        User,
+        "SELECT * FROM users WHERE id = ?",
+        data.id
     )
         .fetch_one(pool)
         .await

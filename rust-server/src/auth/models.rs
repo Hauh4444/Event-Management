@@ -28,10 +28,18 @@ pub struct AuthData {
 
 
 /// Data required to retrieve a user by username.
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct GetUserData {
     /// Username of the user to retrieve.
     pub username: String,
+}
+
+
+/// Data required to retrieve a user by ID.
+#[derive(Deserialize)]
+pub struct GetUserIDData {
+    /// ID of the user to retrieve.
+    pub id: i64,
 }
 
 

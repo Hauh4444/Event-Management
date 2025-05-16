@@ -1,5 +1,6 @@
 // External Libraries
-use actix_web::{App, HttpServer, web};
+use actix_cors::Cors;
+use actix_web::{App, HttpServer, web, http::header};
 use sqlx::sqlite::SqlitePoolOptions;
 use dotenv::dotenv;
 use std::env;
@@ -26,9 +27,21 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Failed to connect to database");
 
-    // Start the HTTP server
+    // Start the Actix-web HTTP server
     HttpServer::new(move || {
+        // Configure CORS middleware to allow requests from the frontend URL
+        // Supports credentials (cookies, authorization headers)
+        // Allows common HTTP methods and headers necessary for JSON APIs
+        let cors = Cors::default()
+            .allowed_origin(&env::var("FRONTEND_URL").expect("FRONTEND_URL must be set"))
+            .allowed_methods(vec!["GET", "POST", "OPTIONS"])
+            .allowed_headers(vec![header::CONTENT_TYPE, header::ACCEPT])
+            .supports_credentials()
+            .max_age(3600);
+
         App::new()
+            // Apply the CORS middleware
+            .wrap(cors)
             // Share the database connection pool with the application
             .app_data(web::Data::new(pool.clone()))
             // Configure authentication routes
@@ -36,7 +49,9 @@ async fn main() -> std::io::Result<()> {
             // Configure event routes
             .configure(event::routes::configure_event_routes)
     })
-        .bind("127.0.0.1:8080")? // Bind to localhost on port 8080
+        // Bind to localhost on port 8080
+        .bind("127.0.0.1:8080")?
+        // Run the server asynchronously
         .run()
-        .await // Run the server asynchronously
+        .await 
 }
