@@ -3,13 +3,14 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 
 // Internal Modules
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "./AuthContext.js";
 import axiosInstance from "@/API/axiosInstance.js";
 
 
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [error, setError] = useState("");
+
 
     const checkAuthStatus = async () => {
         try {
@@ -21,6 +22,7 @@ const AuthProvider = ({ children }) => {
         }
     };
 
+
     const login = async (credentials) => {
         try {
             await axiosInstance.post("/login/", credentials);
@@ -28,12 +30,13 @@ const AuthProvider = ({ children }) => {
             return true;
         } catch (err) {
             console.error(err);
-            setError("Login failed. Please check your credentials.");
+            setError("Authentication failed. Please check your credentials.");
             return false;
         }
     };
 
-    const createAccount = async (credentials) => {
+
+    const register = async (credentials) => {
         try {
             await axiosInstance.post("/register/", credentials);
             await login(credentials);
@@ -45,6 +48,7 @@ const AuthProvider = ({ children }) => {
         }
     };
 
+
     const logout = async () => {
         try {
             await axiosInstance.post("/logout/");
@@ -55,13 +59,15 @@ const AuthProvider = ({ children }) => {
         }
     };
 
+
     return (
-        <AuthContext.Provider value={ { user, error, checkAuthStatus, login, createAccount, logout } }>
+        <AuthContext.Provider value={ { user, error, checkAuthStatus, login, register, logout } }>
             { children }
         </AuthContext.Provider>
     );
 
 };
+
 
 AuthProvider.propTypes = {
     children: PropTypes.node.isRequired,

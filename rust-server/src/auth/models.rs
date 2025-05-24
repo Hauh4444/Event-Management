@@ -45,6 +45,14 @@ pub struct GetUserIDData {
 
 /// Data required to update a user's password.
 #[derive(Deserialize)]
+pub struct UpdatePasswordRequestData {
+    /// New password to set for the user.
+    pub new_password: String,
+}
+
+
+/// Data required to update a user's password.
+#[derive(Deserialize)]
 pub struct UpdatePasswordData {
     /// Unique identifier of the user whose password is to be updated.
     pub user_id: i64,

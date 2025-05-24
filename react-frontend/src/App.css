@@ -1,4 +1,16 @@
-.page {
+* {
     color: #353634;
+}
+
+.page {
+    display: flex;
+    flex-direction: row;
     background-color: #fefffe;
+}
+
+.content {
+    max-width: calc(100vw - 350px);
+    padding: 50px;
+    flex-basis: calc(100vw - 350px);
+    background-color: #f8fbfd;
 }

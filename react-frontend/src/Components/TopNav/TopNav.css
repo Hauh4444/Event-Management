@@ -1,0 +1,42 @@
+.topNav {
+    width: calc(100% - 100px);
+    height: 40px;
+    padding: 30px 50px;
+    border-bottom: 1px solid rgba(53, 54, 52, 0.05);
+    background-color: #fefffe;
+    display: flex;
+    flex-direction: row;
+
+    .btn {
+        min-width: 40px;
+        height: 40px;
+        margin-right: 5px;
+        border-radius: 5px;
+        font-size: 18px;
+        color: #353634;
+
+        &:hover,
+        &.focused {
+            background-color: #ebf0fa;
+            color: #3b5faf;
+        }
+    }
+
+    .search {
+        width: 35%;
+        margin-left: 25px;
+        background-color: #f8fbfd;
+        border-color: #f8fbfd;
+
+        .btn {
+            min-width: 40px;
+            height: 40px;
+            border-radius: 0 10px 10px 0;
+
+            .icon {
+                font-size: 24px;
+                color: #353634;
+            }
+        }
+    }
+}

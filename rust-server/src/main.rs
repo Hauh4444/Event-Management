@@ -6,6 +6,7 @@ use dotenv::dotenv;
 use std::env;
 
 // Internal Modules
+mod analytics;
 mod auth;
 mod event;
 
@@ -44,6 +45,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             // Share the database connection pool with the application
             .app_data(web::Data::new(pool.clone()))
+            // Configure analytics routes
+            .configure(analytics::routes::configure_analytics_routes)
             // Configure authentication routes
             .configure(auth::routes::configure_auth_routes)
             // Configure event routes

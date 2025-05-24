@@ -39,13 +39,13 @@ pub async fn get_event_by_id(id: &i64, pool: &SqlitePool) -> Result<Event, sqlx:
 pub async fn create_event(data: &EventData, pool: &SqlitePool) -> Result<Event, sqlx::Error> {
     let rec = sqlx::query_as!(
         Event,
-        "INSERT INTO events (title, description, start_time, end_time, location, category_id, is_active,
-                    organizer_id, price, max_attendees, contact_email, contact_phone, registration_deadline,
-                    is_virtual, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    RETURNING *",
-        data.title, data.description, data.start_time, data.end_time, data.location, data.category_id, data.is_active,
-        data.organizer_id, data.price, data.max_attendees, data.contact_email, data.contact_phone, data.registration_deadline,
-        data.is_virtual, data.created_at, data.updated_at
+        "INSERT INTO events (title, description, event_date, start_time, end_time, location, category_id, status, organizer_id, 
+                     price, tickets_sold, attendees, max_attendees, contact_email, contact_phone, registration_deadline,
+                     is_virtual, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     RETURNING *",
+        data.title, data.description, data.event_date, data.start_time, data.end_time, data.location, data.category_id, 
+        data.status, data.organizer_id, data.price, data.tickets_sold, data.attendees, data.max_attendees, 
+        data.contact_email, data.contact_phone, data.registration_deadline, data.is_virtual, data.created_at, data.updated_at
     )
         .fetch_one(pool)
         .await?;

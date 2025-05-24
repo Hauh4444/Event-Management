@@ -4,12 +4,13 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-actix-cors = "0.7"
-actix-web = { version = "4.10.2", features = ["cookies"] }
+actix-cors = "0.7.1"
+actix-web = { version = "4.11.0", features = ["cookies"] }
 argon2 = "0.5.3"
 base64 = "0.22.1"
-dotenv = "0.15"
+chrono = { version = "0.4.41", features = ["serde"] }
+dotenv = "0.15.0"
 rand = "0.8.5"
 serde = { version = "1.0.219", features = ["derive"] }
-sqlx = { version = "0.8.5", features = ["sqlite", "runtime-tokio", "macros"] }
+sqlx = { version = "0.8.5", features = ["sqlite", "chrono", "runtime-tokio", "macros"] }
 time = "0.3.41"

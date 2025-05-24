@@ -5,9 +5,9 @@ use sqlx::SqlitePool;
 use time::Duration;
 
 // Internal Modules
-use crate::auth::mapper::{get_user_by_username, get_user_by_id, create_user, update_user_password, delete_user, create_session, delete_session, get_session_by_token};
-use crate::auth::models::{AuthData, GetUserData, GetUserIDData, UpdatePasswordData, DeleteUserData, SessionData, GetSessionData, DeleteSessionData};
-use crate::auth::services::{generate_session_token, hash_password, verify_password};
+use crate::auth::mapper::{get_user_by_username, get_user_by_id, create_user, update_user_password, delete_user, create_session, delete_session};
+use crate::auth::models::{AuthData, GetUserData, GetUserIDData, UpdatePasswordRequestData, UpdatePasswordData, DeleteUserData, SessionData, DeleteSessionData};
+use crate::auth::services::{generate_session_token, hash_password, validate_session, verify_password};
 
 
 /// Checks the authentication status of a user based on the provided session token.
@@ -24,20 +24,14 @@ pub async fn check_auth_status(
     req: HttpRequest,
     pool: web::Data<SqlitePool>,
 ) -> impl Responder {
-    if let Some(cookie) = req.cookie("session_token") {
-        let token = cookie.value().to_string();
-
-        let session = match get_session_by_token(GetSessionData {token}, &pool).await {
-            Ok(session) => session,
-            Err(e) => return HttpResponse::Unauthorized().body(format!("Session not authenticated: {}", e)),
-        };
-
-        match get_user_by_id(GetUserIDData {id: session.user_id}, &pool).await {
-            Ok(user) => HttpResponse::Ok().json(GetUserData {username: user.username}),
-            Err(e) => HttpResponse::Unauthorized().body(format!("User not found: {}", e)),
-        }
-    } else {
-        HttpResponse::Unauthorized().body("No session token found in cookies")
+    let session = match validate_session(&req, &pool).await {
+        Ok(session) => session,
+        Err(response) => return response,
+    };
+    
+    match get_user_by_id(GetUserIDData {id: session.user_id}, &pool).await {
+        Ok(user) => HttpResponse::Ok().json(GetUserData {username: user.username}),
+        Err(e) => HttpResponse::Unauthorized().body(format!("User not found: {}", e)),
     }
 }
 
@@ -127,23 +121,22 @@ pub async fn logout_user(
     req: HttpRequest,
     pool: web::Data<SqlitePool>,
 ) -> impl Responder {
-    if let Some(cookie) = req.cookie("session_token") {
-        let token = cookie.value().to_string();
-        
-        let expired_cookie = Cookie::build("session_token", "")
-            .path("/")
-            .http_only(true)
-            .same_site(cookie::SameSite::None)
-            .secure(true)
-            .expires(time::OffsetDateTime::now_utc() - Duration::days(1))
-            .finish();
+    let session = match validate_session(&req, &pool).await {
+        Ok(session) => session,
+        Err(response) => return response,
+    };
+    
+    let expired_cookie = Cookie::build("session_token", "")
+        .path("/")
+        .http_only(true)
+        .same_site(cookie::SameSite::None)
+        .secure(true)
+        .expires(time::OffsetDateTime::now_utc() - Duration::days(1))
+        .finish();
 
-        match delete_session(DeleteSessionData { token }, &pool).await {
-            Ok(()) => HttpResponse::Ok().cookie(expired_cookie).body("Logged out successfully"),
-            Err(e) => HttpResponse::InternalServerError().body(format!("Failed to log out user: {}", e)),
-        }
-    } else {
-        HttpResponse::Unauthorized().body("No session token found in cookies")
+    match delete_session(DeleteSessionData { token: session.token }, &pool).await {
+        Ok(()) => HttpResponse::Ok().cookie(expired_cookie).body("Logged out successfully"),
+        Err(e) => HttpResponse::InternalServerError().body(format!("Failed to log out user: {}", e)),
     }
 }
 
@@ -160,24 +153,22 @@ pub async fn logout_user(
 /// A response indicating the result of the password change attempt.
 pub async fn change_password(
     req: HttpRequest,
-    data: web::Json<UpdatePasswordData>,
+    data: web::Json<UpdatePasswordRequestData>,
     pool: web::Data<SqlitePool>,
 ) -> impl Responder {
-    if let Some(cookie) = req.cookie("session_token") {
-        // TODO check session token matches user ids
-        let token = cookie.value().to_string();
-
-        let new_password = match hash_password(&data.new_password) {
-            Ok(new_password) => new_password,
-            Err(e) => return HttpResponse::Unauthorized().body(format!("Error hashing password: {}", e)),
-        };
-        
-        match update_user_password(UpdatePasswordData {user_id: data.user_id.clone(), new_password}, &pool).await {
-            Ok(()) => HttpResponse::Ok().body("Password updated"),
-            Err(e) => HttpResponse::InternalServerError().body(format!("Failed to update password: {}", e)),
-        }
-    } else {
-        HttpResponse::Unauthorized().body("No session token found in cookies")
+    let session = match validate_session(&req, &pool).await {
+        Ok(session) => session,
+        Err(response) => return response,
+    };
+    
+    let new_password = match hash_password(&data.new_password) {
+        Ok(new_password) => new_password,
+        Err(e) => return HttpResponse::Unauthorized().body(format!("Error hashing password: {}", e)),
+    };
+    
+    match update_user_password(UpdatePasswordData {user_id: session.user_id.clone(), new_password}, &pool).await {
+        Ok(()) => HttpResponse::Ok().body("Password updated"),
+        Err(e) => HttpResponse::InternalServerError().body(format!("Failed to update password: {}", e)),
     }
 }
 
@@ -193,10 +184,15 @@ pub async fn change_password(
 ///
 /// A response indicating the result of the user deletion attempt.
 pub async fn remove_user(
-    data: web::Json<DeleteUserData>,
+    req: HttpRequest,
     pool: web::Data<SqlitePool>,
 ) -> impl Responder {
-    match delete_user(data.into_inner(), &pool).await {
+    let session = match validate_session(&req, &pool).await {
+        Ok(session) => session,
+        Err(response) => return response,
+    };
+    
+    match delete_user(DeleteUserData { user_id: session.user_id }, &pool).await {
         Ok(()) => HttpResponse::Ok().body("User deleted"),
         Err(e) => HttpResponse::InternalServerError().body(format!("Failed to delete user: {}", e)),
     }

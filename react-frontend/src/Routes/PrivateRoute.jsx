@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 // Internal Modules
-import { useAuth } from "@/ContextAPI/AuthContext";
+import { useAuth } from "@/ContextAPI/Auth/AuthContext.js";
 
 
 const PrivateRoute = () => {
@@ -23,7 +23,7 @@ const PrivateRoute = () => {
         return null;
     }
 
-    if (!auth.user) return <Navigate to="/login" />;
+    if (!auth.user) return <Navigate to="/auth" />;
 
     return <Outlet/>;
 };

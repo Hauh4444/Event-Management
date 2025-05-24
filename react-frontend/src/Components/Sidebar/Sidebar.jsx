@@ -10,7 +10,7 @@ import { MdOutlineAnalytics, MdLogout } from "react-icons/md";
 import { TbSettings, TbHeadset } from "react-icons/tb";
 
 // Internal Contexts
-import { useAuth } from "@/ContextAPI/AuthContext.js";
+import { useAuth } from "@/ContextAPI/Auth/AuthContext.js";
 
 // Stylesheets
 import "./Sidebar.css";
@@ -29,47 +29,54 @@ const Sidebar = () => {
         { title: "Analytics", path: "/analytics", icon: <MdOutlineAnalytics /> },
         { title: "Settings", path: "/settings", icon: <TbSettings /> },
     ];
-
     const footerItems = [
         { title: "Support", path: "/support", icon: <TbHeadset /> },
         { title: "Log out", path: "/logout", icon: <MdLogout /> },
     ]
+
 
     const handleButtonPress = (path) => {
         if (path === "/logout") auth.logout().then(() => navigate("/login"));
         else navigate(path);
     }
 
+
     return (
-        <div className="sidebar">
-            <div className="header">
-                <h1>
-                    Momentix
-                </h1>
+        <>
+            <div className="sidebar-spacer"></div>
+
+            <div className="sidebar">
+                <div className="header">
+                    <h1>
+                        Momentix
+                    </h1>
+                </div>
+
+                <div className="nav">
+                    { navItems.map((item, index) => (
+                        <Button
+                            className={ `btn ${ location.pathname === item.path && "focused" } ` }
+                            key={ index }
+                            onClick={ () => handleButtonPress(item.path) }
+                        >
+                            { item.icon } &ensp; { item.title }
+                        </Button>
+                    )) }
+                </div>
+
+                <div className="footer">
+                    { footerItems.map((item, index) => (
+                        <Button
+                            className={ `btn ${ location.pathname === item.path && "focused" } ` }
+                            key={ index }
+                            onClick={ () => handleButtonPress(item.path) }
+                        >
+                            { item.icon } &ensp; { item.title }
+                        </Button>
+                    )) }
+                </div>
             </div>
-            <div className="nav">
-                { navItems.map((item, index) => (
-                    <Button
-                        className={ `btn ${ location.pathname === item.path && "focused" } ` }
-                        key={ index }
-                        onClick={ () => handleButtonPress(item.path) }
-                    >
-                        { item.icon } &ensp; { item.title }
-                    </Button>
-                )) }
-            </div>
-            <div className="footer">
-                { footerItems.map((item, index) => (
-                    <Button
-                        className="btn"
-                        key={ index }
-                        onClick={ () => handleButtonPress(item.path) }
-                    >
-                        { item.icon } &ensp; { item.title }
-                    </Button>
-                )) }
-            </div>
-        </div>
+        </>
     )
 }
 
