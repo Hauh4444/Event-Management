@@ -14,7 +14,7 @@ use crate::auth::services::{generate_session_token, hash_password, validate_sess
 ///
 /// # Arguments
 ///
-/// * `data` - A JSON object containing the session token.
+/// * `req` - The incoming HTTP request containing session data.
 /// * `pool` - A reference to the SQLite database connection pool.
 ///
 /// # Returns
@@ -100,7 +100,7 @@ pub async fn register_user(
         Err(e) => return HttpResponse::Unauthorized().body(format!("Error hashing password: {}", e)),
     };
     
-    match create_user(AuthData {username: data.username.clone(), password }, &pool).await {
+    match create_user(AuthData {username: data.username.clone(), password}, &pool).await {
         Ok(user) => HttpResponse::Ok().body(format!("User {} registered", user.username)),
         Err(e) => HttpResponse::InternalServerError().body(format!("Failed to register user: {}", e)),
     }
@@ -111,7 +111,7 @@ pub async fn register_user(
 ///
 /// # Arguments
 ///
-/// * `data` - A JSON object containing the session data.
+/// * `req` - The incoming HTTP request containing session data.
 /// * `pool` - A reference to the SQLite database connection pool.
 ///
 /// # Returns
@@ -134,7 +134,7 @@ pub async fn logout_user(
         .expires(time::OffsetDateTime::now_utc() - Duration::days(1))
         .finish();
 
-    match delete_session(DeleteSessionData { token: session.token }, &pool).await {
+    match delete_session(DeleteSessionData {token: session.token}, &pool).await {
         Ok(()) => HttpResponse::Ok().cookie(expired_cookie).body("Logged out successfully"),
         Err(e) => HttpResponse::InternalServerError().body(format!("Failed to log out user: {}", e)),
     }
@@ -145,6 +145,7 @@ pub async fn logout_user(
 ///
 /// # Arguments
 ///
+/// * `req` - The incoming HTTP request containing session data.
 /// * `data` - A JSON object containing the user's ID and new password.
 /// * `pool` - A reference to the SQLite database connection pool.
 ///
@@ -177,7 +178,7 @@ pub async fn change_password(
 ///
 /// # Arguments
 ///
-/// * `data` - A JSON object containing the user's ID.
+/// * `req` - The incoming HTTP request containing session data.
 /// * `pool` - A reference to the SQLite database connection pool.
 ///
 /// # Returns
@@ -192,7 +193,7 @@ pub async fn remove_user(
         Err(response) => return response,
     };
     
-    match delete_user(DeleteUserData { user_id: session.user_id }, &pool).await {
+    match delete_user(DeleteUserData {user_id: session.user_id}, &pool).await {
         Ok(()) => HttpResponse::Ok().body("User deleted"),
         Err(e) => HttpResponse::InternalServerError().body(format!("Failed to delete user: {}", e)),
     }

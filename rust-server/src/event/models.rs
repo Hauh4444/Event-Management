@@ -131,11 +131,22 @@ pub struct EventData {
 }
 
 
+/// Data required to retrieve a user's events.
+#[derive(Deserialize)]
+pub struct GetUserEventsData {
+    /// Identifier for the event organizer.
+    pub organizer_id: i64,
+}
+
+
 /// Data required to retrieve a specific event.
 #[derive(Deserialize)]
 pub struct GetEventData {
     /// Unique identifier of the event to retrieve.
     pub event_id: i64,
+
+    /// Identifier for the event organizer.
+    pub organizer_id: i64,
 }
 
 
@@ -144,4 +155,7 @@ pub struct GetEventData {
 pub struct DeleteEventData {
     /// Unique identifier of the event to delete.
     pub event_id: i64,
+
+    /// Identifier for the event organizer.
+    pub organizer_id: i64,
 }

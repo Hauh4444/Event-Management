@@ -1,89 +1,82 @@
 .dashboardPage {
-    .mainPage {
-        max-width: calc(100vw - 250px);
-        flex-basis: calc(100vw - 250px);
-        background-color: #f8fbfd;
+    .content {
+        h1 {
+            margin-top: 0;
+            font-size: 28px;
+        }
 
-        .content {
-            h1 {
-                margin-top: 0;
-                font-size: 28px;
-            }
+        .graphs {
+            width: 100%;
+            margin: 25px 0;
+            display: flex;
+            flex-direction: row;
+            gap: 2%;
 
-            .graphs {
-                width: 100%;
-                margin: 25px 0;
-                display: flex;
-                flex-direction: row;
-                gap: 2%;
-
-                .item {
-                    max-width: calc(32% - 30px);
-                    padding: 15px;
-                    flex-basis: 32%;
-                    border-radius: 10px;
-                    background-color: #fefffe;
-                    box-shadow: 0 0 2px rgba(53, 54, 52, 0.1);
-
-                    h3 {
-                        height: 40px;
-                        margin: 0;
-                        line-height: 40px;
-                        font-size: 20px;
-                        font-weight: normal;
-
-                        .icon {
-                            margin: -3px 10px 0 0;
-                            vertical-align: middle;
-                        }
-                    }
-
-                    h2 {
-                        margin: 20px 0 0;
-                        padding-left: 10px;
-                        border-left: 4px solid #fcae1e;
-                    }
-
-                    .chart {
-                        overflow-x: scroll;
-
-                        &::-webkit-scrollbar {
-                            height: 6px;
-                        }
-
-                        &::-webkit-scrollbar-track {
-                            background: transparent;
-                        }
-
-                        &::-webkit-scrollbar-thumb {
-                            background-color: rgba(53, 54, 52, 0.15);
-                            border-radius: 3px;
-                        }
-
-                        &::-webkit-scrollbar-thumb:hover {
-                            background-color: rgba(53, 54, 52, 0.3);
-                        }
-
-                        scrollbar-width: thin;
-                        scrollbar-color: rgba(53, 54, 52, 0.15) transparent;
-                    }
-                }
-            }
-
-            .ticketSales,
-            .attendeesTrends {
-                margin: 25px 0;
-                padding: 25px 35px;
+            .item {
+                max-width: calc(32% - 30px);
+                padding: 15px;
+                flex-basis: 32%;
                 border-radius: 10px;
                 background-color: #fefffe;
-                box-shadow: 0 0 2px rgba(53, 54, 52, 0.1);
+                box-shadow: 0 0 2px rgba(53, 54, 52, 0.25);
+
+                h3 {
+                    height: 40px;
+                    margin: 0;
+                    line-height: 40px;
+                    font-size: 20px;
+                    font-weight: normal;
+
+                    .icon {
+                        margin: -3px 10px 0 0;
+                        vertical-align: middle;
+                    }
+                }
 
                 h2 {
-                    height: 40px;
-                    margin: 0 0 20px 0;
-                    line-height: 40px;
-                    font-size: 24px;
+                    margin: 20px 0 0;
+                    padding-left: 10px;
+                    border-left: 4px solid #fcae1e;
                 }
+
+                .chart {
+                    overflow-x: scroll;
+
+                    &::-webkit-scrollbar {
+                        height: 6px;
+                    }
+
+                    &::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+
+                    &::-webkit-scrollbar-thumb {
+                        background-color: rgba(53, 54, 52, 0.15);
+                        border-radius: 3px;
+                    }
+
+                    &::-webkit-scrollbar-thumb:hover {
+                        background-color: rgba(53, 54, 52, 0.3);
+                    }
+
+                    scrollbar-width: thin;
+                    scrollbar-color: rgba(53, 54, 52, 0.15) transparent;
+                }
+            }
+        }
+
+        .overviewItem {
+            margin: 25px 0;
+            padding: 25px 35px;
+            border-radius: 10px;
+            background-color: #fefffe;
+            box-shadow: 0 0 2px rgba(53, 54, 52, 0.25);
+
+            h2 {
+                height: 40px;
+                margin: 0 0 20px 0;
+                line-height: 40px;
+                font-size: 24px;
             }
         }
     }

@@ -14,30 +14,47 @@ import momentix from "@/assets/images/momentix.png";
 import "./Authentication.css";
 
 
+/**
+ * Authentication Page component.
+ *
+ * Provides user authentication UI for sign-in and sign-up workflows.
+ * Handles user input state, invokes authentication context methods,
+ * and redirects on successful login or registration.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered Authentication page component.
+ */
 const Authentication = () => {
+    // React hooks
     const navigate = useNavigate();
-
     const { login, register } = useAuth();
 
+    // State variables
     const [info, setInfo] = useState({ username: "", password: "" });
     const [isSignIn, setIsSignIn] = useState(true);
 
+    // Fields to render in the form dynamically
     const formItems = [
         { label: "Username", name: "username", type: "text" },
         { label: "Password", name: "password", type: "password" },
-    ]
+    ];
 
+
+    /**
+     * Handles submission of sign-in or sign-up form.
+     * Calls appropriate context method and redirects on success.
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        let success;
+        // Call login or register depending on current mode
+        const success = isSignIn ? await login(info) : await register(info);
 
-        if (isSignIn) success = await login(info);
-        else success = await register(info);
-
-        if (success) navigate("/dashboard");
+        if (success) navigate("/dashboard");  // Redirect on successful auth
     };
 
+
+    // Component JSX
     return (
         <div className="authPage page">
             <div className="auth">
@@ -60,25 +77,22 @@ const Authentication = () => {
                     <CardContent className="content">
                         <form
                             className="form"
-                            onSubmit={ (e) => handleSubmit(e) }
+                            onSubmit={ handleSubmit }
                         >
-                            { formItems.map((item, index) => (
+                            {formItems.map(({ label, name, type }, index) => (
                                 <TextField
                                     className="input"
                                     key={ index }
-                                    label={ item.label }
-                                    name={ item.name }
-                                    type={ item.type }
+                                    label={ label }
+                                    name={ name }
+                                    type={ type }
                                     variant="outlined"
-                                    onChange={ (e) => setInfo({ ...info, [e.target.name]: e.target.value }) }
+                                    onChange={ (e) => setInfo(prev => ({ ...prev, [name]: e.target.value })) }
                                     fullWidth
                                 />
-                            )) }
+                            ))}
 
-                            <Button
-                                className="btn"
-                                type="submit"
-                            >
+                            <Button className="btn" type="submit">
                                 { isSignIn ? "Sign In" : "Sign Up" }
                             </Button>
                         </form>
@@ -101,7 +115,7 @@ const Authentication = () => {
 
             <img src={ cityscape } alt="Cityscape" />
         </div>
-    )
+    );
 }
 
 

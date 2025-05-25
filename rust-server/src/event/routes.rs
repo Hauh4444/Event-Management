@@ -3,107 +3,134 @@ use actix_web::{web, Responder, HttpResponse, HttpRequest};
 use sqlx::SqlitePool;
 
 // Internal Modules
-use crate::event::mapper::{get_event_by_id, create_event, delete_event};
-use crate::event::models::{EventData, GetEventData, DeleteEventData};
+use crate::event::mapper::{get_user_events, get_event_by_id, create_event, delete_event};
+use crate::event::models::{Event, EventData, GetUserEventsData, GetEventData, DeleteEventData};
 use crate::auth::services::validate_session;
 
 
-/// Retrieves an event by its unique identifier.
+/// Handles retrieving all events associated with the authenticated organizer.
 ///
 /// # Arguments
 ///
-/// * `data` - A JSON object containing the event ID.
-/// * `pool` - A reference to the SQLite database connection pool.
+/// * `req` - The incoming HTTP request containing session data.
+/// * `pool` - The SQLite database connection pool.
 ///
 /// # Returns
 ///
-/// A response indicating whether the event was found or not.
-pub async fn get_event(
+/// An HTTP response with event data if successful, or an error message.
+pub async fn get_events(
     req: HttpRequest,
-    data: web::Json<GetEventData>,
     pool: web::Data<SqlitePool>,
 ) -> impl Responder {
-    // TODO use session.user_id as organizer_id check
     let session = match validate_session(&req, &pool).await {
         Ok(session) => session,
         Err(response) => return response,
     };
     
-    match get_event_by_id(&data.event_id, &pool).await {
-        Ok(event) => HttpResponse::Ok().body(format!("Event {} found", event.id)),
+    match get_user_events(GetUserEventsData {organizer_id: session.user_id}, &pool).await {
+        Ok(events) => HttpResponse::Ok().json(events),
         Err(e) => HttpResponse::InternalServerError().body(format!("Event not found: {}", e)),
     }
 }
 
 
-/// Registers a new event in the system.
+/// Handles retrieving a specific event by ID, ensuring the organizer owns it.
 ///
 /// # Arguments
 ///
-/// * `data` - A JSON object containing the event details.
-/// * `pool` - A reference to the SQLite database connection pool.
+/// * `req` - The incoming HTTP request containing session data.
+/// * `event_id` - The path parameter representing the event's ID.
+/// * `pool` - The SQLite database connection pool.
 ///
 /// # Returns
 ///
-/// A response indicating the result of the event registration attempt.
+/// An HTTP response with the event details if found, or an error message.
+pub async fn get_event(
+    req: HttpRequest,
+    event_id: web::Path<i64>,
+    pool: web::Data<SqlitePool>,
+) -> impl Responder {
+    let session = match validate_session(&req, &pool).await {
+        Ok(session) => session,
+        Err(response) => return response,
+    };
+
+    match get_event_by_id(GetEventData {event_id: *event_id, organizer_id: session.user_id}, &pool).await {
+        Ok(event) => HttpResponse::Ok().json(Event {..event}),
+        Err(e) => HttpResponse::InternalServerError().body(format!("Event not found: {}", e)),
+    }
+}
+
+
+/// Handles registering a new event under the authenticated organizer.
+///
+/// # Arguments
+///
+/// * `req` - The incoming HTTP request containing session data.
+/// * `data` - The JSON body containing new event details.
+/// * `pool` - The SQLite database connection pool.
+///
+/// # Returns
+///
+/// An HTTP response indicating success or failure of event creation.
 pub async fn register_event(
     req: HttpRequest,
     data: web::Json<EventData>,
     pool: web::Data<SqlitePool>,
 ) -> impl Responder {
-    // TODO use session.user_id as organizer_id 
     let session = match validate_session(&req, &pool).await {
         Ok(session) => session,
         Err(response) => return response,
     };
-    
-    match create_event(&data.into_inner(), &pool).await {
-        Ok(event) => HttpResponse::Ok().body(format!("Event {} registered", event.title)),
+
+    match create_event(EventData {organizer_id: session.user_id, ..data.into_inner()}, &pool).await {
+        Ok(event) => HttpResponse::Ok().body(format!("Event '{}' registered", event.title)),
         Err(e) => HttpResponse::InternalServerError().body(format!("Failed to register event: {}", e)),
     }
 }
 
 
-/// Removes an event from the system.
+/// Handles deleting a specific event by ID if it belongs to the authenticated organizer.
 ///
 /// # Arguments
 ///
-/// * `data` - A JSON object containing the event ID.
-/// * `pool` - A reference to the SQLite database connection pool.
+/// * `req` - The incoming HTTP request containing session data.
+/// * `event_id` - The path parameter representing the event's ID.
+/// * `pool` - The SQLite database connection pool.
 ///
 /// # Returns
 ///
-/// A response indicating the result of the event removal attempt.
+/// An HTTP response indicating success or failure of deletion.
 pub async fn remove_event(
     req: HttpRequest,
-    data: web::Json<DeleteEventData>,
+    event_id: web::Path<i64>,
     pool: web::Data<SqlitePool>,
 ) -> impl Responder {
-    // TODO use session.user_id as organizer_id check
     let session = match validate_session(&req, &pool).await {
         Ok(session) => session,
         Err(response) => return response,
     };
-    
-    match delete_event(data.event_id, &pool).await {
+
+    match delete_event(DeleteEventData {event_id: *event_id, organizer_id: session.user_id}, &pool).await {
         Ok(()) => HttpResponse::Ok().body("Event deleted"),
         Err(e) => HttpResponse::InternalServerError().body(format!("Failed to delete event: {}", e)),
     }
 }
 
 
-/// Configures the event-related routes for the application.
+/// Configures all routes related to event management.
 ///
 /// # Arguments
 ///
-/// * `cfg` - A mutable reference to the service configuration.
+/// * `cfg` - A mutable reference to the Actix service configuration.
 ///
 /// # Returns
 ///
-/// Configures the provided service with event routes.
+/// Adds all event-related routes to the Actix web application.
 pub fn configure_event_routes(cfg: &mut web::ServiceConfig) {
     cfg
-        .route("/event/{id}/", web::get().to(get_event))
-        .route("/event/{id}/", web::post().to(register_event))
-        .route("/event/{id}/", web::delete().to(remove_event));
+        .route("/events/", web::get().to(get_events))
+        .route("/events/{id}/", web::get().to(get_event))
+        .route("/events/", web::post().to(register_event))
+        .route("/events/{id}/", web::delete().to(remove_event));
 }

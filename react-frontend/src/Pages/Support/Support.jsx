@@ -2,6 +2,7 @@
 
 // Internal Modules
 import Sidebar from "@/Components/Sidebar/Sidebar.jsx";
+import TopNav from "@/Components/TopNav/TopNav.jsx";
 
 
 const Support = () => {
@@ -10,6 +11,14 @@ const Support = () => {
     return (
         <div className="supportPage page">
             <Sidebar />
+
+            <div className="mainPage">
+                <TopNav />
+
+                <div className="content">
+
+                </div>
+            </div>
         </div>
     )
 }

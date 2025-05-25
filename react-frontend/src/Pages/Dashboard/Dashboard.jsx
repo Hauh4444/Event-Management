@@ -15,7 +15,18 @@ import axiosInstance from "@/API/axiosInstance.js";
 import "./Dashboard.css";
 
 
+/**
+ * Dashboard Page Component
+ *
+ * Provides an overview of event-related statistics, including events, upcoming events,
+ * cancellations, ticket sales, and attendee trends. It fetches data based on the selected
+ * year and displays it using line charts.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered Dashboard page component.
+ */
 const Dashboard = () => {
+    // Initialize graph data with default zero values and current year
     const [graphItems, setGraphItems] = useState([
         {
             title: "Events",
@@ -42,10 +53,11 @@ const Dashboard = () => {
             label: "canceled",
         },
     ]);
+
+    // Initialize overview data similarly with zero values and current year
     const [overviewItems, setOverviewItems] = useState([
         {
             title: "Events Tickets Sales",
-            className: "ticketSales",
             year: new Date().getFullYear(),
             seriesData: new Array(12).fill(0),
             xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
@@ -53,7 +65,6 @@ const Dashboard = () => {
         },
         {
             title: "Attendees Trends",
-            className: "attendeesTrends",
             year: new Date().getFullYear(),
             seriesData: new Array(12).fill(0),
             xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
@@ -62,36 +73,54 @@ const Dashboard = () => {
     ]);
 
 
+    /**
+     * Fetches data for the specified year and updates graphItems and overviewItems state.
+     *
+     * @param {number} newYear - The year for which to fetch data.
+     *
+     * @returns {Promise<void>}
+     */
     const fetchData = async (newYear) => {
-        try {
-            const res = await axiosInstance.get("/overview/totals/", {
-                params: { year: newYear }
-            });
+        // Fetch summary data for the given year from API
+        const res = await axiosInstance.get("/overview/totals/", {
+            params: { year: newYear }
+        });
 
-            const data = res.data;
+        // Update graph items with the fetched data, defaulting to zeros if missing
+        setGraphItems((prev) =>
+            prev.map((item) =>
+                item.year === newYear
+                    ? { ...item, seriesData: res.data[item.label] || new Array(12).fill(0) }
+                    : item
+            )
+        );
 
-            setGraphItems((prev) =>
-                prev.map((item) =>
-                    item.year === newYear
-                        ? { ...item, seriesData: data[item.label] || new Array(12).fill(0) }
-                        : item
-                )
-            );
-
-            setOverviewItems((prev) =>
-                prev.map((item) =>
-                    item.year === newYear
-                        ? { ...item, seriesData: data[item.label] || new Array(12).fill(0) }
-                        : item
-                )
-            );
-        } catch (err) {
-            console.error(err);
-        }
+        // Update overview items similarly with fetched data
+        setOverviewItems((prev) =>
+            prev.map((item) =>
+                item.year === newYear
+                    ? { ...item, seriesData: res.data[item.label] || new Array(12).fill(0) }
+                    : item
+            )
+        );
     };
 
 
+    // Fetch data once on component mount for the current year
+    useEffect(() => {
+        fetchData(new Date().getFullYear()).catch((err) => console.error(err));
+    }, []);
+
+
+    /**
+     * Handles year selection change for either graph or overview items.
+     *
+     * @param {number} index - Index of the item to update.
+     * @param {number} newYear - The new year selected.
+     * @param {boolean} isGraph - Whether the item is part of graphItems or overviewItems.
+     */
     const onYearChange = (index, newYear, isGraph) => {
+        // Update the year in the respective state array
         if (isGraph) {
             setGraphItems((prev) =>
                 prev.map((item, idx) =>
@@ -110,15 +139,12 @@ const Dashboard = () => {
             );
         }
 
+        // Fetch fresh data for the selected year to update charts
         fetchData(newYear).catch((err) => console.error(err));
     };
 
 
-    useEffect(() => {
-        fetchData(new Date().getFullYear()).catch((err) => console.error(err));
-    }, []);
-
-
+    // Component JSX
     return (
         <div className="dashboardPage page">
             <Sidebar />
@@ -131,6 +157,7 @@ const Dashboard = () => {
                         Overview
                     </h1>
 
+                    {/* Render line charts for event-related graph items */}
                     <div className="graphs">
                         { graphItems.map((item, index) => (
                             <div className="item" key={ index }>
@@ -145,8 +172,9 @@ const Dashboard = () => {
                                     />
                                 </h3>
 
+                                {/* Display total sum of the series data */}
                                 <h2>
-                                    {item.seriesData.reduce((sum, val) => sum + val, 0)}
+                                    { item.seriesData.reduce((sum, val) => sum + val, 0) }
                                 </h2>
 
                                 <div className="chart">
@@ -157,7 +185,7 @@ const Dashboard = () => {
                                             {
                                                 data: item.seriesData,
                                                 curve: "linear",
-                                                valueFormatter: (value) => `${value} ${item.label}`,
+                                                valueFormatter: (value) => `${ value } ${ item.label }`,
                                             }
                                         ]}
                                         xAxis={[
@@ -177,11 +205,11 @@ const Dashboard = () => {
                                             x: "band",
                                         }}
                                         sx={{
-                                            [`& .${lineElementClasses.root}`]: {
+                                            [`& .${ lineElementClasses.root }`]: {
                                                 stroke: "#3b5faf",
                                                 strokeWidth: 2.5,
                                             },
-                                            [`& .${markElementClasses.root}`]: {
+                                            [`& .${ markElementClasses.root }`]: {
                                                 stroke: "#f8fbfd",
                                                 r: 5,
                                                 fill: "#3b5faf",
@@ -215,8 +243,9 @@ const Dashboard = () => {
                         )) }
                     </div>
 
+                    {/* Render line charts for overview items with area charts */}
                     { overviewItems.map((item, index) => (
-                        <div className={ item.className } key={ index }>
+                        <div className="overviewItem" key={ index }>
                             <h2>
                                 { item.title }
 
@@ -236,7 +265,7 @@ const Dashboard = () => {
                                         data: item.seriesData,
                                         area: true,
                                         showMark: false,
-                                        valueFormatter: (value) => `${value} ${item.label}`,
+                                        valueFormatter: (value) => `${ value } ${ item.label }`,
                                     }
                                 ]}
                                 xAxis={[
@@ -254,7 +283,7 @@ const Dashboard = () => {
                                 ]}
                                 grid={{ horizontal: true }}
                                 sx={{
-                                    [`& .${areaElementClasses.root}`]: {
+                                    [`& .${ areaElementClasses.root }`]: {
                                         fill: "url(#areaGradient)",
                                     },
                                     "& .MuiChartsAxis-line": {
@@ -274,7 +303,7 @@ const Dashboard = () => {
                             >
                                 <defs>
                                     <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#3b5faf" stopOpacity="0.4" />
+                                        <stop offset="0%" stopColor="#3b5faf" stopOpacity="0.25" />
                                         <stop offset="100%" stopColor="#3b5faf" stopOpacity="0" />
                                     </linearGradient>
                                 </defs>

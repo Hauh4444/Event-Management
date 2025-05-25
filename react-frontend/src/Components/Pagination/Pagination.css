@@ -1,0 +1,45 @@
+.pagination {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    .btn {
+        width: 125px;
+        height: 40px;
+        margin: 0 !important;
+        border-radius: 5px;
+        border: 2px solid rgba(53, 54, 52, 0.1);
+        color: #353634 !important;
+        font-size: 14px;
+        text-transform: none;
+        transition: all 0.2s ease;
+
+        &:hover,
+        &:focus {
+            background-color: #ebf0fa;
+            color: #3b5faf !important;
+
+            .icon {
+                fill: #3b5faf;
+            }
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            color: #b0b0b0;
+
+            .icon {
+                opacity: 0.6;
+                fill: currentColor;
+            }
+        }
+
+        .icon {
+            margin-top: -1px;
+            vertical-align: middle;
+            font-size: 16px;
+        }
+    }
+}

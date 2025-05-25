@@ -39,3 +39,23 @@ pub struct GetOverviewTotals {
     /// Identifier for the event organizer.
     pub organizer_id: i64,
 }
+
+
+#[derive(Serialize)]
+pub struct TicketsOverview {
+    /// Monthly totals of ticket sales.
+    pub tickets: Vec<f64>,
+
+    /// Net profit.
+    pub profit: f64,
+}
+
+
+#[derive(Deserialize)]
+pub struct GetTicketsOverview {
+    /// The year to retrieve totals for (e.g., 2025).
+    pub year: i64,
+
+    /// Identifier for the event organizer.
+    pub organizer_id: i64,
+}

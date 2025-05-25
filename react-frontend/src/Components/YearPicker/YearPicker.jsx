@@ -2,11 +2,32 @@
 import { MenuItem, Select } from "@mui/material";
 
 
-const YearPicker = ({ startYear = 1900, endYear = new Date().getFullYear(), value, onChange }) => {
+/**
+ * YearPicker component.
+ *
+ * A custom year picker component that allows users to select a year from a dropdown list.
+ * The component generates a list of years starting from `startYear` up to `endYear` and displays them as selectable options.
+ * It utilizes Material-UI's `Select` and `MenuItem` components for rendering the dropdown list.
+ *
+ * @param {Object} props - The component's props.
+ * @param {number} [props.startYear=1900] - The starting year in the list.
+ * @param {number} [props.endYear=new Date().getFullYear()] - The ending year in the list.
+ * @param {number} [props.value] - The currently selected year.
+ * @param {function} props.onChange - Callback function to handle year selection.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered YearPicker component.
+ */
+
+const YearPicker = (
+    { startYear = 1900, endYear = new Date().getFullYear(), value, onChange = () => {} }
+) => {
+    // Derived constants
     const years = [];
     for (let y = startYear; y <= endYear; y++) years.push(y);
 
 
+    // Component JSX
     return (
         <Select
             value={ value || "" }

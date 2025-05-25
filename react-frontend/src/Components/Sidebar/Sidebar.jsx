@@ -16,12 +16,24 @@ import { useAuth } from "@/ContextAPI/Auth/AuthContext.js";
 import "./Sidebar.css";
 
 
+/**
+ * Sidebar component.
+ *
+ * Displays the main navigation sidebar for the application, including
+ * links to dashboard, events, attendees, analytics, settings, support,
+ * and logout functionality.
+ *
+ * @returns {JSX.Element} The rendered Sidebar component.
+ */
 const Sidebar = () => {
+    // React hooks
     const navigate = useNavigate();
     const location = useLocation();
 
+    // Auth context
     const auth = useAuth();
 
+    // Navigation and footer items with icons and paths
     const navItems = [
         { title: "Dashboard", path: "/dashboard", icon: <RiDashboardHorizontalLine /> },
         { title: "Events", path: "/events", icon: <BsCalendar4Event /> },
@@ -35,12 +47,22 @@ const Sidebar = () => {
     ]
 
 
+    /**
+     * Handles navigation actions for sidebar buttons.
+     *
+     * Determines the appropriate action based on the provided path:
+     * - Navigates to the specified path if it's not "/logout".
+     * - Logs out the user and redirects to the login page if the path is "/logout".
+     *
+     * @param {string} path - The target path to navigate to or the logout action.
+     */
     const handleButtonPress = (path) => {
         if (path === "/logout") auth.logout().then(() => navigate("/login"));
         else navigate(path);
     }
 
 
+    // Component JSX
     return (
         <>
             <div className="sidebar-spacer"></div>

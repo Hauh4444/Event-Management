@@ -6,11 +6,17 @@
     display: flex;
     flex-direction: row;
     background-color: #fefffe;
-}
 
-.content {
-    max-width: calc(100vw - 350px);
-    padding: 50px;
-    flex-basis: calc(100vw - 350px);
-    background-color: #f8fbfd;
+    .mainPage {
+        max-width: calc(100vw - 250px);
+        flex-basis: calc(100vw - 250px);
+        background-color: #f8fbfd;
+
+        .content {
+            max-width: calc(100vw - 350px);
+            padding: 50px;
+            flex-basis: calc(100vw - 350px);
+            background-color: #f8fbfd;
+        }
+    }
 }

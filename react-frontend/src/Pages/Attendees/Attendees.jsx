@@ -2,6 +2,7 @@
 
 // Internal Modules
 import Sidebar from "@/Components/Sidebar/Sidebar.jsx";
+import TopNav from "@/Components/TopNav/TopNav.jsx";
 
 
 const Attendees = () => {
@@ -10,6 +11,14 @@ const Attendees = () => {
     return (
         <div className="attendeesPage page">
             <Sidebar />
+
+            <div className="mainPage">
+                <TopNav />
+
+                <div className="content">
+
+                </div>
+            </div>
         </div>
     )
 }

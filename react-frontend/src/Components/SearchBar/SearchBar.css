@@ -1,0 +1,21 @@
+.search {
+    width: 35%;
+    margin-left: 25px !important;
+    background-color: #f8fbfd;
+    border-color: #f8fbfd;
+
+    .btn {
+        min-width: 40px;
+        height: 40px;
+        max-width: 40px;
+        margin: 0 !important;
+        border-radius: 0 10px 10px 0 !important;
+        border: none !important;
+
+        .icon {
+            margin: 0 !important;
+            font-size: 24px !important;
+            color: #353634;
+        }
+    }
+}

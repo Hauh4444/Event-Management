@@ -1,19 +1,28 @@
 // External Libraries
-import { useEffect, useState } from "react";
-import { Button, InputAdornment, TextField } from "@mui/material";
+import { Button } from "@mui/material";
 
 // External Icons
-import { IoIosSearch } from "react-icons/io";
 import { PiCaretLeftBold, PiCaretRightBold } from "react-icons/pi";
+
+// Internal Modules
+import SearchBar from "@/Components/SearchBar/SearchBar.jsx";
 
 // Stylesheets
 import "./TopNav.css";
 
 
-
+/**
+ * TopNav Component
+ *
+ * A navigation bar component that provides quick access to previous and next actions,
+ * along with a search functionality. It is typically used at the top of a page to facilitate
+ * navigation and content filtering.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered TopNav component.
+ */
 const TopNav = () => {
-
-
+    // Component JSX
     return (
         <div className="topNav">
             <Button className="btn">
@@ -24,42 +33,7 @@ const TopNav = () => {
                 <PiCaretRightBold />
             </Button>
 
-            <TextField
-                className="search"
-                type="text"
-                placeholder="Search"
-                slotProps={{
-                    input: {
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <Button className="btn">
-                                    <IoIosSearch className="icon" />
-                                </Button>
-                            </InputAdornment>
-                        ),
-                    },
-                }}
-                sx={{
-                    "& .MuiInputBase-root": {
-                        height: "40px",
-                        padding: "0",
-                        fontSize: "16px",
-                        color: "#353634"
-                    },
-                    "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                            borderColor: "rgba(53, 54, 52, 0.1)",
-                            borderRadius: "10px",
-                        },
-                        "&:hover fieldset": {
-                            borderColor: "rgba(53, 54, 52, 0.5)",
-                        },
-                        "&.Mui-focused fieldset": {
-                            borderColor: "rgba(53, 54, 52, 0.75)",
-                        },
-                    },
-                }}
-            />
+            <SearchBar />
         </div>
     )
 }
