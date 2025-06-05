@@ -1,0 +1,56 @@
+.calendarHeatmap {
+    width: 98%;
+    margin: 0 auto;
+
+    .react-calendar-heatmap {
+        .color-block {
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+                filter: brightness(1.2);
+            }
+        }
+
+        .react-calendar-heatmap-month-labels {
+            transform: translate(29px, 0px);
+        }
+
+        .react-calendar-heatmap-weekday-labels {
+            transform: translate(1px, 17px);
+        }
+
+        .react-calendar-heatmap-all-weeks {
+            transform: translate(29px, 19px);
+        }
+
+        /*noinspection ALL*/
+
+        .react-calendar-heatmap-month-label,
+        .react-calendar-heatmap-weekday-label {
+            fill: #353634 !important;
+        }
+
+        .scale0 {
+            fill: rgba(53, 54, 52, 0.05);
+        }
+
+        .scale1 {
+            fill: #d0dbf9;
+        }
+
+        .scale2 {
+            fill: #8b9ce2;
+        }
+
+        .scale3 {
+            fill: #556fc8;
+        }
+
+        .scale4 {
+            fill: #3b5faf;
+        }
+    }
+}
+

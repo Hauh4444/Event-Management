@@ -22,7 +22,7 @@ import "./Authentication.css";
  * and redirects on successful login or registration.
  *
  * @component
- * @returns {JSX.Element} The rendered Authentication page component.
+ * @returns { JSX.Element } The rendered Authentication page component.
  */
 const Authentication = () => {
     // React hooks

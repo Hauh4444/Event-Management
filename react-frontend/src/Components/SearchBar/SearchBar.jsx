@@ -14,11 +14,11 @@ import "./SearchBar.css";
  * Renders a styled text input field with a search icon button at the end.
  * Primarily used for search input functionality.
  *
- * @param {Object} props - The component's props.
- * @param {function} props.onChange - Callback function to handle year selection.
+ * @param { Object } props - The component's props.
+ * @param { function } props.onChange - Callback function to handle year selection.
  * *
  * @component
- * @returns {JSX.Element} The rendered search bar component.
+ * @returns { JSX.Element } The rendered search bar component.
  */
 const SearchBar = ({ onChange = () => {}, value, onClick = () => {} }) => {
     // Component JSX
@@ -26,7 +26,7 @@ const SearchBar = ({ onChange = () => {}, value, onClick = () => {} }) => {
         <TextField
             className="search"
             onChange={ (e) => onChange(e.target.value) }
-            onKeyDown={(e) => {if (e.key === "Enter") onClick();}}
+            onKeyDown={(e) => { if (e.key === "Enter") onClick(); }}
             value={ value }
             type="text"
             placeholder="Search"
@@ -34,7 +34,7 @@ const SearchBar = ({ onChange = () => {}, value, onClick = () => {} }) => {
                 input: {
                     endAdornment: (
                         <InputAdornment position="end">
-                            <Button className="btn" onClick={() => onClick()}>
+                            <Button className="btn" onClick={ () => onClick() }>
                                 <IoIosSearch className="icon" />
                             </Button>
                         </InputAdornment>

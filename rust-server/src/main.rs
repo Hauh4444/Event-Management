@@ -1,15 +1,29 @@
 // External Libraries
 use actix_cors::Cors;
+use actix_files::Files;
 use actix_web::{App, HttpServer, web, http::header, middleware::Logger};
 use sqlx::sqlite::SqlitePoolOptions;
 use dotenv::dotenv;
 use std::env;
 use env_logger::Env;
 
+// Internal Routes
+use analytics::routes::configure_analytics_routes;
+use auth::routes::configure_auth_routes;
+use category::routes::configure_category_routes;
+use event::routes::configure_event_routes;
+
 // Internal Modules
+mod agenda;
 mod analytics;
+mod attachment;
 mod auth;
+mod category;
+mod comment;
 mod event;
+mod faq;
+mod organizer;
+mod speaker;
 
 
 /// Initializes the application, sets up the database connection pool,
@@ -46,9 +60,14 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::new(r#"%a "%r" %s"#))
             .wrap(cors)
             .app_data(web::Data::new(pool.clone()))
-            .configure(analytics::routes::configure_analytics_routes)
-            .configure(auth::routes::configure_auth_routes)
-            .configure(event::routes::configure_event_routes)
+            .service(
+                web::scope("/api")
+                    .configure(configure_analytics_routes)
+                    .configure(configure_auth_routes)
+                    .configure(configure_category_routes)
+                    .configure(configure_event_routes)
+            )
+            .service(Files::new("/static", "static").show_files_listing())
     })
         .bind("127.0.0.1:8080")?
         .run()

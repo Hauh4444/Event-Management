@@ -13,11 +13,11 @@ import axiosInstance from "@/API/axiosInstance.js";
  * Manages user info, authentication errors, and exposes async functions
  * for login, registration, logout, and auth status checking.
  *
- * @param {object} props
- * @param {React.ReactNode} props.children - React children nodes.
+ * @param { object } props
+ * @param { React.ReactNode } props.children - React children nodes.
  *
  * @component
- * @returns {JSX.Element} AuthProvider component wrapping children with AuthContext.
+ * @returns { JSX.Element } AuthProvider component wrapping children with AuthContext.
  */
 const AuthProvider = ({ children }) => {
     // Holds the authenticated user data or null if not logged in
@@ -46,9 +46,9 @@ const AuthProvider = ({ children }) => {
      * On success, updates user state by checking auth status.
      * On failure, sets an error message.
      *
-     * @param {object} credentials - User login credentials { username, password }.
+     * @param { object } credentials - User login credentials { username, password }.
      *
-     * @returns {Promise<boolean>} True if login succeeded, else false.
+     * @returns { Promise<boolean> } True if login succeeded, else false.
      */
     const login = async (credentials) => {
         try {
@@ -68,9 +68,9 @@ const AuthProvider = ({ children }) => {
      * If successful, automatically logs in the new user.
      * On failure, sets an error message.
      *
-     * @param {object} credentials - User registration credentials.
+     * @param { object } credentials - User registration credentials.
      *
-     * @returns {Promise<boolean>} True if registration (and login) succeeded, else false.
+     * @returns { Promise<boolean> } True if registration (and login) succeeded, else false.
      */
     const register = async (credentials) => {
         try {
@@ -90,7 +90,7 @@ const AuthProvider = ({ children }) => {
      * Clears the user state on success.
      * Sets an error message on failure.
      *
-     * @returns {Promise<void>}
+     * @returns { Promise<void> }
      */
     const logout = async () => {
         try {

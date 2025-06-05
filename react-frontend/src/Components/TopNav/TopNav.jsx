@@ -19,7 +19,7 @@ import "./TopNav.css";
  * navigation and content filtering.
  *
  * @component
- * @returns {JSX.Element} The rendered TopNav component.
+ * @returns { JSX.Element } The rendered TopNav component.
  */
 const TopNav = () => {
     // Component JSX

@@ -9,18 +9,19 @@ import { MenuItem, Select } from "@mui/material";
  * The component generates a list of years starting from `startYear` up to `endYear` and displays them as selectable options.
  * It utilizes Material-UI's `Select` and `MenuItem` components for rendering the dropdown list.
  *
- * @param {Object} props - The component's props.
- * @param {number} [props.startYear=1900] - The starting year in the list.
- * @param {number} [props.endYear=new Date().getFullYear()] - The ending year in the list.
- * @param {number} [props.value] - The currently selected year.
- * @param {function} props.onChange - Callback function to handle year selection.
+ * @param { Object } props - The component's props.
+ * @param { number } [props.startYear=1900] - The starting year in the list.
+ * @param { number } [props.endYear=new Date().getFullYear()] - The ending year in the list.
+ * @param { number } [props.value] - The currently selected year.
+ * @param { function } props.onChange - Callback function to handle year selection.
  *
  * @component
- * @returns {JSX.Element} The rendered YearPicker component.
+ * @returns { JSX.Element } The rendered YearPicker component.
  */
 
 const YearPicker = (
-    { startYear = 1900, endYear = new Date().getFullYear(), value, onChange = () => {} }
+    { startYear = 1900, endYear = new Date().getFullYear(), value,
+        onChange = () => {}, size = "small", sx = {} }
 ) => {
     // Derived constants
     const years = [];
@@ -30,13 +31,11 @@ const YearPicker = (
     // Component JSX
     return (
         <Select
+            className="yearSelect"
             value={ value || "" }
-            onChange={(e) => onChange(e.target.value)}
+            onChange={ (e) => onChange(e.target.value) }
             variant="outlined"
-            size="small"
-            style={{
-                float: "right",
-            }}
+            size={ size }
             sx={{
                 height: "40px",
                 borderRadius: "10px",
@@ -44,8 +43,11 @@ const YearPicker = (
                 "& fieldset": { border: "none" },
                 "&:hover fieldset": { border: "none" },
                 "&.Mui-focused fieldset": { border: "none" },
-                "& .MuiInputBase-input": { borderRadius: "10px", transition: "all 0.2s ease" },
-                "&:hover .MuiInputBase-input": { backgroundColor: "#ebf0fa" }
+                "& .MuiInputBase-input": { borderRadius: "10px", transition: "all 0.2s ease", color: "#353634" },
+                "&:hover .MuiInputBase-input": { backgroundColor: "#ebf0fa", color: "#3b5faf", },
+                "& .MuiSvgIcon-root": { fill: "#353634" },
+                "&:hover .MuiSvgIcon-root": { fill: "#3b5faf" },
+                ...sx,
             }}
         >
             { years.map((year) => (

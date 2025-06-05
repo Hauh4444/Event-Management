@@ -2,6 +2,14 @@
 use serde::{Serialize, Deserialize};
 use chrono::{NaiveDate, NaiveDateTime};
 
+// Internal Modules
+use crate::organizer::models::{Organizer};
+use crate::agenda::models::{Agenda};
+use crate::speaker::models::{Speaker};
+use crate::faq::models::{Faq};
+use crate::attachment::models::{Attachment};
+use crate::comment::models::{Comment};
+
 
 /// Represents an event in the system.
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
@@ -60,13 +68,24 @@ pub struct Event {
     /// Flag indicating whether the event is virtual.
     pub is_virtual: i64,
 
+    /// Optional encoded image or image link url
+    pub image: Option<String>,
+
+    /// Optional embedded map link url
+    pub map_embed: Option<String>,
+
+    /// Optional accessibility information
+    pub accessibility_info: Option<String>,
+
+    /// Optional safety guidelines
+    pub safety_guidelines: Option<String>,
+
     /// Timestamp for when the event was created.
     pub created_at: NaiveDateTime,
 
     /// Timestamp for the last update to the event.
     pub updated_at: NaiveDateTime,
 }
-
 
 
 /// Data required to create or update an event.
@@ -123,6 +142,18 @@ pub struct EventData {
     /// Flag indicating whether the event is virtual.
     pub is_virtual: i64,
 
+    /// Optional encoded image or image link url
+    pub image: Option<String>,
+
+    /// Optional embedded map link url
+    pub map_embed: Option<String>,
+
+    /// Optional accessibility information
+    pub accessibility_info: Option<String>,
+
+    /// Optional safety guidelines
+    pub safety_guidelines: Option<String>,
+
     /// Timestamp for when the event was created.
     pub created_at: String,
 
@@ -131,11 +162,22 @@ pub struct EventData {
 }
 
 
+/// Query parameters for getting overview totals.
+#[derive(Deserialize)]
+pub struct GetUserEventsQuery {
+    /// The year to retrieve totals for (e.g., 2025).
+    pub year: i64,
+}
+
+
 /// Data required to retrieve a user's events.
 #[derive(Deserialize)]
 pub struct GetUserEventsData {
     /// Identifier for the event organizer.
     pub organizer_id: i64,
+    
+    /// The year to retrieve totals for (e.g., 2025).
+    pub year: i64,
 }
 
 
@@ -150,12 +192,27 @@ pub struct GetEventData {
 }
 
 
-/// Data required to delete an event.
-#[derive(Deserialize)]
-pub struct DeleteEventData {
-    /// Unique identifier of the event to delete.
-    pub event_id: i64,
+/// Represents related detail information of the event.
+#[derive(Deserialize, Serialize)]
+pub struct EventDetails {
+    /// Organizer info of the event.
+    pub organizer: Organizer,
 
-    /// Identifier for the event organizer.
-    pub organizer_id: i64,
+    /// List of agenda items of the event.
+    pub agenda: Vec<Agenda>,
+
+    /// List of speakers of the event.
+    pub speakers: Vec<Speaker>,
+
+    /// List of faqs of the event.
+    pub faqs: Vec<Faq>,
+
+    /// List of attachments of the event.
+    pub attachments: Vec<Attachment>,
+    
+    /// List of comments on the event.
+    pub comments: Vec<Comment>,
+
+    /// List of related events.
+    pub related_events: Vec<Event>,
 }

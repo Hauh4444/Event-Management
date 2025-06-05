@@ -2,7 +2,7 @@
     width: calc(100% - 100px);
     height: 40px;
     padding: 30px 50px;
-    border-bottom: 1px solid rgba(53, 54, 52, 0.05);
+    border-bottom: 2px solid rgba(53, 54, 52, 0.1);
     background-color: #fefffe;
     display: flex;
     flex-direction: row;

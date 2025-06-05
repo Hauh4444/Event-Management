@@ -8,7 +8,7 @@ use rand::rngs::OsRng;
 use sqlx::SqlitePool;
 
 // Internal Modules
-use crate::auth::mapper::get_session_by_token;
+use crate::auth::mapper::fetch_session_by_token;
 use crate::auth::models::{GetSessionData, Session};
 
 
@@ -34,7 +34,7 @@ pub async fn validate_session(
 
     let token = cookie.value().to_string();
 
-    get_session_by_token(GetSessionData { token }, pool)
+    fetch_session_by_token(GetSessionData { token }, pool)
         .await
         .map_err(|e| HttpResponse::Unauthorized().body(format!("Session not authenticated: {}", e)))
 }

@@ -1,0 +1,268 @@
+.eventDetailsPage {
+    .content {
+        .event {
+            background-color: #fefffe;
+            border-radius: 10px;
+            box-shadow: 0 0 2px rgba(53, 54, 52, 0.25);
+            padding: 50px;
+
+            .eventBanner {
+                img {
+                    width: 100%;
+                    max-height: 320px;
+                    object-fit: cover;
+                    border-radius: 8px;
+                    margin-bottom: 24px;
+                }
+            }
+
+            .header {
+                .titleRow {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+
+                    .title {
+                        margin: 0;
+                        font-size: 30px;
+                        color: #353634;
+                    }
+
+                    .actions {
+                        display: flex;
+                        flex-direction: row;
+                        gap: 10px;
+
+                        .btn {
+                            width: 125px;
+                            height: 40px;
+                            margin: 0 !important;
+                            border-radius: 5px;
+                            border: 2px solid rgba(53, 54, 52, 0.1);
+                            font-size: 16px;
+                            text-transform: none;
+                            transition: all 0.2s ease;
+
+                            &.edit {
+                                background-color: #3b5faf;
+                                color: #ebf0fa;
+
+                                &:hover {
+                                    background-color: #4b77bf;
+                                }
+                            }
+
+                            &.cancel {
+                                background-color: #d21404;
+                                color: #ebf0fa;
+
+                                &:hover {
+                                    background-color: #e3242b;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .meta {
+                    color: #7d8189;
+                    font-size: 16px;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                }
+
+                .countdown {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #d21404;
+                }
+            }
+
+            .body {
+                .description {
+                    margin: 20px 0;
+                    font-size: 18px;
+                    color: #7d8189;
+                }
+            }
+
+            section {
+                margin-bottom: 24px;
+                padding-top: 24px;
+                border-top: 1px solid rgba(53, 54, 52, 0.1);
+
+                h2 {
+                    margin-top: 0;
+                    margin-bottom: 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    font-weight: 700;
+                    font-size: 22px;
+                    color: #3b5faf;
+                }
+            }
+
+            section:last-child {
+                margin-bottom: 0;
+            }
+
+            .organizerSection {
+                .organizerInfo {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+
+                    .organizerLogo {
+                        width: 72px;
+                        height: 72px;
+                        object-fit: contain;
+                        border-radius: 12px;
+                        border: 1px solid #ddd;
+                    }
+
+                    p {
+                        margin: 0;
+                        font-size: 20px;
+                        font-weight: bold;
+                    }
+
+                    a {
+                        margin-left: auto;
+                        text-decoration: none;
+                        font-size: 16px;
+                        color: #3b5faf;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+
+            .mapSection {
+                iframe {
+                    width: 100%;
+                    height: 320px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }
+            }
+
+            .infoGrid {
+                margin-bottom: 24px;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 18px 32px;
+
+                .item {
+                    padding: 14px 18px;
+                    background-color: #ebf0fa;
+                    border-radius: 10px;
+                    border: 2px solid rgba(53, 54, 52, 0.1);
+                    font-weight: bold;
+
+                    .label {
+                        display: block;
+                        align-items: center;
+                        gap: 10px;
+                        color: #3b5faf;
+                    }
+
+                    .icon {
+                        margin: -2px 3px 0 0;
+                        vertical-align: middle;
+                    }
+                }
+            }
+
+            .socialSection {
+                margin-top: 32px;
+
+                .btn {
+                    width: 125px;
+                    height: 40px;
+                    margin: 0 10px 0 0;
+                    border-radius: 5px;
+                    border: 2px solid rgba(53, 54, 52, 0.1);
+                    color: #353634 !important;
+                    font-size: 14px;
+                    font-weight: bold;
+                    transition: all 0.2s ease;
+
+                    &:hover {
+                        background-color: #ebf0fa;
+                        color: #3b5faf !important;
+                    }
+                }
+            }
+
+            .agendaSection,
+            .attachmentsSection,
+            .relatedEventsSection {
+                ul {
+                    margin-bottom: 0;
+                    padding-left: 0;
+                    list-style: none;
+
+                    li {
+                        padding: 5px 0;
+                        border-bottom: 1px solid #fefffe;
+                    }
+                }
+            }
+
+            .speakersSection {
+                .speakersGrid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+                    gap: 18px 32px;
+
+                    .speakerCard {
+                        display: flex;
+                        flex-direction: row;
+
+                        .speakerImage {
+                            width: 125px;
+                            height: 125px;
+                            object-fit: contain;
+                            border-radius: 12px;
+                            border: 1px solid #ddd;
+                        }
+
+                        .speakerInfo {
+                            padding: 0 15px;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            gap: 10px;
+
+                            h4,
+                            p {
+                                margin: 0;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .commentsSection {
+                .comment {
+                    margin-top: 16px;
+                }
+
+                p {
+                    margin: 0;
+                    padding: 14px 18px;
+                    background-color: #ebf0fa;
+                    border-radius: 10px;
+                    border: 2px solid rgba(53, 54, 52, 0.1);
+                }
+            }
+        }
+    }
+}

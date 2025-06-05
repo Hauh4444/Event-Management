@@ -15,10 +15,10 @@ use crate::auth::models::{User, AuthData, GetUserData, GetUserIDData, UpdatePass
 /// # Returns
 ///
 /// A `Result` containing either the `User` struct if found, or an error if the query fails.
-pub async fn get_user_by_username(data: GetUserData, pool: &SqlitePool) -> Result<User, sqlx::Error> {
+pub async fn fetch_user_by_username(data: GetUserData, pool: &SqlitePool) -> Result<User, sqlx::Error> {
     sqlx::query_as!(
         User,
-        "SELECT * FROM users WHERE username = ?",
+        "SELECT id, username, password FROM users WHERE username = ?",
         data.username
     )
         .fetch_one(pool)
@@ -36,10 +36,10 @@ pub async fn get_user_by_username(data: GetUserData, pool: &SqlitePool) -> Resul
 /// # Returns
 ///
 /// A `Result` containing either the `User` struct if found, or an error if the query fails.
-pub async fn get_user_by_id(data: GetUserIDData, pool: &SqlitePool) -> Result<User, sqlx::Error> {
+pub async fn fetch_user_by_id(data: GetUserIDData, pool: &SqlitePool) -> Result<User, sqlx::Error> {
     sqlx::query_as!(
         User,
-        "SELECT * FROM users WHERE id = ?",
+        "SELECT id, username, password FROM users WHERE id = ?",
         data.id
     )
         .fetch_one(pool)
@@ -126,10 +126,10 @@ pub async fn delete_user(data: DeleteUserData, pool: &SqlitePool) -> Result<(), 
 /// # Returns
 ///
 /// A `Result` containing the `Session` struct if found, or an error if the query fails.
-pub async fn get_session_by_token(data: GetSessionData, pool: &SqlitePool) -> Result<Session, sqlx::Error> {
+pub async fn fetch_session_by_token(data: GetSessionData, pool: &SqlitePool) -> Result<Session, sqlx::Error> {
     sqlx::query_as!(
         Session,
-        "SELECT * FROM sessions WHERE token = ?",
+        "SELECT id, user_id, token FROM sessions WHERE token = ?",
         data.token
     )
         .fetch_one(pool)

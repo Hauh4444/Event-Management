@@ -23,7 +23,7 @@ import "./Sidebar.css";
  * links to dashboard, events, attendees, analytics, settings, support,
  * and logout functionality.
  *
- * @returns {JSX.Element} The rendered Sidebar component.
+ * @returns { JSX.Element } The rendered Sidebar component.
  */
 const Sidebar = () => {
     // React hooks
@@ -54,7 +54,7 @@ const Sidebar = () => {
      * - Navigates to the specified path if it's not "/logout".
      * - Logs out the user and redirects to the login page if the path is "/logout".
      *
-     * @param {string} path - The target path to navigate to or the logout action.
+     * @param { string } path - The target path to navigate to or the logout action.
      */
     const handleButtonPress = (path) => {
         if (path === "/logout") auth.logout().then(() => navigate("/login"));

@@ -20,3 +20,14 @@
         }
     }
 }
+
+body.exporting *:focus,
+body.exporting .MuiTouchRipple-root {
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+}
+
+body.exporting .MuiTouchRipple-root {
+    display: none !important;
+}

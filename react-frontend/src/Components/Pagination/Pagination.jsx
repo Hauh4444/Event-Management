@@ -14,13 +14,13 @@ import "./Pagination.css";
  * Displays pagination controls with previous and next buttons,
  * along with numbered page buttons for direct navigation.
  *
- * @param {Object} props - Component props.
- * @param {number} props.pageCount - Total number of pages available.
- * @param {number} props.page - Current active page number.
- * @param {(event: React.ChangeEvent<unknown>, page: number) => void} props.onChange - Callback fired when page changes.
+ * @param { Object } props - Component props.
+ * @param { number } props.pageCount - Total number of pages available.
+ * @param { number } props.page - Current active page number.
+ * @param { (event: React.ChangeEvent<unknown>, page: number) => void } props.onChange - Callback fired when page changes.
  *
  * @component
- * @returns {JSX.Element} The rendered pagination component.
+ * @returns { JSX.Element } The rendered pagination component.
  */
 const CustomPagination = ({ pageCount, page, onChange }) => {
     // Component JSX
@@ -52,9 +52,9 @@ const CustomPagination = ({ pageCount, page, onChange }) => {
                     },
                 }}
                 renderItem={ (item) => (
-                    item.type === 'previous' || item.type === 'next'
+                    item.type === "previous" || item.type === "next"
                         ? null
-                        : <PaginationItem {...item} />
+                        : <PaginationItem { ...item } />
                 ) }
             />
 

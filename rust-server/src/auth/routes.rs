@@ -5,7 +5,7 @@ use sqlx::SqlitePool;
 use time::Duration;
 
 // Internal Modules
-use crate::auth::mapper::{get_user_by_username, get_user_by_id, create_user, update_user_password, delete_user, create_session, delete_session};
+use crate::auth::mapper::{fetch_user_by_username, fetch_user_by_id, create_user, update_user_password, delete_user, create_session, delete_session};
 use crate::auth::models::{AuthData, GetUserData, GetUserIDData, UpdatePasswordRequestData, UpdatePasswordData, DeleteUserData, SessionData, DeleteSessionData};
 use crate::auth::services::{generate_session_token, hash_password, validate_session, verify_password};
 
@@ -29,7 +29,7 @@ pub async fn check_auth_status(
         Err(response) => return response,
     };
     
-    match get_user_by_id(GetUserIDData {id: session.user_id}, &pool).await {
+    match fetch_user_by_id(GetUserIDData {id: session.user_id}, &pool).await {
         Ok(user) => HttpResponse::Ok().json(GetUserData {username: user.username}),
         Err(e) => HttpResponse::Unauthorized().body(format!("User not found: {}", e)),
     }
@@ -52,14 +52,14 @@ pub async fn login_user(
 ) -> impl Responder {
     let auth_data = data.into_inner();
 
-    let user = match get_user_by_username(GetUserData {username: auth_data.username}, &pool).await {
+    let user = match fetch_user_by_username(GetUserData {username: auth_data.username}, &pool).await {
         Ok(user) => user,
         Err(e) => return HttpResponse::Unauthorized().body(format!("Username not found: {}", e)),
     };
     
     match verify_password(&user.password, &auth_data.password) {
-        Ok(()) => (),
         Err(e) => return HttpResponse::Unauthorized().body(format!("Invalid password: {}", e)),
+        _ => {},
     }
 
     let token = generate_session_token();
@@ -167,7 +167,7 @@ pub async fn change_password(
         Err(e) => return HttpResponse::Unauthorized().body(format!("Error hashing password: {}", e)),
     };
     
-    match update_user_password(UpdatePasswordData {user_id: session.user_id.clone(), new_password}, &pool).await {
+    match update_user_password(UpdatePasswordData {user_id: session.user_id, new_password}, &pool).await {
         Ok(()) => HttpResponse::Ok().body("Password updated"),
         Err(e) => HttpResponse::InternalServerError().body(format!("Failed to update password: {}", e)),
     }

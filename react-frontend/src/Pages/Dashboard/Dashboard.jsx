@@ -23,7 +23,7 @@ import "./Dashboard.css";
  * year and displays it using line charts.
  *
  * @component
- * @returns {JSX.Element} The rendered Dashboard page component.
+ * @returns { JSX.Element } The rendered Dashboard page component.
  */
 const Dashboard = () => {
     // Initialize graph data with default zero values and current year
@@ -45,7 +45,7 @@ const Dashboard = () => {
             label: "upcoming",
         },
         {
-            title: "Cancelled",
+            title: "Canceled",
             iconColor: "#ff2400",
             year: new Date().getFullYear(),
             seriesData: new Array(12).fill(0),
@@ -53,7 +53,6 @@ const Dashboard = () => {
             label: "canceled",
         },
     ]);
-
     // Initialize overview data similarly with zero values and current year
     const [overviewItems, setOverviewItems] = useState([
         {
@@ -76,9 +75,9 @@ const Dashboard = () => {
     /**
      * Fetches data for the specified year and updates graphItems and overviewItems state.
      *
-     * @param {number} newYear - The year for which to fetch data.
+     * @param { number } newYear - The year for which to fetch data.
      *
-     * @returns {Promise<void>}
+     * @returns { Promise<void> }
      */
     const fetchData = async (newYear) => {
         // Fetch summary data for the given year from API
@@ -106,7 +105,9 @@ const Dashboard = () => {
     };
 
 
-    // Fetch data once on component mount for the current year
+    /**
+     * Handles fetching data for current year on component mount.
+     */
     useEffect(() => {
         fetchData(new Date().getFullYear()).catch((err) => console.error(err));
     }, []);
@@ -115,9 +116,9 @@ const Dashboard = () => {
     /**
      * Handles year selection change for either graph or overview items.
      *
-     * @param {number} index - Index of the item to update.
-     * @param {number} newYear - The new year selected.
-     * @param {boolean} isGraph - Whether the item is part of graphItems or overviewItems.
+     * @param { number } index - Index of the item to update.
+     * @param { number } newYear - The new year selected.
+     * @param { boolean } isGraph - Whether the item is part of graphItems or overviewItems.
      */
     const onYearChange = (index, newYear, isGraph) => {
         // Update the year in the respective state array
@@ -157,7 +158,7 @@ const Dashboard = () => {
                         Overview
                     </h1>
 
-                    {/* Render line charts for event-related graph items */}
+                    { /* Render line charts for event-related graph items */ }
                     <div className="graphs">
                         { graphItems.map((item, index) => (
                             <div className="item" key={ index }>
@@ -172,7 +173,7 @@ const Dashboard = () => {
                                     />
                                 </h3>
 
-                                {/* Display total sum of the series data */}
+                                { /* Display total sum of the series data */ }
                                 <h2>
                                     { item.seriesData.reduce((sum, val) => sum + val, 0) }
                                 </h2>
@@ -207,7 +208,7 @@ const Dashboard = () => {
                                         sx={{
                                             [`& .${ lineElementClasses.root }`]: {
                                                 stroke: "#3b5faf",
-                                                strokeWidth: 2.5,
+                                                strokeWidth: 3,
                                             },
                                             [`& .${ markElementClasses.root }`]: {
                                                 stroke: "#f8fbfd",
@@ -243,7 +244,7 @@ const Dashboard = () => {
                         )) }
                     </div>
 
-                    {/* Render line charts for overview items with area charts */}
+                    { /* Render line charts for overview items with area charts */ }
                     { overviewItems.map((item, index) => (
                         <div className="overviewItem" key={ index }>
                             <h2>
@@ -285,6 +286,10 @@ const Dashboard = () => {
                                 sx={{
                                     [`& .${ areaElementClasses.root }`]: {
                                         fill: "url(#areaGradient)",
+                                    },
+                                    [`& .${ lineElementClasses.root }`]: {
+                                        stroke: "#3b5faf",
+                                        strokeWidth: 3,
                                     },
                                     "& .MuiChartsAxis-line": {
                                         display: "none",

@@ -30,9 +30,9 @@ pub struct OverviewQuery {
 }
 
 
-/// Query parameters for getting overview totals.
+/// Data parameters for getting overview totals.
 #[derive(Deserialize)]
-pub struct GetOverviewTotals {
+pub struct GetOverview {
     /// The year to retrieve totals for (e.g., 2025).
     pub year: i64,
     
@@ -41,6 +41,26 @@ pub struct GetOverviewTotals {
 }
 
 
+/// Represents aggregated daily event counts for a given year.
+#[derive(Serialize)]
+pub struct EventsOverview {
+    /// Daily totals of event counts.
+    pub event_counts: Vec<DateCount>,
+}
+
+
+/// Represents the number of events on a specific date.
+#[derive(Serialize)]
+pub struct DateCount {
+    /// Date in "YYYY-MM-DD" format.
+    pub date: String,
+
+    /// Number of events on the given date.
+    pub count: usize,
+}
+
+
+/// Represents aggregated totals for ticket metrics for a given year.
 #[derive(Serialize)]
 pub struct TicketsOverview {
     /// Monthly totals of ticket sales.
@@ -48,14 +68,4 @@ pub struct TicketsOverview {
 
     /// Net profit.
     pub profit: f64,
-}
-
-
-#[derive(Deserialize)]
-pub struct GetTicketsOverview {
-    /// The year to retrieve totals for (e.g., 2025).
-    pub year: i64,
-
-    /// Identifier for the event organizer.
-    pub organizer_id: i64,
 }

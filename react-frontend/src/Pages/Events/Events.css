@@ -16,12 +16,14 @@
             }
 
             .btn {
+                height: 50px;
                 padding: 10px 20px;
                 border-radius: 5px;
                 border: 2px solid rgba(53, 54, 52, 0.1);
                 float: right;
                 color: #353634;
-                font-size: 14px;
+                font-size: 16px;
+                font-weight: bold;
                 text-transform: none;
                 transition: all 0.2s ease;
 
@@ -73,26 +75,30 @@
                 width: fit-content;
                 margin: 20px 0;
 
-                .increase {
+                .increase,
+                .decrease {
                     padding: 5px 8px;
-                    background-color: #b9ebd4;
-                    color: #007848;
 
                     .icon {
                         margin: -3px 3px 0 0;
                         vertical-align: middle;
+                    }
+                }
+
+                .increase {
+                    background-color: #b9ebd4;
+                    color: #007848;
+
+                    .icon {
                         fill: #007848;
                     }
                 }
 
                 .decrease {
-                    padding: 5px 8px;
                     background-color: #fa8072;
                     color: #7c0a02;
 
                     .icon {
-                        margin: -3px 3px 0 0;
-                        vertical-align: middle;
                         fill: #7c0a02;
                     }
                 }
@@ -183,7 +189,8 @@
                 }
 
                 tr {
-                    height: 56.5px;
+                    height: 55px !important;
+                    max-height: 55px;
 
                     td {
                         width: 15%;
@@ -191,6 +198,7 @@
                         font-size: 14px;
 
                         .btn {
+                            height: 35px;
                             margin: 0 5px;
                             border-radius: 5px;
                             color: #3b5faf;
@@ -213,15 +221,4 @@
             }
         }
     }
-}
-
-body.exporting *:focus,
-body.exporting .MuiTouchRipple-root {
-    outline: none !important;
-    box-shadow: none !important;
-    background-color: transparent !important;
-}
-
-body.exporting .MuiTouchRipple-root {
-    display: none !important;
 }

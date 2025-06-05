@@ -13,6 +13,8 @@ import Analytics from "@/Pages/Analytics/Analytics.jsx";
 import Attendees from "@/Pages/Attendees/Attendees.jsx";
 import Dashboard from "@/Pages/Dashboard/Dashboard.jsx";
 import Events from "@/Pages/Events/Events.jsx";
+import EventDetails from "@/Pages/Events/EventDetails.jsx";
+import EditEvent from "@/Pages/Events/EditEvent.jsx";
 import Settings from "@/Pages/Settings/Settings.jsx";
 import Support from "@/Pages/Support/Support.jsx";
 
@@ -27,6 +29,8 @@ const PublicRoutes = () => {
                     <Route path="/attendees" element={ <Attendees /> } />
                     <Route path="/dashboard" element={ <Dashboard /> } />
                     <Route path="/events" element={ <Events /> } />
+                    <Route path="/events/:id" element={ <EventDetails /> } />
+                    <Route path="/events/:id/edit" element={ <EditEvent /> } />
                     <Route path="/settings" element={ <Settings /> } />
                     <Route path="/support" element={ <Support /> } />
                 </Route>

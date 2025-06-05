@@ -1,10 +1,26 @@
 // External Libraries
 use actix_web::{web, Responder, HttpResponse, HttpRequest};
-use sqlx::SqlitePool;
+use sqlx::{SqlitePool};
 
-// Internal Modules
-use crate::event::mapper::{get_user_events, get_event_by_id, create_event, delete_event};
-use crate::event::models::{Event, EventData, GetUserEventsData, GetEventData, DeleteEventData};
+// Internal Mappers
+use crate::event::mapper::{fetch_events, fetch_event, create_event, update_event};
+use crate::organizer::mapper::fetch_organizer;
+use crate::agenda::mapper::{fetch_agenda, update_agenda};
+use crate::speaker::mapper::{fetch_speakers, update_speakers};
+use crate::faq::mapper::{fetch_faqs, update_faqs};
+use crate::attachment::mapper::{fetch_attachments, update_attachments};
+use crate::comment::mapper::fetch_comments;
+
+// Internal Models
+use crate::event::models::{Event, EventData, GetUserEventsQuery, GetUserEventsData, GetEventData, EventDetails};
+use crate::organizer::models::{Organizer, GetOrganizerData};
+use crate::agenda::models::GetAgendaData;
+use crate::speaker::models::GetSpeakerData;
+use crate::faq::models::GetFaqData;
+use crate::attachment::models::GetAttachmentData;
+use crate::comment::models::GetCommentData;
+
+// Internal Services
 use crate::auth::services::validate_session;
 
 
@@ -20,6 +36,7 @@ use crate::auth::services::validate_session;
 /// An HTTP response with event data if successful, or an error message.
 pub async fn get_events(
     req: HttpRequest,
+    query: web::Query<GetUserEventsQuery>,
     pool: web::Data<SqlitePool>,
 ) -> impl Responder {
     let session = match validate_session(&req, &pool).await {
@@ -27,7 +44,7 @@ pub async fn get_events(
         Err(response) => return response,
     };
     
-    match get_user_events(GetUserEventsData {organizer_id: session.user_id}, &pool).await {
+    match fetch_events(GetUserEventsData {organizer_id: session.user_id, year: query.year}, &pool).await {
         Ok(events) => HttpResponse::Ok().json(events),
         Err(e) => HttpResponse::InternalServerError().body(format!("Event not found: {}", e)),
     }
@@ -44,7 +61,7 @@ pub async fn get_events(
 ///
 /// # Returns
 ///
-/// An HTTP response with the event details if found, or an error message.
+/// An HTTP response with the event information if found, or an error message.
 pub async fn get_event(
     req: HttpRequest,
     event_id: web::Path<i64>,
@@ -55,10 +72,61 @@ pub async fn get_event(
         Err(response) => return response,
     };
 
-    match get_event_by_id(GetEventData {event_id: *event_id, organizer_id: session.user_id}, &pool).await {
+    match fetch_event(GetEventData {event_id: *event_id, organizer_id: session.user_id}, &pool).await {
         Ok(event) => HttpResponse::Ok().json(Event {..event}),
         Err(e) => HttpResponse::InternalServerError().body(format!("Event not found: {}", e)),
     }
+}
+
+
+/// Handles retrieving a specific event's details by ID, ensuring the organizer owns it.
+///
+/// # Arguments
+///
+/// * `req` - The incoming HTTP request containing session data.
+/// * `event_id` - The path parameter representing the event's ID.
+/// * `pool` - The SQLite database connection pool.
+///
+/// # Returns
+///
+/// An HTTP response with the event detail information if found, or an error message.
+pub async fn get_event_details(
+    req: HttpRequest,
+    event_id: web::Path<i64>,
+    pool: web::Data<SqlitePool>,
+) -> impl Responder {
+    let session = match validate_session(&req, &pool).await {
+        Ok(session) => session,
+        Err(response) => return response,
+    };
+
+    let event = match fetch_event(GetEventData {event_id: *event_id, organizer_id: session.user_id}, &pool).await {
+        Ok(event) => event,
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Event not found: {}", e)),
+    };
+
+    let organizer_info = fetch_organizer(GetOrganizerData { organizer_id: event.organizer_id }, &pool)
+        .await.unwrap_or_else(|_| Organizer::default());
+    let agenda_items = fetch_agenda(GetAgendaData { event_id: event.id }, &pool)
+        .await.unwrap_or_else(|_| vec![]);
+    let speaker_items = fetch_speakers(GetSpeakerData { event_id: event.id }, &pool)
+        .await.unwrap_or_else(|_| vec![]);
+    let faq_items = fetch_faqs(GetFaqData { event_id: event.id }, &pool)
+        .await.unwrap_or_else(|_| vec![]);
+    let attachment_items = fetch_attachments(GetAttachmentData { event_id: event.id }, &pool)
+        .await.unwrap_or_else(|_| vec![]);
+    let comment_items = fetch_comments(GetCommentData { event_id: event.id }, &pool)
+        .await.unwrap_or_else(|_| vec![]);
+
+    HttpResponse::Ok().json(EventDetails {
+        organizer: organizer_info,
+        agenda: agenda_items,
+        speakers: speaker_items,
+        faqs: faq_items,
+        attachments: attachment_items,
+        comments: comment_items,
+        related_events: vec![],
+    })
 }
 
 
@@ -67,7 +135,7 @@ pub async fn get_event(
 /// # Arguments
 ///
 /// * `req` - The incoming HTTP request containing session data.
-/// * `data` - The JSON body containing new event details.
+/// * `data` - The JSON body containing new event data.
 /// * `pool` - The SQLite database connection pool.
 ///
 /// # Returns
@@ -89,21 +157,25 @@ pub async fn register_event(
     }
 }
 
+// TODO create event details: agenda, speakers, faqs, attachments
 
-/// Handles deleting a specific event by ID if it belongs to the authenticated organizer.
+
+/// Handles updating an event under the authenticated organizer.
 ///
 /// # Arguments
 ///
 /// * `req` - The incoming HTTP request containing session data.
 /// * `event_id` - The path parameter representing the event's ID.
+/// * `data` - The JSON body containing new event data.
 /// * `pool` - The SQLite database connection pool.
 ///
 /// # Returns
 ///
-/// An HTTP response indicating success or failure of deletion.
-pub async fn remove_event(
+/// An HTTP response indicating success or failure of updating event.
+pub async fn put_event(
     req: HttpRequest,
     event_id: web::Path<i64>,
+    data: web::Json<Event>,
     pool: web::Data<SqlitePool>,
 ) -> impl Responder {
     let session = match validate_session(&req, &pool).await {
@@ -111,10 +183,66 @@ pub async fn remove_event(
         Err(response) => return response,
     };
 
-    match delete_event(DeleteEventData {event_id: *event_id, organizer_id: session.user_id}, &pool).await {
-        Ok(()) => HttpResponse::Ok().body("Event deleted"),
-        Err(e) => HttpResponse::InternalServerError().body(format!("Failed to delete event: {}", e)),
+    match fetch_event(GetEventData {event_id: *event_id, organizer_id: session.user_id}, &pool).await {
+        Ok(event) => event,
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Event not found: {}", e)),
+    };
+    
+    match update_event(Event {id: *event_id, ..data.into_inner()}, &pool).await {
+        Ok(()) => HttpResponse::Ok().body(format!("Event '{}' updated", event_id)),
+        Err(e) => HttpResponse::InternalServerError().body(format!("Failed to update event: {}", e)),
     }
+}
+
+
+/// Handles updating the detailed information of a specific event.
+///
+/// # Arguments
+///
+/// * `req` - The incoming HTTP request containing session data.
+/// * `event_id` - The path parameter representing the event's ID to update.
+/// * `data` - The JSON body containing the event details to update.
+/// * `pool` - The SQLite database connection pool.
+///
+/// # Returns
+///
+/// An HTTP response indicating success or failure of the update operation.
+pub async fn put_event_details(
+    req: HttpRequest,
+    event_id: web::Path<i64>,
+    data: web::Json<EventDetails>,
+    pool: web::Data<SqlitePool>,
+) -> impl Responder {
+    let session = match validate_session(&req, &pool).await {
+        Ok(session) => session,
+        Err(response) => return response,
+    };
+
+    match fetch_event(GetEventData {event_id: *event_id, organizer_id: session.user_id}, &pool).await {
+        Ok(event) => event,
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Event not found: {}", e)),
+    };
+
+    let EventDetails { agenda, speakers, faqs, attachments, .. } = data.into_inner();
+
+    match update_agenda(agenda, &pool).await {
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Failed to update agenda: {}", e)),
+        _ => {},
+    };
+    match update_speakers(speakers, &pool).await {
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Failed to update speakers: {}", e)),
+        _ => {},
+    };
+    match update_faqs(faqs, &pool).await {
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Failed to update faqs: {}", e)),
+        _ => {},
+    };
+    match update_attachments(attachments, &pool).await {
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Failed to update attachments: {}", e)),
+        _ => {},
+    };
+    
+    HttpResponse::Ok().json("Event details updated")
 }
 
 
@@ -131,6 +259,8 @@ pub fn configure_event_routes(cfg: &mut web::ServiceConfig) {
     cfg
         .route("/events/", web::get().to(get_events))
         .route("/events/{id}/", web::get().to(get_event))
+        .route("/events/{id}/details/", web::get().to(get_event_details))
         .route("/events/", web::post().to(register_event))
-        .route("/events/{id}/", web::delete().to(remove_event));
+        .route("/events/{id}/", web::put().to(put_event))
+        .route("/events/{id}/details/", web::put().to(put_event_details));
 }
