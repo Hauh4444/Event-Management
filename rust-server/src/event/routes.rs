@@ -5,14 +5,14 @@ use sqlx::{SqlitePool};
 // Internal Mappers
 use crate::event::mapper::{fetch_events, fetch_event, create_event, update_event};
 use crate::organizer::mapper::fetch_organizer;
-use crate::agenda::mapper::{fetch_agenda, update_agenda};
-use crate::speaker::mapper::{fetch_speakers, update_speakers};
-use crate::faq::mapper::{fetch_faqs, update_faqs};
-use crate::attachment::mapper::{fetch_attachments, update_attachments};
+use crate::agenda::mapper::{fetch_agenda, create_agenda, update_agenda};
+use crate::speaker::mapper::{fetch_speakers, create_speakers, update_speakers};
+use crate::faq::mapper::{fetch_faqs, create_faqs, update_faqs};
+use crate::attachment::mapper::{fetch_attachments, create_attachments, update_attachments};
 use crate::comment::mapper::fetch_comments;
 
 // Internal Models
-use crate::event::models::{Event, EventData, GetUserEventsQuery, GetUserEventsData, GetEventData, EventDetails};
+use crate::event::models::{Event, EventData, GetUserEventsQuery, GetUserEventsData, GetEventData, EventDetails, CreateEventDetails};
 use crate::organizer::models::{Organizer, GetOrganizerData};
 use crate::agenda::models::GetAgendaData;
 use crate::speaker::models::GetSpeakerData;
@@ -46,7 +46,7 @@ pub async fn get_events(
     
     match fetch_events(GetUserEventsData {organizer_id: session.user_id, year: query.year}, &pool).await {
         Ok(events) => HttpResponse::Ok().json(events),
-        Err(e) => HttpResponse::InternalServerError().body(format!("Event not found: {}", e)),
+        Err(e) => HttpResponse::InternalServerError().body(format!("Events not found: {}", e)),
     }
 }
 
@@ -117,6 +117,8 @@ pub async fn get_event_details(
         .await.unwrap_or_else(|_| vec![]);
     let comment_items = fetch_comments(GetCommentData { event_id: event.id }, &pool)
         .await.unwrap_or_else(|_| vec![]);
+    
+    // TODO Fetch related events based on similar data: category_id, speakers, etc
 
     HttpResponse::Ok().json(EventDetails {
         organizer: organizer_info,
@@ -150,6 +152,8 @@ pub async fn register_event(
         Ok(session) => session,
         Err(response) => return response,
     };
+    
+    // TODO Save image file and update image to be location reference
 
     match create_event(EventData {organizer_id: session.user_id, ..data.into_inner()}, &pool).await {
         Ok(event) => HttpResponse::Ok().body(format!("Event '{}' registered", event.title)),
@@ -157,7 +161,66 @@ pub async fn register_event(
     }
 }
 
-// TODO create event details: agenda, speakers, faqs, attachments
+
+/// Handles registering a new events details under the authenticated organizer.
+///
+/// # Arguments
+///
+/// * `req` - The incoming HTTP request containing session data.
+/// * `event_id` - The path parameter representing the event's ID.
+/// * `data` - The JSON body containing new event detail data.
+/// * `pool` - The SQLite database connection pool.
+///
+/// # Returns
+///
+/// An HTTP response indicating success or failure of event detail creation.
+pub async fn register_event_details(
+    req: HttpRequest,
+    event_id: web::Path<i64>,
+    data: web::Json<CreateEventDetails>,
+    pool: web::Data<SqlitePool>,
+) -> impl Responder {
+    let session = match validate_session(&req, &pool).await {
+        Ok(session) => session,
+        Err(response) => return response,
+    };
+    
+    match fetch_event(GetEventData {event_id: *event_id, organizer_id: session.user_id}, &pool).await {
+        Ok(event) => event,
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Event not found: {}", e)),
+    };
+    
+    let CreateEventDetails { 
+        agenda, 
+        speakers, 
+        faqs, 
+        attachments, 
+    } = data.into_inner();
+    
+    let agenda_items = match create_agenda(agenda, &pool).await {
+        Ok(agenda_items) => agenda_items,
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Failed to create agenda: {}", e)),
+    };
+    let speaker_items = match create_speakers(speakers, &pool).await {
+        Ok(speaker_items) => speaker_items,
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Failed to create speakers: {}", e)),
+    };
+    let faq_items = match create_faqs(faqs, &pool).await {
+        Ok(faq_items) => faq_items,
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Failed to create faqs: {}", e)),
+    };
+    let attachment_items = match create_attachments(attachments, &pool).await {
+        Ok(attachment_items) => attachment_items,
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Failed to create attachments: {}", e)),
+    };
+
+    HttpResponse::Ok().json(CreateEventDetails {
+        agenda: agenda_items, 
+        speakers: speaker_items,
+        faqs: faq_items,
+        attachments: attachment_items,
+    })
+}
 
 
 /// Handles updating an event under the authenticated organizer.
@@ -187,7 +250,9 @@ pub async fn put_event(
         Ok(event) => event,
         Err(e) => return HttpResponse::InternalServerError().body(format!("Event not found: {}", e)),
     };
-    
+
+    // TODO Remove old and save new image file and update image location reference
+
     match update_event(Event {id: *event_id, ..data.into_inner()}, &pool).await {
         Ok(()) => HttpResponse::Ok().body(format!("Event '{}' updated", event_id)),
         Err(e) => HttpResponse::InternalServerError().body(format!("Failed to update event: {}", e)),
@@ -201,7 +266,7 @@ pub async fn put_event(
 ///
 /// * `req` - The incoming HTTP request containing session data.
 /// * `event_id` - The path parameter representing the event's ID to update.
-/// * `data` - The JSON body containing the event details to update.
+/// * `data` - The JSON body containing new event detail data.
 /// * `pool` - The SQLite database connection pool.
 ///
 /// # Returns
@@ -223,7 +288,13 @@ pub async fn put_event_details(
         Err(e) => return HttpResponse::InternalServerError().body(format!("Event not found: {}", e)),
     };
 
-    let EventDetails { agenda, speakers, faqs, attachments, .. } = data.into_inner();
+    let EventDetails { 
+        agenda, 
+        speakers, 
+        faqs, 
+        attachments, 
+        .. 
+    } = data.into_inner();
 
     match update_agenda(agenda, &pool).await {
         Err(e) => return HttpResponse::InternalServerError().body(format!("Failed to update agenda: {}", e)),
@@ -242,7 +313,7 @@ pub async fn put_event_details(
         _ => {},
     };
     
-    HttpResponse::Ok().json("Event details updated")
+    HttpResponse::Ok().body("Event details updated")
 }
 
 
@@ -261,6 +332,7 @@ pub fn configure_event_routes(cfg: &mut web::ServiceConfig) {
         .route("/events/{id}/", web::get().to(get_event))
         .route("/events/{id}/details/", web::get().to(get_event_details))
         .route("/events/", web::post().to(register_event))
+        .route("/events/{id}/details/", web::post().to(register_event_details))
         .route("/events/{id}/", web::put().to(put_event))
         .route("/events/{id}/details/", web::put().to(put_event_details));
 }

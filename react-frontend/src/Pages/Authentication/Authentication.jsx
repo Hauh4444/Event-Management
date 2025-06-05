@@ -79,7 +79,7 @@ const Authentication = () => {
                             className="form"
                             onSubmit={ handleSubmit }
                         >
-                            {formItems.map(({ label, name, type }, index) => (
+                            { formItems.map(({ label, name, type }, index) => (
                                 <TextField
                                     className="input"
                                     key={ index }
@@ -90,7 +90,7 @@ const Authentication = () => {
                                     onChange={ (e) => setInfo(prev => ({ ...prev, [name]: e.target.value })) }
                                     fullWidth
                                 />
-                            ))}
+                            )) }
 
                             <Button className="btn" type="submit">
                                 { isSignIn ? "Sign In" : "Sign Up" }

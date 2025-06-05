@@ -19,7 +19,7 @@ pub struct Attachment {
 }
 
 
-/// Data required to retrieve a attachment info.
+/// Data required to retrieve attachment info.
 #[derive(Deserialize)]
 pub struct GetAttachmentData {
     /// Unique identifier for the event of the attachment.

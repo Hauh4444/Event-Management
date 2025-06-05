@@ -26,7 +26,7 @@ const SearchBar = ({ onChange = () => {}, value, onClick = () => {} }) => {
         <TextField
             className="search"
             onChange={ (e) => onChange(e.target.value) }
-            onKeyDown={(e) => { if (e.key === "Enter") onClick(); }}
+            onKeyDown={ (e) => { if (e.key === "Enter") onClick(); } }
             value={ value }
             type="text"
             placeholder="Search"

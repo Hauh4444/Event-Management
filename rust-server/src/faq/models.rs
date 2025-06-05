@@ -19,7 +19,7 @@ pub struct Faq {
 }
 
 
-/// Data required to retrieve a faq info.
+/// Data required to retrieve faq info.
 #[derive(Deserialize)]
 pub struct GetFaqData {
     /// Unique identifier for the event of the faq.

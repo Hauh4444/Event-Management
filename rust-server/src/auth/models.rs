@@ -16,6 +16,23 @@ pub struct User {
 }
 
 
+/// Represents user information to be returned to the client.
+#[derive(Serialize)]
+pub struct UserData {
+    /// Username chosen by the user.
+    pub username: String,
+
+    /// Name of the user organizer
+    pub name: String,
+
+    /// Logo of the user organizer
+    pub logo: Option<String>,
+    
+    /// Website URL of the user organizer
+    pub website: Option<String>,
+}
+
+
 /// Data required for user authentication.
 #[derive(Deserialize)]
 pub struct AuthData {

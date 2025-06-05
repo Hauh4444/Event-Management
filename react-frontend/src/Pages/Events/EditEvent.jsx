@@ -32,7 +32,7 @@ const EditEvent = () => {
     const { id: eventId } = useParams();
 
     // State variables
-    // TODO finish setting up updating of entire event: image, map_embed_url
+    // TODO Finish setting up updating of entire event: image, map_embed_url (image file picker)
     const [event, setEvent] = useState({
         title: "",
         description: "",
@@ -62,14 +62,17 @@ const EditEvent = () => {
         faqs: [],
         attachments: [],
     });
+    const [categories, setCategories] = useState([]);
 
 
     /**
-     * Navigate to event details page if event has passed
+     * Navigate to event details page if event has concluded
      */
     useEffect(() => {
+        // Calculate time left until start of event
         const eventDateTime = event ? new Date(`${ event.event_date }T${ event.start_time }`) : null;
         const timeLeftMs = eventDateTime - new Date();
+        // Navigate to view event if event has started or concluded
         if (timeLeftMs <= 0) navigate(`/events/${ eventId }`);
     }, [event, eventId, navigate]);
 
@@ -89,6 +92,11 @@ const EditEvent = () => {
         res = await axiosInstance.get(`/events/${ eventId }/details/`);
         // Set event state with response data
         setEventDetails(res.data);
+
+        // Fetch category data
+        res = await axiosInstance.get("/categories/");
+        // Set category state with response data
+        setCategories(res.data);
     }
 
 
@@ -213,6 +221,44 @@ const EditEvent = () => {
                                 value={ event.contact_phone }
                                 onChange={ handleChange }
                             />
+                        </section>
+
+                        { /* Event Category and Status Information */ }
+                        <section className="row">
+                            { categories.length > 0 && (
+                                <FormControl fullWidth>
+                                    <InputLabel id="event_category">Category</InputLabel>
+                                    <Select
+                                        labelId="event_category"
+                                        name="category_id"
+                                        label="Category"
+                                        value={ categories ? event.category_id : 0 }
+                                        onChange={ handleChange }
+                                        size="medium"
+                                        variant="outlined"
+                                    >
+                                        { categories.map((category, index) => (
+                                            <MenuItem value={ category.id } key={ index }>{ category.name }</MenuItem>
+                                        )) }
+                                    </Select>
+                                </FormControl>
+                            ) }
+
+                            <FormControl fullWidth>
+                                <InputLabel id="event_status">Status</InputLabel>
+                                <Select
+                                    labelId="event_status"
+                                    name="status"
+                                    label="Status"
+                                    value={ event.status }
+                                    onChange={ handleChange }
+                                    size="medium"
+                                    variant="outlined"
+                                >
+                                    <MenuItem value="upcoming">Upcoming</MenuItem>
+                                    <MenuItem value="canceled">Canceled</MenuItem>
+                                </Select>
+                            </FormControl>
                         </section>
 
                         { /* Event Attending Details */ }

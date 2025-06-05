@@ -34,6 +34,41 @@ pub async fn fetch_speakers(data: GetSpeakerData, pool: &SqlitePool) -> Result<V
 }
 
 
+/// Creates multiple speaker items in the database.
+///
+/// # Arguments
+///
+/// * `data` - A vector of `Speaker` structs containing the created speaker items.
+/// * `pool` - A reference to the SQLite connection pool.
+///
+/// # Returns
+///
+/// A `Result` indicating success (`Ok(())`) or failure (`Err(sqlx::Error)`).
+///
+/// # Errors
+///
+/// Returns an error if any of the creation queries fail during execution.
+pub async fn create_speakers(data: Vec<Speaker>, pool: &SqlitePool) -> Result<Vec<Speaker>, sqlx::Error> {
+    let mut speakers = Vec::new();
+    
+    for speaker_item in data {
+        let res = sqlx::query_as!(
+            Speaker,
+            "INSERT INTO speakers (event_id, name, bio, photo)
+             VALUES (?, ?, ?, ?)
+             RETURNING id, event_id, name, bio, photo",
+            speaker_item.event_id, speaker_item.name, speaker_item.bio, speaker_item.photo
+        )
+            .fetch_one(pool)
+            .await?;
+        
+        speakers.push(res);
+    };
+
+    Ok(speakers)
+}
+
+
 /// Updates multiple speaker items in the database.
 ///
 /// # Arguments

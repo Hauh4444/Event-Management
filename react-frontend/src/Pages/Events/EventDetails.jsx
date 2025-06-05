@@ -46,7 +46,7 @@ const EventDetails = () => {
     const { id: eventId } = useParams();
 
     // State variables
-    // TODO display category and map embed
+    // TODO Display category and map embed
     const [event, setEvent] = useState({
         title: "",
         description: "",
@@ -86,7 +86,9 @@ const EventDetails = () => {
     const daysLeft = Math.floor(timeLeftMs / (1000 * 60 * 60 * 24));
     const hoursLeft = Math.floor((timeLeftMs / (1000 * 60 * 60)) % 24);
     const minutesLeft = Math.floor((timeLeftMs / (1000 * 60)) % 60);
-    const countdown = timeLeftMs > 0 ? `${ daysLeft }d ${ hoursLeft }h ${ minutesLeft }m left` : "Event started or passed";
+    const countdown = timeLeftMs > 0 ?
+        `${ daysLeft }d ${ hoursLeft }h ${ minutesLeft }m left` :
+        "Event started or concluded";
 
 
     /**
@@ -176,7 +178,7 @@ const EventDetails = () => {
      * @param social
      */
     const handleShare = (social) => {
-        // TODO proper sharing of events
+        // TODO Proper sharing of events
         alert("Shared to " + social);
     }
 
@@ -190,8 +192,8 @@ const EventDetails = () => {
                 <div className="content">
                     { event && (
                         <div className="event">
-                            { /* TODO better banner styling */ }
                             { /* Event Banner/Image */ }
+                            { /* TODO Better banner styling */ }
                             { event.image && (
                                 <div className="eventBanner">
                                     <img
@@ -288,7 +290,7 @@ const EventDetails = () => {
                                             src={ event.map_embed_url }
                                             width="100%"
                                             height="300"
-                                            style={ { border: 0 } }
+                                            style={{ border: 0 }}
                                             allowFullScreen=""
                                             loading="lazy"
                                             title="Event Location Map"
@@ -455,7 +457,7 @@ const EventDetails = () => {
                                                 <li
                                                     key={ i }
                                                     onClick={ () => navigate(`/events/${ rel.id }`) }
-                                                    style={ { cursor: "pointer" } }
+                                                    style={{ cursor: "pointer" }}
                                                 >
                                                     { rel.title } - { formatDate(rel.event_date) }
                                                 </li>

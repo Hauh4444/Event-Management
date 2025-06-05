@@ -22,7 +22,7 @@ pub struct Speaker {
 }
 
 
-/// Data required to retrieve a speaker info.
+/// Data required to retrieve speaker info.
 #[derive(Deserialize)]
 pub struct GetSpeakerData {
     /// Unique identifier for the event of the speaker.

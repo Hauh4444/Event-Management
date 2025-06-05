@@ -25,6 +25,9 @@ import axiosInstance from "@/API/axiosInstance.js";
 import "./Events.css";
 
 
+// TODO Register Event Functionality
+
+
 /**
  * Events Page Component
  *
@@ -39,17 +42,14 @@ const Events = () => {
     // React hooks
     const navigate = useNavigate();
 
-    // State for event overview data
-    const [eventsOverview, setEventsOverview] = useState([]);
-    // State for ticket sales overview data (monthly sales, profit, last year total)
-    const [ticketsOverview, setTicketsOverview] = useState({
-        seriesData: new Array(12).fill(0), // monthly sales data default to 0
-        xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)), // month labels for x-axis
-        profit: 0, // current year total profit
-        lastYearTotal: 0, // last year total tickets sold
-    });
-
     // State variables
+    const [eventsOverview, setEventsOverview] = useState([]);
+    const [ticketsOverview, setTicketsOverview] = useState({
+        seriesData: new Array(12).fill(0),
+        xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
+        profit: 0,
+        lastYearTotal: 0,
+    });
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [events, setEvents] = useState([]);
     const [filteredEvents, setFilteredEvents] = useState([]);
@@ -361,10 +361,10 @@ const Events = () => {
                                     data: ticketsOverview.seriesData,
                                     showMark: false,
                                     valueFormatter: (value) =>
-                                        `$${value.toLocaleString(undefined, {
+                                        `$${ value.toLocaleString(undefined, {
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2,
-                                        })}`,
+                                        }) }`,
                                 },
                             ]}
                             xAxis={[
@@ -428,19 +428,27 @@ const Events = () => {
 
                     <div className="events">
                         <table>
+                            <colgroup>
+                                <col style={{ width: "20%" }} />
+                                <col style={{ width: "15%" }} />
+                                <col style={{ width: "20%" }} />
+                                <col style={{ width: "15%" }} />
+                                <col style={{ width: "15%" }} />
+                                <col style={{ width: "15%" }} />
+                            </colgroup>
                             <thead>
                             <tr>
                                 <th className="title">
-                                    <MdOutlineEventNote className="titleIcon" />Events
+                                    <MdOutlineEventNote className="titleIcon"/>Events
                                 </th>
                                 <th>
-                                    { /* Total number of events */ }
+                                    { /* Total number of events */}
                                     <div className="numEvents">
                                         { filteredEvents.length } Events
                                     </div>
                                 </th>
-                                <th colSpan={ 3 }>
-                                    { /* Search bar for event filtering */ }
+                                <th colSpan={3}>
+                                    { /* Search bar for event filtering */}
                                     <SearchBar
                                         onChange={ (val) => setQuery(val) }
                                         value={ query }
@@ -448,8 +456,10 @@ const Events = () => {
                                     />
                                 </th>
                                 <th>
+                                    { /* Button for more specific event filtering */ }
+                                    { /* TODO Filter functionality */ }
                                     <Button className="filterBtn">
-                                        <VscListFilter className="icon" style={{ marginRight: "10px" }} />
+                                        <VscListFilter className="icon" style={{ marginRight: "10px" }}/>
                                         Filters
                                     </Button>
                                 </th>
@@ -473,7 +483,7 @@ const Events = () => {
                                     <td>{ item.title }</td>
                                     <td>{ item.event_date }</td>
                                     <td>{ item.location }</td>
-                                    { /* Capitalize first letter of status */ }
+                                    { /* Capitalize first letter of status */}
                                     <td>{ item.status.charAt(0).toUpperCase() + item.status.slice(1) }</td>
                                     <td>{ item.tickets_sold } / { item.max_attendees }</td>
                                     <td className="btns">
@@ -487,16 +497,16 @@ const Events = () => {
                                 </tr>
                             )) }
 
-                            { /* Render empty rows to keep table height consistent */ }
+                            { /* Render empty rows to keep table height consistent */}
                             { Array.from({ length: perPage - paginatedEvents.length }).map((_, index) => (
-                                <tr key={ `placeholder-${ index }` }>
+                                <tr key={`placeholder-${ index }`}>
                                     <td colSpan="6" className="empty-row">&nbsp;</td>
                                 </tr>
                             )) }
                             </tbody>
 
                             <tfoot>
-                            { /* Render pagination */ }
+                            { /* Render pagination */}
                             <tr>
                                 <td colSpan="6">
                                     <CustomPagination

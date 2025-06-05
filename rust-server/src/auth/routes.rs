@@ -4,9 +4,15 @@ use cookie::Cookie;
 use sqlx::SqlitePool;
 use time::Duration;
 
-// Internal Modules
+// Internal Mappers
 use crate::auth::mapper::{fetch_user_by_username, fetch_user_by_id, create_user, update_user_password, delete_user, create_session, delete_session};
-use crate::auth::models::{AuthData, GetUserData, GetUserIDData, UpdatePasswordRequestData, UpdatePasswordData, DeleteUserData, SessionData, DeleteSessionData};
+use crate::organizer::mapper::{delete_organizer, fetch_organizer};
+
+// Internal Models
+use crate::auth::models::{UserData, AuthData, GetUserData, GetUserIDData, UpdatePasswordRequestData, UpdatePasswordData, DeleteUserData, SessionData, DeleteSessionData};
+use crate::organizer::models::{DeleteOrganizerData, GetOrganizerData, Organizer};
+
+// Internal Services
 use crate::auth::services::{generate_session_token, hash_password, validate_session, verify_password};
 
 
@@ -29,8 +35,16 @@ pub async fn check_auth_status(
         Err(response) => return response,
     };
     
+    let organizer_info = fetch_organizer(GetOrganizerData { organizer_id: session.user_id }, &pool)
+        .await.unwrap_or_else(|_| Organizer::default());    
+    
     match fetch_user_by_id(GetUserIDData {id: session.user_id}, &pool).await {
-        Ok(user) => HttpResponse::Ok().json(GetUserData {username: user.username}),
+        Ok(user) => HttpResponse::Ok().json(UserData {
+            username: user.username,
+            name: organizer_info.name,
+            logo: organizer_info.logo,
+            website: organizer_info.website,
+        }),
         Err(e) => HttpResponse::Unauthorized().body(format!("User not found: {}", e)),
     }
 }
@@ -104,6 +118,8 @@ pub async fn register_user(
         Ok(user) => HttpResponse::Ok().body(format!("User {} registered", user.username)),
         Err(e) => HttpResponse::InternalServerError().body(format!("Failed to register user: {}", e)),
     }
+    
+    // TODO Create organizer (possibly separate route)
 }
 
 
@@ -194,8 +210,13 @@ pub async fn remove_user(
     };
     
     match delete_user(DeleteUserData {user_id: session.user_id}, &pool).await {
+        Err(e) => return HttpResponse::InternalServerError().body(format!("Failed to delete user: {}", e)),
+        _ => {},
+    };
+    
+    match delete_organizer(DeleteOrganizerData {organizer_id: session.user_id}, &pool).await {
         Ok(()) => HttpResponse::Ok().body("User deleted"),
-        Err(e) => HttpResponse::InternalServerError().body(format!("Failed to delete user: {}", e)),
+        Err(e) => HttpResponse::InternalServerError().body(format!("Failed to delete organizer: {}", e)),
     }
 }
 

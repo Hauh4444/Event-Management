@@ -216,3 +216,20 @@ pub struct EventDetails {
     /// List of related events.
     pub related_events: Vec<Event>,
 }
+
+
+/// Represents registerable related detail information of the event.
+#[derive(Deserialize, Serialize)]
+pub struct CreateEventDetails {
+    /// List of agenda items of the event.
+    pub agenda: Vec<Agenda>,
+
+    /// List of speakers of the event.
+    pub speakers: Vec<Speaker>,
+
+    /// List of faqs of the event.
+    pub faqs: Vec<Faq>,
+
+    /// List of attachments of the event.
+    pub attachments: Vec<Attachment>,
+}

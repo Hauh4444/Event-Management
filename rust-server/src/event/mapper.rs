@@ -25,11 +25,11 @@ pub async fn fetch_events(data: GetUserEventsData, pool: &SqlitePool) -> Result<
 
     sqlx::query_as!(
         Event,
-        "SELECT id, title, description, event_date, start_time, end_time, location, category_id, status, organizer_id, 
+        "SELECT id, title, description, event_date, start_time, end_time, location, category_id, status, organizer_id,
                 price, tickets_sold, attendees, max_attendees, contact_email, contact_phone, registration_deadline,
                 is_virtual, image, map_embed, accessibility_info, safety_guidelines, created_at, updated_at
-         FROM events 
-         WHERE strftime('%Y', event_date) = ? AND organizer_id = ? 
+         FROM events
+         WHERE strftime('%Y', event_date) = ? AND organizer_id = ?
          ORDER BY event_date ASC",
         year, organizer_id
     )

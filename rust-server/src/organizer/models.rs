@@ -32,9 +32,17 @@ impl Default for Organizer {
 }
 
 
-/// Data required to retrieve a organizer info.
+/// Data required to retrieve organizer info.
 #[derive(Deserialize)]
 pub struct GetOrganizerData {
+    /// Unique identifier for the organizer.
+    pub organizer_id: i64,
+}
+
+
+/// Data required to delete organizer info.
+#[derive(Deserialize)]
+pub struct DeleteOrganizerData {
     /// Unique identifier for the organizer.
     pub organizer_id: i64,
 }

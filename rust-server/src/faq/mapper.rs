@@ -34,6 +34,41 @@ pub async fn fetch_faqs(data: GetFaqData, pool: &SqlitePool) -> Result<Vec<Faq>,
 }
 
 
+/// Creates multiple faq items in the database.
+///
+/// # Arguments
+///
+/// * `data` - A vector of `Faq` structs containing the created faq items.
+/// * `pool` - A reference to the SQLite connection pool.
+///
+/// # Returns
+///
+/// A `Result` indicating success (`Ok(())`) or failure (`Err(sqlx::Error)`).
+///
+/// # Errors
+///
+/// Returns an error if any of the creation queries fail during execution.
+pub async fn create_faqs(data: Vec<Faq>, pool: &SqlitePool) -> Result<Vec<Faq>, sqlx::Error> {
+    let mut faqs = Vec::new();
+    
+    for faq_item in data {
+        let res = sqlx::query_as!(
+            Faq,
+            "INSERT INTO faqs (event_id, question, answer) 
+             VALUES (?, ?, ?)
+             RETURNING id, event_id, question, answer",
+            faq_item.event_id, faq_item.question, faq_item.answer
+        )
+            .fetch_one(pool)
+            .await?;
+        
+        faqs.push(res);
+    };
+
+    Ok(faqs)
+}
+
+
 /// Updates multiple faq items in the database.
 ///
 /// # Arguments

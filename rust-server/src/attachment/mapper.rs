@@ -34,6 +34,41 @@ pub async fn fetch_attachments(data: GetAttachmentData, pool: &SqlitePool) -> Re
 }
 
 
+/// Creates multiple attachment items in the database.
+///
+/// # Arguments
+///
+/// * `data` - A vector of `Attachment` structs containing the created attachment items.
+/// * `pool` - A reference to the SQLite connection pool.
+///
+/// # Returns
+///
+/// A `Result` indicating success (`Ok(())`) or failure (`Err(sqlx::Error)`).
+///
+/// # Errors
+///
+/// Returns an error if any of the creation queries fail during execution.
+pub async fn create_attachments(data: Vec<Attachment>, pool: &SqlitePool) -> Result<Vec<Attachment>, sqlx::Error> {
+    let mut attachments = Vec::new();
+    
+    for attachment_item in data {
+        let res = sqlx::query_as!(
+            Attachment,
+            "INSERT INTO attachments (event_id, name, url)
+             VALUES (?, ?, ?)
+             RETURNING id, event_id, name, url",
+            attachment_item.event_id, attachment_item.name, attachment_item.url
+        )
+            .fetch_one(pool)
+            .await?;
+        
+        attachments.push(res);
+    };
+
+    Ok(attachments)
+}
+
+
 /// Updates multiple attachment items in the database.
 ///
 /// # Arguments

@@ -34,6 +34,41 @@ pub async fn fetch_agenda(data: GetAgendaData, pool: &SqlitePool) -> Result<Vec<
 }
 
 
+/// Creates multiple agenda items in the database.
+///
+/// # Arguments
+///
+/// * `data` - A vector of `Agenda` structs containing the new agenda items.
+/// * `pool` - A reference to the SQLite connection pool.
+///
+/// # Returns
+///
+/// A `Result` indicating success (`Ok(())`) or failure (`Err(sqlx::Error)`).
+///
+/// # Errors
+///
+/// Returns an error if any of the creation queries fail during execution.
+pub async fn create_agenda(data: Vec<Agenda>, pool: &SqlitePool) -> Result<Vec<Agenda>, sqlx::Error> {
+    let mut agendas = Vec::new();
+    
+    for agenda_item in data {
+        let res = sqlx::query_as!(
+            Agenda,
+            "INSERT INTO agendas (event_id, start_time, title, speaker) 
+             VALUES (?, ?, ?, ?)
+             RETURNING id, event_id, start_time, title, speaker",
+            agenda_item.event_id, agenda_item.start_time, agenda_item.title, agenda_item.speaker
+        )
+            .fetch_one(pool)
+            .await?;
+        
+        agendas.push(res);
+    };
+
+    Ok(agendas)
+}
+
+
 /// Updates multiple agenda items in the database.
 ///
 /// # Arguments

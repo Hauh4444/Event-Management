@@ -105,7 +105,7 @@ const AuthProvider = ({ children }) => {
 
     // Context JSX
     return (
-        <AuthContext.Provider value={ { user, error, checkAuthStatus, login, register, logout } }>
+        <AuthContext.Provider value={{ user, error, checkAuthStatus, login, register, logout }}>
             { children }
         </AuthContext.Provider>
     );

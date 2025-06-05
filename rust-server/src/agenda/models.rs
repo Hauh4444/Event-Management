@@ -23,7 +23,7 @@ pub struct Agenda {
 }
 
 
-/// Data required to retrieve a agenda info.
+/// Data required to retrieve agenda info.
 #[derive(Deserialize)]
 pub struct GetAgendaData {
     /// Unique identifier for the event of the agenda.

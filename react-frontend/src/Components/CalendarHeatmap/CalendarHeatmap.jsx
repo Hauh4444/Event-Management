@@ -13,7 +13,7 @@ import "./CalendarHeatmap.css";
  * Renders a GitHub-style calendar heatmap for visualizing activity data over time.
  *
  * @param { Object } props
- * @param {Array<{ date: string, count: number }>} props.values - Array of objects with date and count.
+ * @param { Array<{ date: string, count: number }> } props.values - Array of objects with date and count.
  * @param { Date | string } props.startDate - Start date of the calendar.
  * @param { Date | string } props.endDate - End date of the calendar.
  * @param { Function } [props.onClick] - Callback when a day cell is clicked.
@@ -43,13 +43,13 @@ const CalendarHeatmap = ({
                     if (value.count >= 3) return "scale2";
                     return "scale1";
                 } }
-                tooltipDataAttrs={(value) => {
+                tooltipDataAttrs={ (value) => {
                     if (!value || !value.date) return {};
                     return {
                         "data-tooltip-id": "calendar-tooltip",
                         "data-tooltip-content": tooltipDataAttr(value),
                     };
-                }}
+                } }
                 onClick={ onClick }
                 showWeekdayLabels={ true }
             />

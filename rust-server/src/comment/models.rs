@@ -16,7 +16,7 @@ pub struct Comment {
 }
 
 
-/// Data required to retrieve a comment info.
+/// Data required to retrieve comment info.
 #[derive(Deserialize)]
 pub struct GetCommentData {
     /// Unique identifier for the event of the comment.

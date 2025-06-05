@@ -1,11 +1,12 @@
 .topNav {
     width: calc(100% - 100px);
-    height: 40px;
-    padding: 30px 50px;
+    height: 60px;
+    padding: 20px 50px;
     border-bottom: 2px solid rgba(53, 54, 52, 0.1);
     background-color: #fefffe;
     display: flex;
     flex-direction: row;
+    align-items: center;
 
     .btn {
         min-width: 40px;
@@ -19,6 +20,41 @@
         &.focused {
             background-color: #ebf0fa;
             color: #3b5faf;
+        }
+    }
+
+    .logoBtn {
+        height: 56px;
+        margin-left: auto;
+        padding: 0 5px;
+        text-transform: none;
+
+        .logo {
+            width: 46px;
+            height: 46px;
+            margin-right: 8px;
+            border-radius: 23px;
+        }
+
+        .userInfo {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+
+            h3 {
+                margin: 0;
+                font-size: 16px;
+            }
+
+            p {
+                margin: 0;
+                font-size: 14px;
+                color: #7d8189;
+            }
+        }
+
+        &:hover {
+            background-color: #fefffe;
         }
     }
 }
