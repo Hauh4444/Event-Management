@@ -3,7 +3,7 @@
     height: 60px;
     padding: 20px 50px;
     border-bottom: 2px solid rgba(53, 54, 52, 0.1);
-    background-color: #fefffe;
+    background-color: var(--mui-palette-background-default);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -14,12 +14,12 @@
         margin-right: 5px;
         border-radius: 5px;
         font-size: 18px;
-        color: #353634;
+        color: var(--mui-palette-text-primary);
 
         &:hover,
         &.focused {
-            background-color: #ebf0fa;
-            color: #3b5faf;
+            background-color: var(--mui-palette-secondary-light);
+            color: var(--mui-palette-primary-main);
         }
     }
 
@@ -49,12 +49,12 @@
             p {
                 margin: 0;
                 font-size: 14px;
-                color: #7d8189;
+                color: var(--mui-palette-text-secondary);
             }
         }
 
         &:hover {
-            background-color: #fefffe;
+            background-color: var(--mui-palette-background-default);
         }
     }
 }

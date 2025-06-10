@@ -1,23 +1,16 @@
-// External Libraries
-import { createTheme, ThemeProvider } from  "@mui/material/styles";
-
 // Internal Modules
+import CustomThemeProvider from "@/ContextAPI/Theme/ThemeProvider.jsx";
 import PublicRoutes from "@/Routes/PublicRoutes.jsx";
 
 // Stylesheets
 import "./App.css";
 
 
-const darkTheme = createTheme({ palette: { mode: "dark" } });
-
-const lightTheme = createTheme({ palette: { mode: "light" } });
-
-
 const App = () => {
     return (
-      <ThemeProvider theme={ lightTheme }>
+      <CustomThemeProvider>
           <PublicRoutes />
-      </ThemeProvider>
+      </CustomThemeProvider>
     )
 }
 

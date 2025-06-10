@@ -13,7 +13,7 @@ import axiosInstance from "@/API/axiosInstance.js";
  * Manages user info, authentication errors, and exposes async functions
  * for login, registration, logout, and auth status checking.
  *
- * @param { object } props
+ * @param { Object } props
  * @param { React.ReactNode } props.children - React children nodes.
  *
  * @component
@@ -46,7 +46,7 @@ const AuthProvider = ({ children }) => {
      * On success, updates user state by checking auth status.
      * On failure, sets an error message.
      *
-     * @param { object } credentials - User login credentials { username, password }.
+     * @param { Object } credentials - User login credentials { username, password }.
      *
      * @returns { Promise<boolean> } True if login succeeded, else false.
      */
@@ -68,7 +68,7 @@ const AuthProvider = ({ children }) => {
      * If successful, automatically logs in the new user.
      * On failure, sets an error message.
      *
-     * @param { object } credentials - User registration credentials.
+     * @param { Object } credentials - User registration credentials.
      *
      * @returns { Promise<boolean> } True if registration (and login) succeeded, else false.
      */
@@ -105,7 +105,7 @@ const AuthProvider = ({ children }) => {
 
     // Context JSX
     return (
-        <AuthContext.Provider value={{ user, error, checkAuthStatus, login, register, logout }}>
+        <AuthContext.Provider value={ { user, error, checkAuthStatus, login, register, logout } }>
             { children }
         </AuthContext.Provider>
     );

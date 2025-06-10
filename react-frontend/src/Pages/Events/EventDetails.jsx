@@ -164,7 +164,7 @@ const EventDetails = () => {
         // Set canceled event based on event state
         let canceledEvent = { ...event, status: "canceled" };
 
-        // Put updated event to backend
+        // PUT updated event to backend
         await axiosInstance.put(`/events/${ eventId }/`, canceledEvent).catch((err) => console.error(err));
 
         // Fetch new canceled event data
@@ -473,5 +473,6 @@ const EventDetails = () => {
         </div>
     );
 };
+
 
 export default EventDetails;

@@ -32,6 +32,19 @@ impl Default for Organizer {
 }
 
 
+/// Data required to create an organizer.
+pub struct OrganizerData {
+    /// Name of the organizer.
+    pub name: String,
+
+    /// Logo of the organizer.
+    pub logo: Option<String>,
+
+    /// Website of the organizer
+    pub website: Option<String>,
+}
+
+
 /// Data required to retrieve organizer info.
 #[derive(Deserialize)]
 pub struct GetOrganizerData {

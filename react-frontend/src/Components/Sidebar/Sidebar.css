@@ -24,7 +24,7 @@
             height: 50px;
             margin: 0;
             line-height: 50px;
-            color: #3b5faf;
+            color: var(--mui-palette-primary-main);
         }
     }
 
@@ -51,13 +51,13 @@
             border-radius: 5px;
             text-transform: none;
             justify-content: flex-start;
-            color: #353634;
+            color: var(--mui-palette-text-primary);
             transition: all 0.2s ease;
 
             &:hover,
             &.focused {
-                background-color: #ebf0fa;
-                color: #3b5faf;
+                background-color: var(--mui-palette-secondary-light);
+                color: var(--mui-palette-primary-main);
             }
         }
     }

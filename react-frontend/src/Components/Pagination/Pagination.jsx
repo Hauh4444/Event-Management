@@ -46,8 +46,8 @@ const CustomPagination = ({ pageCount, page, onChange }) => {
                         margin: "0 5px",
                         borderRadius: "5px",
                         "&:hover, &.Mui-selected, &.Mui-selected:hover": {
-                            backgroundColor: "#ebf0fa",
-                            color: "#3b5faf",
+                            backgroundColor: "var(--mui-palette-secondary-light)",
+                            color: "var(--mui-palette-primary-main)",
                         },
                     },
                 }}

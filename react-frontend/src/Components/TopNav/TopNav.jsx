@@ -1,4 +1,5 @@
 // External Libraries
+import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 
 // External Icons
@@ -25,8 +26,12 @@ import "./TopNav.css";
  * @returns { JSX.Element } The rendered TopNav component.
  */
 const TopNav = () => {
+    // React hooks
+    const navigate = useNavigate();
+
     // Auth context
     const auth = useAuth();
+
 
     // Component JSX
     return (
@@ -41,8 +46,7 @@ const TopNav = () => {
 
             <SearchBar />
 
-            { /* TODO Nav to user settings */ }
-            <Button className="logoBtn">
+            <Button className="logoBtn" onClick={ () => navigate("/settings?s=organizer") }>
                 <img
                     className="logo"
                     src={ `${ import.meta.env.VITE_BACKEND_STATIC_URL }/${ auth.user.logo }` }

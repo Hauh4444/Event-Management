@@ -50,7 +50,7 @@ pub async fn fetch_agenda(data: GetAgendaData, pool: &SqlitePool) -> Result<Vec<
 /// Returns an error if any of the creation queries fail during execution.
 pub async fn create_agenda(data: Vec<Agenda>, pool: &SqlitePool) -> Result<Vec<Agenda>, sqlx::Error> {
     let mut agendas = Vec::new();
-    
+
     for agenda_item in data {
         let res = sqlx::query_as!(
             Agenda,
@@ -61,7 +61,7 @@ pub async fn create_agenda(data: Vec<Agenda>, pool: &SqlitePool) -> Result<Vec<A
         )
             .fetch_one(pool)
             .await?;
-        
+
         agendas.push(res);
     };
 

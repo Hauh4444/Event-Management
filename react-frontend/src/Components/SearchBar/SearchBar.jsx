@@ -46,7 +46,7 @@ const SearchBar = ({ onChange = () => {}, value, onClick = () => {} }) => {
                     height: "40px",
                     padding: "0",
                     fontSize: "16px",
-                    color: "#353634"
+                    color: "var(--mui-palette-text-primary)"
                 },
                 "& .MuiOutlinedInput-root": {
                     "& fieldset": {

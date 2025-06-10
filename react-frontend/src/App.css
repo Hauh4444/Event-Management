@@ -1,22 +1,22 @@
 * {
-    color: #353634;
+    color: var(--mui-palette-text-primary);
 }
 
 .page {
     display: flex;
     flex-direction: row;
-    background-color: #fefffe;
+    background-color: var(--mui-palette-background-default);
 
     .mainPage {
         max-width: calc(100vw - 250px);
         flex-basis: calc(100vw - 250px);
-        background-color: #f8fbfd;
+        background-color: var(--mui-palette-background-paper);
 
         .content {
             max-width: calc(100vw - 350px);
             padding: 50px;
             flex-basis: calc(100vw - 350px);
-            background-color: #f8fbfd;
+            background-color: var(--mui-palette-background-paper);
         }
     }
 }

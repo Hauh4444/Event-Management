@@ -104,7 +104,7 @@ const EditEvent = () => {
      * Handles fetching data on component mount.
      */
     useEffect(() => {
-        fetchData().catch((error) => console.error(error));
+        fetchData().catch((err) => console.error(err));
     }, []);
 
 
@@ -125,17 +125,17 @@ const EditEvent = () => {
 
 
     /**
-     * Handles submitting data in form and updating event.
+     * Handles submitting updated event.
      *
      * @param e
      */
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Put updated event to backend
+        // PUT updated event to backend
         await axiosInstance.put(`/events/${ eventId }/`, event).catch((err) => console.error(err));
 
-        // Put updated event details to backend
+        // PUT updated event details to backend
         await axiosInstance.put(`/events/${ eventId }/details/`, eventDetails)
             .then(() => navigate(`/events/${ eventId }/`))
             .catch((err) => console.error(err));
@@ -162,6 +162,7 @@ const EditEvent = () => {
                                 fullWidth
                                 label="Title"
                                 name="title"
+                                id="title"
                                 value={ event.title }
                                 onChange={ handleChange }
                             />
@@ -169,6 +170,7 @@ const EditEvent = () => {
                                 fullWidth
                                 label="Description"
                                 name="description"
+                                id="description"
                                 value={ event.description }
                                 onChange={ handleChange }
                                 multiline
@@ -182,6 +184,7 @@ const EditEvent = () => {
                                 type="date"
                                 label="Event Date"
                                 name="event_date"
+                                id="event_date"
                                 value={ event.event_date }
                                 onChange={ handleChange }
                             />
@@ -189,6 +192,7 @@ const EditEvent = () => {
                                 type="time"
                                 label="Start Time"
                                 name="start_time"
+                                id="start_time"
                                 value={ event.start_time }
                                 onChange={ handleChange }
                             />
@@ -196,12 +200,14 @@ const EditEvent = () => {
                                 type="time"
                                 label="End Time"
                                 name="end_time"
+                                id="end_time"
                                 value={ event.end_time }
                                 onChange={ handleChange }
                             />
                             <TextField
                                 label="Location"
                                 name="location"
+                                id="location"
                                 value={ event.location }
                                 onChange={ handleChange }
                             />
@@ -212,12 +218,14 @@ const EditEvent = () => {
                             <TextField
                                 label="Contact Email"
                                 name="contact_email"
+                                id="contact_email"
                                 value={ event.contact_email }
                                 onChange={ handleChange }
                             />
                             <TextField
                                 label="Contact Phone"
                                 name="contact_phone"
+                                id="contact_phone"
                                 value={ event.contact_phone }
                                 onChange={ handleChange }
                             />
@@ -230,8 +238,9 @@ const EditEvent = () => {
                                     <InputLabel id="event_category">Category</InputLabel>
                                     <Select
                                         labelId="event_category"
-                                        name="category_id"
                                         label="Category"
+                                        name="category_id"
+                                        id="category_id"
                                         value={ categories ? event.category_id : 0 }
                                         onChange={ handleChange }
                                         size="medium"
@@ -248,8 +257,9 @@ const EditEvent = () => {
                                 <InputLabel id="event_status">Status</InputLabel>
                                 <Select
                                     labelId="event_status"
-                                    name="status"
                                     label="Status"
+                                    name="status"
+                                    id="status"
                                     value={ event.status }
                                     onChange={ handleChange }
                                     size="medium"
@@ -266,6 +276,7 @@ const EditEvent = () => {
                             <TextField
                                 label="Ticket Price"
                                 name="price"
+                                id="price"
                                 type="number"
                                 value={ event.price }
                                 onChange={ handleChange }
@@ -273,6 +284,7 @@ const EditEvent = () => {
                             <TextField
                                 label="Max Attendees"
                                 name="max_attendees"
+                                id="max_attendees"
                                 type="number"
                                 value={ event.max_attendees }
                                 onChange={ handleChange }
@@ -281,6 +293,7 @@ const EditEvent = () => {
                                 type="date"
                                 label="Registration Deadline"
                                 name="registration_deadline"
+                                id="registration_deadline"
                                 value={ event.registration_deadline }
                                 onChange={ handleChange }
                             />
@@ -288,8 +301,9 @@ const EditEvent = () => {
                                 <InputLabel id="event_type">Type</InputLabel>
                                 <Select
                                     labelId="event_type"
-                                    name="is_virtual"
                                     label="Type"
+                                    name="is_virtual"
+                                    id="is_virtual"
                                     value={ event.is_virtual }
                                     onChange={ handleChange }
                                     size="medium"
@@ -307,6 +321,7 @@ const EditEvent = () => {
                                 fullWidth
                                 label="Accessibility Info"
                                 name="accessibility_info"
+                                id="accessibility_info"
                                 value={ event.accessibility_info || "" }
                                 onChange={ handleChange }
                                 multiline
@@ -316,6 +331,7 @@ const EditEvent = () => {
                                 fullWidth
                                 label="Safety Guidelines"
                                 name="safety_guidelines"
+                                id="safety_guidelines"
                                 value={ event.safety_guidelines || "" }
                                 onChange={ handleChange }
                                 multiline
@@ -338,5 +354,6 @@ const EditEvent = () => {
         </div>
     );
 };
+
 
 export default EditEvent;

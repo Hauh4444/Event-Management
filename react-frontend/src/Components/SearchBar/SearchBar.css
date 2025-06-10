@@ -1,8 +1,8 @@
 .search {
     width: 35%;
     margin-left: 25px !important;
-    background-color: #f8fbfd;
-    border-color: #f8fbfd;
+    background-color: var(--mui-palette-background-paper);
+    border-color: var(--mui-palette-background-paper);
 
     .btn {
         min-width: 40px;
@@ -15,7 +15,7 @@
         .icon {
             margin: 0 !important;
             font-size: 24px !important;
-            color: #353634;
+            color: var(--mui-palette-text-primary);
         }
     }
 }

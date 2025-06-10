@@ -36,14 +36,14 @@
                 margin: 0;
                 border-radius: 5px;
                 border: 2px solid rgba(53, 54, 52, 0.1);
-                background-color: #3b5faf;
+                background-color: var(--mui-palette-primary-main);
                 font-size: 16px;
                 text-transform: none;
-                color: #ebf0fa;
+                color: var(--mui-palette-secondary-light);
                 transition: all 0.2s ease;
 
                 &:hover {
-                    background-color: #4b77bf;
+                    background-color: var(--mui-palette-secondary-main);
                 }
             }
         }

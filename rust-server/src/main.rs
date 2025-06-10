@@ -12,6 +12,7 @@ use analytics::routes::configure_analytics_routes;
 use auth::routes::configure_auth_routes;
 use category::routes::configure_category_routes;
 use event::routes::configure_event_routes;
+use organizer::routes::configure_organizer_routes;
 
 // Internal Modules
 mod agenda;
@@ -66,6 +67,7 @@ async fn main() -> std::io::Result<()> {
                     .configure(configure_auth_routes)
                     .configure(configure_category_routes)
                     .configure(configure_event_routes)
+                    .configure(configure_organizer_routes)
             )
             .service(Files::new("/static", "static").show_files_listing())
     })

@@ -392,7 +392,7 @@ const Events = () => {
                                     fill: "url(#areaGradient)",
                                 },
                                 [`& .${ lineElementClasses.root }`]: {
-                                    stroke: "#3b5faf",
+                                    stroke: "var(--mui-palette-primary-main)",
                                     strokeWidth: 3,
                                 },
                                 "& .MuiChartsAxis-line": {
@@ -413,8 +413,8 @@ const Events = () => {
                             { /* Gradient fill for area chart */ }
                             <defs>
                                 <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" stopColor="#3b5faf" stopOpacity="0.25" />
-                                    <stop offset="100%" stopColor="#3b5faf" stopOpacity="0" />
+                                    <stop offset="0%" stopColor="var(--mui-palette-primary-main)" stopOpacity="0.25" />
+                                    <stop offset="100%" stopColor="var(--mui-palette-primary-main)" stopOpacity="0" />
                                 </linearGradient>
                             </defs>
                         </LineChart>

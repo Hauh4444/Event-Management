@@ -34,9 +34,9 @@ pub async fn check_auth_status(
         Ok(session) => session,
         Err(response) => return response,
     };
-    
+
     let organizer_info = fetch_organizer(GetOrganizerData { organizer_id: session.user_id }, &pool)
-        .await.unwrap_or_else(|_| Organizer::default());    
+        .await.unwrap_or_else(|_| Organizer::default());
     
     match fetch_user_by_id(GetUserIDData {id: session.user_id}, &pool).await {
         Ok(user) => HttpResponse::Ok().json(UserData {

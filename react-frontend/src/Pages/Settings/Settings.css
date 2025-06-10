@@ -1,0 +1,74 @@
+.settingsPage {
+    .content {
+        h1 {
+            width: fit-content;
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        .settingsForm {
+            .input {
+                margin: 0 0 16px;
+            }
+
+            .imageUpload {
+                height: 250px;
+                margin: 0 0 16px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: space-between;
+
+                .image {
+                    width: 200px;
+                    height: 200px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+
+                    img {
+                        width: auto;
+                        height: auto;
+                        min-width: 100%;
+                        min-height: 100%;
+                    }
+                }
+
+                .btn {
+                    width: 125px;
+                    height: 40px;
+                    border-radius: 5px;
+                    border: 2px solid rgba(53, 54, 52, 0.1);
+                    color: var(--mui-palette-text-primary);
+                    font-size: 16px;
+                    text-transform: none;
+                    transition: all 0.2s ease;
+
+                    &:hover {
+                        background-color: var(--mui-palette-secondary-light);
+                        color: var(--mui-palette-primary-main);
+                    }
+                }
+            }
+        }
+
+        .submitBtn {
+            width: 175px;
+            height: 50px;
+            margin: 0;
+            border-radius: 5px;
+            border: 2px solid rgba(53, 54, 52, 0.1);
+            background-color: var(--mui-palette-primary-main);
+            display: block;
+            font-size: 16px;
+            text-transform: none;
+            color: var(--mui-palette-secondary-light);
+            transition: all 0.2s ease;
+
+            &:hover {
+                background-color: var(--mui-palette-secondary-main);
+            }
+        }
+    }
+}

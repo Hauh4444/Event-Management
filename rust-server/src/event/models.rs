@@ -88,7 +88,7 @@ pub struct Event {
 }
 
 
-/// Data required to create or update an event.
+/// Data required to create an event.
 #[derive(Deserialize)]
 pub struct EventData {
     /// Title of the event.

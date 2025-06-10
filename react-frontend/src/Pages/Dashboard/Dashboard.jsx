@@ -30,7 +30,7 @@ const Dashboard = () => {
     const [graphItems, setGraphItems] = useState([
         {
             title: "Events",
-            iconColor: "#3b5faf",
+            iconColor: "var(--mui-palette-primary-main)",
             year: new Date().getFullYear(),
             seriesData: new Array(12).fill(0),
             xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
@@ -38,7 +38,7 @@ const Dashboard = () => {
         },
         {
             title: "Upcoming",
-            iconColor: "#3b5faf",
+            iconColor: "var(--mui-palette-primary-main)",
             year: new Date().getFullYear(),
             seriesData: new Array(12).fill(0),
             xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
@@ -46,7 +46,7 @@ const Dashboard = () => {
         },
         {
             title: "Canceled",
-            iconColor: "#ff2400",
+            iconColor: "var(--mui-palette-red-primary)",
             year: new Date().getFullYear(),
             seriesData: new Array(12).fill(0),
             xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
@@ -207,13 +207,13 @@ const Dashboard = () => {
                                         }}
                                         sx={{
                                             [`& .${ lineElementClasses.root }`]: {
-                                                stroke: "#3b5faf",
+                                                stroke: "var(--mui-palette-primary-main)",
                                                 strokeWidth: 3,
                                             },
                                             [`& .${ markElementClasses.root }`]: {
-                                                stroke: "#f8fbfd",
+                                                stroke: "var(--mui-palette-background-paper)",
                                                 r: 5,
-                                                fill: "#3b5faf",
+                                                fill: "var(--mui-palette-primary-main)",
                                             },
                                             "& .MuiChartsAxis-line": {
                                                 display: "none",
@@ -234,8 +234,8 @@ const Dashboard = () => {
                                     >
                                         <defs>
                                             <linearGradient id="bandGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                                <stop offset="0%" stopColor="#3b5faf" stopOpacity="1" />
-                                                <stop offset="100%" stopColor="#3b5faf" stopOpacity="0.25" />
+                                                <stop offset="0%" stopColor="var(--mui-palette-primary-main)" stopOpacity="1" />
+                                                <stop offset="100%" stopColor="var(--mui-palette-primary-main)" stopOpacity="0.25" />
                                             </linearGradient>
                                         </defs>
                                     </LineChart>
@@ -288,7 +288,7 @@ const Dashboard = () => {
                                         fill: "url(#areaGradient)",
                                     },
                                     [`& .${ lineElementClasses.root }`]: {
-                                        stroke: "#3b5faf",
+                                        stroke: "var(--mui-palette-primary-main)",
                                         strokeWidth: 3,
                                     },
                                     "& .MuiChartsAxis-line": {
@@ -308,8 +308,8 @@ const Dashboard = () => {
                             >
                                 <defs>
                                     <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                        <stop offset="0%" stopColor="#3b5faf" stopOpacity="0.25" />
-                                        <stop offset="100%" stopColor="#3b5faf" stopOpacity="0" />
+                                        <stop offset="0%" stopColor="var(--mui-palette-primary-main)" stopOpacity="0.25" />
+                                        <stop offset="100%" stopColor="var(--mui-palette-primary-main)" stopOpacity="0" />
                                     </linearGradient>
                                 </defs>
                             </LineChart>

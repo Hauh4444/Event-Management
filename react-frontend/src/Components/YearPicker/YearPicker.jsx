@@ -43,10 +43,10 @@ const YearPicker = (
                 "& fieldset": { border: "none" },
                 "&:hover fieldset": { border: "none" },
                 "&.Mui-focused fieldset": { border: "none" },
-                "& .MuiInputBase-input": { borderRadius: "10px", transition: "all 0.2s ease", color: "#353634" },
-                "&:hover .MuiInputBase-input": { backgroundColor: "#ebf0fa", color: "#3b5faf", },
-                "& .MuiSvgIcon-root": { fill: "#353634" },
-                "&:hover .MuiSvgIcon-root": { fill: "#3b5faf" },
+                "& .MuiInputBase-input": { borderRadius: "10px", transition: "all 0.2s ease", color: "var(--mui-palette-text-primary)" },
+                "&:hover .MuiInputBase-input": { backgroundColor: "var(--mui-palette-secondary-light)", color: "var(--mui-palette-primary-main)", },
+                "& .MuiSvgIcon-root": { fill: "var(--mui-palette-text-primary)" },
+                "&:hover .MuiSvgIcon-root": { fill: "var(--mui-palette-primary-main)" },
                 ...sx,
             }}
         >

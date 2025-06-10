@@ -29,27 +29,27 @@
 
         .react-calendar-heatmap-month-label,
         .react-calendar-heatmap-weekday-label {
-            fill: #353634 !important;
+            fill: var(--mui-palette-text-primary) !important;
         }
 
         .scale0 {
-            fill: rgba(53, 54, 52, 0.05);
+            fill: var(--mui-palette-heatmap-scale0);
         }
 
         .scale1 {
-            fill: #d0dbf9;
+            fill: var(--mui-palette-heatmap-scale1);
         }
 
         .scale2 {
-            fill: #8b9ce2;
+            fill: var(--mui-palette-heatmap-scale2);
         }
 
         .scale3 {
-            fill: #556fc8;
+            fill: var(--mui-palette-heatmap-scale3);
         }
 
         .scale4 {
-            fill: #3b5faf;
+            fill: var(--mui-palette-heatmap-scale4);
         }
     }
 }

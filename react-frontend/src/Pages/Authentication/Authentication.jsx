@@ -27,6 +27,8 @@ import "./Authentication.css";
 const Authentication = () => {
     // React hooks
     const navigate = useNavigate();
+
+    // Auth context
     const { login, register } = useAuth();
 
     // State variables
@@ -87,7 +89,8 @@ const Authentication = () => {
                                     name={ name }
                                     type={ type }
                                     variant="outlined"
-                                    onChange={ (e) => setInfo(prev => ({ ...prev, [name]: e.target.value })) }
+                                    onChange={ (e) => setInfo(prev =>
+                                        ({ ...prev, [name]: e.target.value })) }
                                     fullWidth
                                 />
                             )) }
