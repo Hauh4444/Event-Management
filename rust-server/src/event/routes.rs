@@ -246,12 +246,15 @@ pub async fn put_event(
         Err(response) => return response,
     };
 
-    match fetch_event(GetEventData {event_id: *event_id, organizer_id: session.user_id}, &pool).await {
+    let event = match fetch_event(GetEventData {event_id: *event_id, organizer_id: session.user_id}, &pool).await {
         Ok(event) => event,
         Err(e) => return HttpResponse::InternalServerError().body(format!("Event not found: {}", e)),
     };
-
+    
     // TODO Remove old and save new image file and update image location reference
+    if data.image != event.image {
+        
+    }
 
     match update_event(Event {id: *event_id, ..data.into_inner()}, &pool).await {
         Ok(()) => HttpResponse::Ok().body(format!("Event '{}' updated", event_id)),

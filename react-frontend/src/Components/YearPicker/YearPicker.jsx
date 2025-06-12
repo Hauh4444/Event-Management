@@ -39,7 +39,7 @@ const YearPicker = (
             sx={{
                 height: "40px",
                 borderRadius: "10px",
-                boxShadow: "0 0 2px rgba(53, 54, 52, 0.2)",
+                boxShadow: "0 0 2px rgba(53, 54, 52,  0.15)",
                 "& fieldset": { border: "none" },
                 "&:hover fieldset": { border: "none" },
                 "&.Mui-focused fieldset": { border: "none" },

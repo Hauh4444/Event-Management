@@ -52,7 +52,7 @@ pub async fn create_agenda(data: Vec<Agenda>, pool: &SqlitePool) -> Result<Vec<A
     let mut agendas = Vec::new();
 
     for agenda_item in data {
-        let res = sqlx::query_as!(
+        let rec = sqlx::query_as!(
             Agenda,
             "INSERT INTO agendas (event_id, start_time, title, speaker) 
              VALUES (?, ?, ?, ?)
@@ -62,7 +62,7 @@ pub async fn create_agenda(data: Vec<Agenda>, pool: &SqlitePool) -> Result<Vec<A
             .fetch_one(pool)
             .await?;
 
-        agendas.push(res);
+        agendas.push(rec);
     };
 
     Ok(agendas)

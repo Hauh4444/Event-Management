@@ -52,7 +52,7 @@ pub async fn create_attachments(data: Vec<Attachment>, pool: &SqlitePool) -> Res
     let mut attachments = Vec::new();
     
     for attachment_item in data {
-        let res = sqlx::query_as!(
+        let rec = sqlx::query_as!(
             Attachment,
             "INSERT INTO attachments (event_id, name, url)
              VALUES (?, ?, ?)
@@ -62,7 +62,7 @@ pub async fn create_attachments(data: Vec<Attachment>, pool: &SqlitePool) -> Res
             .fetch_one(pool)
             .await?;
         
-        attachments.push(res);
+        attachments.push(rec);
     };
 
     Ok(attachments)

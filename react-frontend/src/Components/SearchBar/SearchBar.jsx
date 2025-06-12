@@ -50,14 +50,14 @@ const SearchBar = ({ onChange = () => {}, value, onClick = () => {} }) => {
                 },
                 "& .MuiOutlinedInput-root": {
                     "& fieldset": {
-                        borderColor: "rgba(53, 54, 52, 0.1)",
+                        borderColor: "rgba(53, 54, 52,  0.1)",
                         borderRadius: "10px",
                     },
                     "&:hover fieldset": {
-                        borderColor: "rgba(53, 54, 52, 0.5)",
+                        borderColor: "rgba(53, 54, 52,  0.5)",
                     },
                     "&.Mui-focused fieldset": {
-                        borderColor: "rgba(53, 54, 52, 0.75)",
+                        borderColor: "rgba(53, 54, 52,  0.75)",
                     },
                 },
             }}

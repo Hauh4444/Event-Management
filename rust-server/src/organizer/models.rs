@@ -33,6 +33,7 @@ impl Default for Organizer {
 
 
 /// Data required to create an organizer.
+#[derive(Deserialize)]
 pub struct OrganizerData {
     /// Name of the organizer.
     pub name: String,

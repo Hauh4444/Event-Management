@@ -45,6 +45,8 @@ const Authentication = () => {
     /**
      * Handles submission of sign-in or sign-up form.
      * Calls appropriate context method and redirects on success.
+     *
+     * @param e
      */
     const handleSubmit = async (e) => {
         e.preventDefault();

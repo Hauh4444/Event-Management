@@ -57,21 +57,22 @@ async fn main() -> std::io::Result<()> {
             .supports_credentials()
             .max_age(3600);
 
+        // Construct the application with middleware, data, and routes
         App::new()
-            .wrap(Logger::new(r#"%a "%r" %s"#))
+            .wrap(Logger::new(r#"%a "%r" %s"#)) // Log client IP, request line, and status
             .wrap(cors)
-            .app_data(web::Data::new(pool.clone()))
+            .app_data(web::Data::new(pool.clone())) // Inject DB pool as app data
             .service(
-                web::scope("/api")
+                web::scope("/api") // API route grouping
                     .configure(configure_analytics_routes)
                     .configure(configure_auth_routes)
                     .configure(configure_category_routes)
                     .configure(configure_event_routes)
                     .configure(configure_organizer_routes)
             )
-            .service(Files::new("/static", "static").show_files_listing())
+            .service(Files::new("/static", "static").show_files_listing()) // Serve static files
     })
-        .bind("127.0.0.1:8080")?
+        .bind("127.0.0.1:8080")? // Bind server to localhost on port 8080
         .run()
         .await
 }

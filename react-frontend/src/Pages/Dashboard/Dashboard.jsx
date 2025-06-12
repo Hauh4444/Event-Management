@@ -222,7 +222,7 @@ const Dashboard = () => {
                                                 display: "none",
                                             },
                                             "& .MuiChartsGrid-line": {
-                                                stroke: "rgba(53, 54, 52, 0.25)",
+                                                stroke: "rgba(53, 54, 52,  0.15)",
                                                 strokeDasharray: "3 3",
                                             },
                                             "&:hover": {
@@ -301,7 +301,7 @@ const Dashboard = () => {
                                         transform: "translateY(15px)",
                                     },
                                     "& .MuiChartsGrid-line": {
-                                        stroke: "rgba(53, 54, 52, 0.1)",
+                                        stroke: "rgba(53, 54, 52,  0.1)",
                                         strokeDasharray: "5 5",
                                     },
                                 }}

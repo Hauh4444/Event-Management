@@ -405,7 +405,7 @@ const Events = () => {
                                     transform: "translateY(15px)",
                                 },
                                 "& .MuiChartsGrid-line": {
-                                    stroke: "rgba(53, 54, 52, 0.1)",
+                                    stroke: "rgba(53, 54, 52,  0.1)",
                                     strokeDasharray: "5 5",
                                 },
                             }}

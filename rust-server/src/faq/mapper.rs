@@ -52,7 +52,7 @@ pub async fn create_faqs(data: Vec<Faq>, pool: &SqlitePool) -> Result<Vec<Faq>, 
     let mut faqs = Vec::new();
     
     for faq_item in data {
-        let res = sqlx::query_as!(
+        let rec = sqlx::query_as!(
             Faq,
             "INSERT INTO faqs (event_id, question, answer) 
              VALUES (?, ?, ?)
@@ -62,7 +62,7 @@ pub async fn create_faqs(data: Vec<Faq>, pool: &SqlitePool) -> Result<Vec<Faq>, 
             .fetch_one(pool)
             .await?;
         
-        faqs.push(res);
+        faqs.push(rec);
     };
 
     Ok(faqs)

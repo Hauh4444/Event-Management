@@ -6,6 +6,7 @@ import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@m
 // Internal Modules
 import Sidebar from "@/Components/Sidebar/Sidebar.jsx";
 import TopNav from "@/Components/TopNav/TopNav.jsx";
+import SettingsNav from "@/Components/SettingsNav/SettingsNav.jsx";
 import axiosInstance from "@/API/axiosInstance.js";
 
 // Internal Contexts
@@ -37,6 +38,7 @@ const Settings = () => {
     // State variables
     const [settings, setSettings] = useState({
         theme: theme.mode,
+        color_blind_mode: "off",
     });
 
     // Derived constants
@@ -62,7 +64,10 @@ const Settings = () => {
      * Handles fetching data on component mount.
      */
     useEffect(() => {
+        // Fetch settings based on filters
         if (filters.s) fetchData(filters.s).catch((err) => console.error(err));
+        // Manually reset settings to default general settings if no filters
+        else setSettings({ theme: theme.mode });
     }, [filters.s])
 
 
@@ -96,6 +101,9 @@ const Settings = () => {
                 <TopNav />
 
                 <div className="content">
+                    { /* Settings Navigation */ }
+                    <SettingsNav />
+
                     { /* Page Header */ }
                     <h1>{ filters.s ? filters.s.charAt(0).toUpperCase() + filters.s.slice(1) : "General" } Settings</h1>
 
@@ -165,7 +173,7 @@ const Settings = () => {
                                         label="Theme"
                                         name="theme"
                                         id="theme"
-                                        value={ settings.theme }
+                                        value={ settings.theme || theme.mode }
                                         onChange={ (e) => setSettings(prev =>
                                             ({ ...prev, theme: e.target.value })) }
                                         size="medium"

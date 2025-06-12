@@ -101,7 +101,7 @@ pub struct Session {
 }
 
 
-/// Data required to create a new session.
+/// Data required to create a session.
 #[derive(Deserialize)]
 pub struct SessionData {
     /// Unique identifier of the user for whom the session is created.

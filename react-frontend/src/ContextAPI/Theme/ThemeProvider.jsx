@@ -81,7 +81,7 @@ export const CustomThemeProvider = ({ children }) => {
                             light: "#b9ebd4",
                         },
                         heatmap: {
-                            scale0: "rgba(53, 54, 52, 0.05)",
+                            scale0: "rgba(53, 54, 52,  0.05)",
                             scale1: "#d0dbf9",
                             scale2: "#8b9ce2",
                             scale3: "#556fc8",
@@ -91,7 +91,7 @@ export const CustomThemeProvider = ({ children }) => {
                 });
             } else if (mode === "dark") {
                 { /* Dark mode theme */ }
-                { /* TODO adjust dark colors */ }
+                { /* TODO Adjust dark colors */ }
                 return createTheme({
                     cssVariables: true,
                     palette: {
@@ -131,7 +131,7 @@ export const CustomThemeProvider = ({ children }) => {
                             light: "#b9ebd4",
                         },
                         heatmap: {
-                            scale0: "rgba(53, 54, 52, 0.05)",
+                            scale0: "rgba(53, 54, 52,  0.05)",
                             scale1: "#d0dbf9",
                             scale2: "#8b9ce2",
                             scale3: "#556fc8",

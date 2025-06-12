@@ -32,6 +32,35 @@ pub async fn fetch_organizer(data: GetOrganizerData, pool: &SqlitePool) -> Resul
 }
 
 
+/// Creates an organizer in the database.
+///
+/// # Arguments
+///
+/// * `data` - A struct containing all the new organizer data.
+/// * `pool` - A reference to the SQLite connection pool.
+///
+/// # Returns
+///
+/// A `Result` containing the newly created `Organizer`, or an `sqlx::Error` if the update fails.
+///
+/// # Errors
+///
+/// Returns an error if the query fails or any constraint is violated.
+pub async fn create_organizer(data: Organizer, pool: &SqlitePool) -> Result<Organizer, sqlx::Error> {
+    let rec = sqlx::query_as!(
+        Organizer,
+        "INSERT INTO organizers (id, name, logo, website)
+         VALUES (?, ?, ?, ?)
+         RETURNING id, name, logo, website",
+        data.id, data.name, data.logo, data.website
+    )
+        .fetch_one(pool)
+        .await?;
+
+    Ok(rec)
+}
+
+
 /// Updates an organizer in the database.
 ///
 /// # Arguments

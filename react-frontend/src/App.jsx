@@ -6,6 +6,7 @@ import PublicRoutes from "@/Routes/PublicRoutes.jsx";
 import "./App.css";
 
 
+// TODO rgba(53, 54, 52, alpha) needs to be replaced with theme colors
 const App = () => {
     return (
       <CustomThemeProvider>

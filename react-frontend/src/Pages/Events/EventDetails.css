@@ -3,7 +3,7 @@
         .event {
             background-color: var(--mui-palette-background-default);
             border-radius: 10px;
-            box-shadow: 0 0 2px rgba(53, 54, 52, 0.25);
+            box-shadow: 0 0 2px rgba(53, 54, 52,  0.15);
             padding: 50px;
 
             .eventBanner {

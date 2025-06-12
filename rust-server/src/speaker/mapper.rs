@@ -52,7 +52,7 @@ pub async fn create_speakers(data: Vec<Speaker>, pool: &SqlitePool) -> Result<Ve
     let mut speakers = Vec::new();
     
     for speaker_item in data {
-        let res = sqlx::query_as!(
+        let rec = sqlx::query_as!(
             Speaker,
             "INSERT INTO speakers (event_id, name, bio, photo)
              VALUES (?, ?, ?, ?)
@@ -62,7 +62,7 @@ pub async fn create_speakers(data: Vec<Speaker>, pool: &SqlitePool) -> Result<Ve
             .fetch_one(pool)
             .await?;
         
-        speakers.push(res);
+        speakers.push(rec);
     };
 
     Ok(speakers)
