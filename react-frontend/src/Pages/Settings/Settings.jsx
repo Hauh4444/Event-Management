@@ -79,16 +79,16 @@ const Settings = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (filters.s) {
-            // PUT updated settings to backend
-            await axiosInstance.put(`/${ filters.s }/`, settings).catch((err) => console.error(err));
-
-            // Fetch updated data
-            fetchData(filters.s).catch((err) => console.error(err));
-        } else {
-            // Set general settings manually
+        // Set general settings manually
+        if (!filters.s) {
             theme.setTheme(settings.theme);
+            return;
         }
+
+        // PUT updated settings to backend
+        await axiosInstance.put(`/${ filters.s }/`, settings).catch((err) => console.error(err));
+        // Fetch updated data
+        fetchData(filters.s).catch((err) => console.error(err));
     }
 
 
@@ -184,6 +184,20 @@ const Settings = () => {
                                     </Select>
                                 </FormControl>
                             </>
+                        ) }
+
+                        { filters.s === "user" && (
+                            <TextField
+                                className="input"
+                                label="Password"
+                                name="password"
+                                id="password"
+                                type="text"
+                                variant="outlined"
+                                value="********"
+                                disabled
+                                fullWidth
+                            />
                         ) }
 
                         { /* Submit Button */ }

@@ -72,6 +72,8 @@ const Events = () => {
      * Fetches ticket overview and events data from API and updates state.
      * Uses Promise all to fetch current and previous year ticket data concurrently.
      *
+     * @param { number } year - The year selected.
+     *
      * @typedef { Object } TicketsOverviewResponse
      * @property { number[] } tickets
      * @property { number } profit
@@ -422,6 +424,7 @@ const Events = () => {
 
                     <CalendarHeatmap
                         values={ eventsOverview }
+                        scaleValues={ [3, 8, 15] }
                         startDate={ new Date(selectedYear, 0, 1) }
                         endDate={ new Date(selectedYear, 11, 31) }
                     />

@@ -9,7 +9,10 @@ use sqlx::SqlitePool;
 
 // Internal Modules
 use crate::auth::mapper::fetch_session_by_token;
-use crate::auth::models::{GetSessionData, Session};
+use crate::auth::models::{
+    GetSessionData,
+    Session
+};
 
 
 /// Validates the user session from the HTTP request cookies by checking the session token.

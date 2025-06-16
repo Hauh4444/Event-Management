@@ -2,7 +2,12 @@
 use sqlx::SqlitePool;
 
 // Internal Modules
-use crate::event::models::{Event, EventData, GetUserEventsData, GetEventData};
+use crate::event::models::{
+    Event,
+    EventData,
+    GetUserEventsData,
+    GetEventData
+};
 
 
 /// Retrieves all events created by a specific organizer.

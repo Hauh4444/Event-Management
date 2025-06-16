@@ -16,6 +16,32 @@ use crate::organizer::models::{DeleteOrganizerData, GetOrganizerData, Organizer}
 use crate::auth::services::{generate_session_token, hash_password, validate_session, verify_password};
 
 
+/// Handles retrieving a specific user by session token.
+///
+/// # Arguments
+///
+/// * `req` - The incoming HTTP request containing session data.
+/// * `pool` - A reference to the SQLite database connection pool.
+///
+/// # Returns
+///
+/// An HTTP response with the user information if found, or an error message.
+pub async fn get_user(
+    req: HttpRequest,
+    pool: web::Data<SqlitePool>,
+) -> impl Responder {
+    let session = match validate_session(&req, &pool).await {
+        Ok(session) => session,
+        Err(response) => return response,
+    };
+
+    match fetch_user_by_id(GetUserIDData {id: session.user_id}, &pool).await {
+        Ok(user) => HttpResponse::Ok().json(GetUserData {username: user.username}),
+        Err(e) => HttpResponse::Unauthorized().body(format!("User not found: {}", e)),
+    }
+}
+
+
 /// Checks the authentication status of a user based on the provided session token.
 ///
 /// # Arguments
@@ -232,6 +258,7 @@ pub async fn remove_user(
 /// Configures the provided service with authentication routes.
 pub fn configure_auth_routes(cfg: &mut web::ServiceConfig) {
     cfg
+        .route("/user/", web::get().to(get_user))
         .route("/check_auth_status/", web::get().to(check_auth_status))
         .route("/login/", web::post().to(login_user))
         .route("/register/", web::post().to(register_user))

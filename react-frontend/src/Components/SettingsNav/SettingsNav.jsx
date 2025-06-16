@@ -16,14 +16,15 @@ const SettingsNav = () => {
     // Derived constants
     const navButtons = [
         { nav: undefined, label: "General" },
-        { nav: "organizer", label: "Organizer" },
+        { nav: "organizer", label: "Account" },
+        { nav: "user", label: "User" },
     ];
 
 
     /**
      * Handles navigation within settings
      *
-     * @param {string} nav
+     * @param { string } nav
      */
     const handleNav = (nav) => {
         // Set settings filters

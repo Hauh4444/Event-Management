@@ -41,6 +41,17 @@ pub struct GetOverview {
 }
 
 
+/// Represents aggregated totals for ticket metrics for a given year.
+#[derive(Serialize)]
+pub struct TicketsOverview {
+    /// Monthly totals of ticket sales.
+    pub tickets: Vec<f64>,
+
+    /// Net profit.
+    pub profit: f64,
+}
+
+
 /// Represents aggregated daily event counts for a given year.
 #[derive(Serialize)]
 pub struct EventsOverview {
@@ -60,12 +71,12 @@ pub struct DateCount {
 }
 
 
-/// Represents aggregated totals for ticket metrics for a given year.
+/// Represents aggregated totals for attendee metrics for a given year.
 #[derive(Serialize)]
-pub struct TicketsOverview {
-    /// Monthly totals of ticket sales.
-    pub tickets: Vec<f64>,
+pub struct AttendeesOverview {
+    /// Monthly totals of attendees.
+    pub attendees: Vec<f64>,
 
     /// Net profit.
-    pub profit: f64,
+    pub total: f64,
 }

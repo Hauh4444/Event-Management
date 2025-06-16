@@ -24,6 +24,7 @@ import "./CalendarHeatmap.css";
  */
 const CalendarHeatmap = ({
     values,
+    scaleValues,
     startDate,
     endDate,
     onClick = () => {},
@@ -38,9 +39,9 @@ const CalendarHeatmap = ({
                 values={ values }
                 classForValue={ (value) => {
                     if (!value || value.count === 0) return "scale0";
-                    if (value.count >= 15) return "scale4";
-                    if (value.count >= 8) return "scale3";
-                    if (value.count >= 3) return "scale2";
+                    if (value.count >= scaleValues[2]) return "scale4";
+                    if (value.count >= scaleValues[1]) return "scale3";
+                    if (value.count >= scaleValues[0]) return "scale2";
                     return "scale1";
                 } }
                 tooltipDataAttrs={ (value) => {

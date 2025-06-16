@@ -44,6 +44,19 @@ export const CustomThemeProvider = ({ children }) => {
                 { /* Light mode theme */ }
                 return createTheme({
                     cssVariables: true,
+                    components: {
+                        MuiOutlinedInput: {
+                            styleOverrides: {
+                                root: {
+                                    '& input:-webkit-autofill': {
+                                        WebkitBoxShadow: '0 0 0 1000px #f8fbfd inset',
+                                        WebkitTextFillColor: '#353634',
+                                        transition: 'background-color 5000s ease-in-out 0s',
+                                    },
+                                },
+                            },
+                        },
+                    },
                     palette: {
                         mode: "light",
                         primary: {
@@ -94,6 +107,19 @@ export const CustomThemeProvider = ({ children }) => {
                 { /* TODO Adjust dark colors */ }
                 return createTheme({
                     cssVariables: true,
+                    components: {
+                        MuiOutlinedInput: {
+                            styleOverrides: {
+                                root: {
+                                    '& input:-webkit-autofill': {
+                                        WebkitBoxShadow: '0 0 0 1000px #f8fbfd inset',
+                                        WebkitTextFillColor: '#353634',
+                                        transition: 'background-color 5000s ease-in-out 0s',
+                                    },
+                                },
+                            },
+                        },
+                    },
                     palette: {
                         mode: "dark",
                         primary: {

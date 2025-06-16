@@ -24,10 +24,12 @@
     }
 
     .logoBtn {
-        height: 56px;
+        height: 60px;
         margin-left: auto;
-        padding: 0 5px;
+        padding: 0 10px;
+        border-radius: 5px;
         text-transform: none;
+        transition: all 0.2s ease;
 
         .logo {
             width: 46px;
@@ -54,7 +56,7 @@
         }
 
         &:hover {
-            background-color: var(--mui-palette-background-default);
+            background-color: var(--mui-palette-secondary-light);
         }
     }
 }

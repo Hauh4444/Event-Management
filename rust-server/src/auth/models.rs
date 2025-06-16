@@ -34,7 +34,7 @@ pub struct UserData {
 
 
 /// Data required for user authentication.
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct AuthData {
     /// Username for authentication.
     pub username: String,

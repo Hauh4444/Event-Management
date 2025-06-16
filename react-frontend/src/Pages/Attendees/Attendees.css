@@ -1,0 +1,108 @@
+.attendeesPage {
+    .content {
+        .head {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+
+            h1 {
+                margin-top: 0;
+                font-size: 28px;
+            }
+
+            p {
+                margin: 0 0 50px;
+                color: var(--mui-palette-text-secondary);
+            }
+
+            .btn {
+                height: 50px;
+                padding: 10px 20px;
+                border-radius: 5px;
+                border: 2px solid rgba(53, 54, 52, 0.1);
+                float: right;
+                color: var(--mui-palette-text-primary);
+                font-size: 16px;
+                font-weight: bold;
+                text-transform: none;
+                transition: all 0.2s ease;
+
+                &:hover {
+                    background-color: var(--mui-palette-secondary-light);
+                    color: var(--mui-palette-primary-main);
+
+                    .icon {
+                        fill: var(--mui-palette-primary-main);
+                    }
+                }
+
+                .icon {
+                    margin-right: 5px;
+                    vertical-align: middle;
+                    font-size: 18px;
+                }
+            }
+        }
+
+
+        .overviewItem {
+            margin-bottom: 50px;
+            padding: 25px 35px;
+            border-radius: 10px;
+            background-color: var(--mui-palette-background-default);
+            box-shadow: 0 0 2px rgba(53, 54, 52, 0.15);
+            display: flex;
+            flex-direction: row;
+
+            .info {
+                width: 35%;
+            }
+
+            h2 {
+                height: 40px;
+                margin: 20px 0 40px 0;
+                line-height: 40px;
+                font-size: 18px;
+                font-weight: normal;
+                color: var(--mui-palette-text-secondary);
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            p {
+                width: fit-content;
+                margin: 20px 0;
+
+                .increase,
+                .decrease {
+                    padding: 5px 8px;
+
+                    .icon {
+                        margin: -3px 3px 0 0;
+                        vertical-align: middle;
+                    }
+                }
+
+                .increase {
+                    background-color: var(--mui-palette-green-light);
+                    color: var(--mui-palette-green-main);
+
+                    .icon {
+                        fill: var(--mui-palette-green-main);
+                    }
+                }
+
+                .decrease {
+                    background-color: var(--mui-palette-red-light);
+                    color: var(--mui-palette-red-dark);
+
+                    .icon {
+                        fill: var(--mui-palette-red-dark);
+                    }
+                }
+            }
+        }
+    }
+}
