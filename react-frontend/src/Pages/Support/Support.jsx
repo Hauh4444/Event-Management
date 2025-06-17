@@ -1,6 +1,6 @@
 // External Libraries
 
-// Internal Modules
+// Internal Components
 import Sidebar from "@/Components/Sidebar/Sidebar.jsx";
 import TopNav from "@/Components/TopNav/TopNav.jsx";
 

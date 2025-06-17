@@ -3,29 +3,29 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import { areaElementClasses, LineChart, lineElementClasses } from "@mui/x-charts/LineChart";
-import { jsPDF as JsPDF } from "jspdf";
-import html2canvas from "html2canvas";
 
 // External Icons
 import { AiOutlineExport } from "react-icons/ai";
 import { FaArrowUpLong, FaArrowDownLong, FaInfinity } from "react-icons/fa6";
 import { VscListFilter } from "react-icons/vsc";
 import { MdOutlineEventNote } from "react-icons/md";
+import { RiFileDownloadLine } from "react-icons/ri";
 
-// Internal Modules
+// Internal Components
 import Sidebar from "@/Components/Sidebar/Sidebar.jsx";
 import TopNav from "@/Components/TopNav/TopNav.jsx";
 import YearPicker from "@/Components/YearPicker/YearPicker.jsx";
 import CalendarHeatmap from "@/Components/CalendarHeatmap/CalendarHeatmap.jsx";
 import SearchBar from "@/Components/SearchBar/SearchBar.jsx";
 import CustomPagination from "@/Components/Pagination/Pagination.jsx";
+
+// Internal Utilities
 import axiosInstance from "@/API/axiosInstance.js";
+import handleExportPDF from "@/Utils/exportPDF.js";
+import handleDownloadCSV from "@/Utils/downloadCSV.js";
 
 // Stylesheets
 import "./Events.css";
-
-
-// TODO Register Event Functionality
 
 
 /**
@@ -38,32 +38,34 @@ import "./Events.css";
  * @component
  * @returns { JSX.Element } The rendered Events page component.
  */
+// TODO Register Event Functionality
 const Events = () => {
     // React hooks
     const navigate = useNavigate();
 
     // State variables
-    const [eventsOverview, setEventsOverview] = useState([]);
-    const [ticketsOverview, setTicketsOverview] = useState({
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [ticketsMonthlyOverview, setTicketsMonthlyOverview] = useState({
         seriesData: new Array(12).fill(0),
         xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
         profit: 0,
         lastYearTotal: 0,
     });
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [dailyEventsOverview, setDailyEventsOverview] = useState([]);
     const [events, setEvents] = useState([]);
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [page, setPage] = useState(1);
     const [query, setQuery] = useState("");
-
+    
     // Derived constants
     const perPage = 6;
     const paginatedEvents = filteredEvents.slice((page - 1) * perPage, page * perPage);
     const pageCount = Math.ceil(filteredEvents.length / perPage);
-    const isLastYearZero = ticketsOverview.lastYearTotal === 0;
+    const isLastYearZero = ticketsMonthlyOverview.lastYearTotal === 0;
     const salesChange = isLastYearZero
         ? ""
-        : (((ticketsOverview.profit - ticketsOverview.lastYearTotal) / ticketsOverview.lastYearTotal) * 100)
+        : (((ticketsMonthlyOverview.profit - ticketsMonthlyOverview.lastYearTotal) /
+            ticketsMonthlyOverview.lastYearTotal) * 100)
             .toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const isIncrease = isLastYearZero || (parseFloat(salesChange) > 0);
 
@@ -74,7 +76,7 @@ const Events = () => {
      *
      * @param { number } year - The year selected.
      *
-     * @typedef { Object } TicketsOverviewResponse
+     * @typedef { Object } TicketsOverviewRes
      * @property { number[] } tickets
      * @property { number } profit
      *
@@ -86,48 +88,50 @@ const Events = () => {
      * @property { number } tickets_sold
      * @property { number } max_attendees
      *
-     * @typedef { Array<EventItem> } EventsResponseData
+     * @typedef { Array<EventItem> } EventsResData
      *
      * @returns { Promise<void> }
      */
     const fetchData = async (year) => {
-        // Fetch event overview data for current year
-        const res = await axiosInstance.get("/overview/events/", { params: { year } });
-        // Set event overview state with response data
-        setEventsOverview(res.data["event_counts"]);
-
         // Fetch ticket overview data for current year and last year in parallel
-        const [currentYearResponse, previousYearResponse] = await Promise.all([
-            axiosInstance.get("/overview/tickets/", { params: { year: year } }),
-            axiosInstance.get("/overview/tickets/", { params: { year: year - 1 } }),
+        const [currentYearRes, previousYearRes] = await Promise.all([
+            axiosInstance.get("/overview/monthly-ticket-sales/", { params: { year: year } }),
+            axiosInstance.get("/overview/monthly-ticket-sales/", { params: { year: year - 1 } }),
         ]);
 
         // Extract last year tickets array, fallback to empty array if undefined
-        const lastYearTickets = previousYearResponse.data.tickets || [];
+        const lastYearTickets = previousYearRes.data.tickets || [];
         // Sum all tickets sold last year
         const lastYearTotal = lastYearTickets.reduce((total, count) => total + count, 0);
 
         // Extract current year tickets monthly data, fallback to zero array if undefined
-        const currentYearTickets = currentYearResponse.data.tickets || new Array(12).fill(0);
+        const currentYearTickets = currentYearRes.data.tickets || new Array(12).fill(0);
 
         // Generate month labels for x-axis for current year
         const xAxisDates = Array.from({ length: 12 }, (_, monthIndex) =>
             new Date(year, monthIndex, 1));
 
         // Update tickets overview state
-        setTicketsOverview({
+        setTicketsMonthlyOverview({
             seriesData: currentYearTickets,
             xAxisData: xAxisDates,
-            profit: currentYearResponse.data.profit,
+            profit: currentYearRes.data.profit,
             lastYearTotal: lastYearTotal,
         });
 
+        // Fetch event overview data for current year
+        const dailyEventsRes = await axiosInstance.get("/overview/daily-event-counts/", {
+            params: { year }
+        });
+        // Set event overview state with response data
+        setDailyEventsOverview(dailyEventsRes.data["event_counts"]);
+
         // Fetch events data separately
-        const eventsResponse = await axiosInstance.get("/events/", {
+        const eventsRes = await axiosInstance.get("/events/", {
             params: { year: year }
         });
-        setEvents(eventsResponse.data);
-        setFilteredEvents(eventsResponse.data);
+        setEvents(eventsRes.data);
+        setFilteredEvents(eventsRes.data);
     };
 
 
@@ -149,88 +153,6 @@ const Events = () => {
     useEffect(() => {
         fetchData(new Date().getFullYear()).catch((err) => console.error(err));
     }, []);
-
-
-    /**
-     * Exports the current content of the .content container as a PDF.
-     * Uses html2canvas to capture the DOM content as a canvas,
-     * then uses jsPDF to create a multipage PDF with the captured image.
-     */
-    const handleExportPDF = async () => {
-        const input = document.querySelector(".content");
-        if (!input) return;
-
-        // Add class to body to indicate export in progress (for styling)
-        document.body.classList.add("exporting");
-
-        try {
-            // Capture the content area to a high-resolution canvas
-            const canvas = await html2canvas(input, {
-                scale: 3,         // increase scale for higher resolution
-                useCORS: true,    // allow cross-origin images
-                allowTaint: true, // allow tainted canvas for cross-origin images
-                letterRendering: true,
-                backgroundColor: "#ffffff",
-                ignoreElements: (element) => element.classList.contains("empty-row"), // ignore empty placeholder rows
-            });
-
-            const pdf = new JsPDF("p", "pt", "a4");
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
-            const padding = 10;
-
-            // Calculate image width and scale to fit page width with padding
-            const imgWidth = pdfWidth - padding * 2;
-            const scale = imgWidth / canvas.width;
-
-            // Calculate height in pixels that fits on one PDF page after scaling
-            const pageHeightPx = pdfHeight / scale;
-
-            let yPos = 0;
-
-            // Loop to create pages if content height exceeds one page
-            while (yPos < canvas.height) {
-                // Create a temporary canvas for the current page slice
-                const pageCanvas = document.createElement("canvas");
-                pageCanvas.width = canvas.width;
-                pageCanvas.height = Math.min(pageHeightPx, canvas.height - yPos);
-
-                const ctx = pageCanvas.getContext("2d");
-
-                // Draw the relevant slice of the main canvas onto the page canvas
-                ctx.drawImage(
-                    canvas,
-                    0, yPos,
-                    canvas.width, pageCanvas.height,
-                    0, 0,
-                    canvas.width, pageCanvas.height
-                );
-
-                // Add the image slice to the PDF
-                pdf.addImage(
-                    pageCanvas.toDataURL("image/png"),
-                    "PNG",
-                    padding,
-                    padding,
-                    imgWidth,
-                    pageCanvas.height * scale
-                );
-
-                yPos += pageCanvas.height;
-
-                // Add a new page if there is more content remaining
-                if (yPos < canvas.height) pdf.addPage();
-            }
-
-            // Save the generated PDF file
-            pdf.save("events-overview.pdf");
-        } catch (err) {
-            console.error("PDF generation failed:", err);
-        } finally {
-            // Remove exporting class regardless of success or failure
-            document.body.classList.remove("exporting");
-        }
-    };
 
 
     /**
@@ -313,7 +235,12 @@ const Events = () => {
                             />
 
                             { /* Export button triggers PDF export */ }
-                            <Button className="btn" onClick={ () => handleExportPDF() }>
+                            <Button
+                                className="btn"
+                                onClick={ async () => {
+                                    await handleExportPDF(document.querySelector(".content"))
+                                } }
+                            >
                                 <AiOutlineExport className="icon" />
                                 Export
                             </Button>
@@ -328,7 +255,7 @@ const Events = () => {
 
                             { /* Display total profit formatted with 2 decimals */ }
                             <h1>
-                                ${ ticketsOverview.profit.toLocaleString(undefined,
+                                ${ ticketsMonthlyOverview.profit.toLocaleString(undefined,
                                 { minimumFractionDigits: 2, maximumFractionDigits: 2 }
                             ) }
                             </h1>
@@ -360,7 +287,7 @@ const Events = () => {
                             series={[
                                 {
                                     area: true,
-                                    data: ticketsOverview.seriesData,
+                                    data: ticketsMonthlyOverview.seriesData,
                                     showMark: false,
                                     valueFormatter: (value) =>
                                         `$${ value.toLocaleString(undefined, {
@@ -372,7 +299,7 @@ const Events = () => {
                             xAxis={[
                                 {
                                     scaleType: "point",
-                                    data: ticketsOverview.xAxisData,
+                                    data: ticketsMonthlyOverview.xAxisData,
                                     valueFormatter: (value) => value.toLocaleString("default", { month: "short" }),
                                 },
                             ]}
@@ -423,8 +350,9 @@ const Events = () => {
                     </div>
 
                     <CalendarHeatmap
-                        values={ eventsOverview }
-                        scaleValues={ [3, 8, 15] }
+                        values={ dailyEventsOverview }
+                        valueType="events"
+                        scaleValues={ [2, 3, 4] }
                         startDate={ new Date(selectedYear, 0, 1) }
                         endDate={ new Date(selectedYear, 11, 31) }
                     />
@@ -439,10 +367,11 @@ const Events = () => {
                                 <col style={{ width: "15%" }} />
                                 <col style={{ width: "15%" }} />
                             </colgroup>
+
                             <thead>
                             <tr>
                                 <th className="title">
-                                    <MdOutlineEventNote className="titleIcon"/>Events
+                                    <MdOutlineEventNote className="icon"/>Events
                                 </th>
                                 <th>
                                     { /* Total number of events */}
@@ -450,7 +379,7 @@ const Events = () => {
                                         { filteredEvents.length } Events
                                     </div>
                                 </th>
-                                <th colSpan={3}>
+                                <th colSpan={ 2 }>
                                     { /* Search bar for event filtering */}
                                     <SearchBar
                                         onChange={ (val) => setQuery(val) }
@@ -461,9 +390,21 @@ const Events = () => {
                                 <th>
                                     { /* Button for more specific event filtering */ }
                                     { /* TODO Filter functionality */ }
-                                    <Button className="filterBtn">
-                                        <VscListFilter className="icon" style={{ marginRight: "10px" }}/>
+                                    <Button className="headBtn">
+                                        <VscListFilter className="icon"/>
                                         Filters
+                                    </Button>
+                                </th>
+                                <th>
+                                    { /* Button to download event data as CSV */ }
+                                    <Button
+                                        className="headBtn"
+                                        onClick={ async () => {
+                                            await handleDownloadCSV(events, "events")
+                                        } }
+                                    >
+                                        <RiFileDownloadLine className="icon"/>
+                                        Download
                                     </Button>
                                 </th>
                             </tr>
@@ -503,7 +444,7 @@ const Events = () => {
                             { /* Render empty rows to keep table height consistent */}
                             { Array.from({ length: perPage - paginatedEvents.length }).map((_, index) => (
                                 <tr key={`placeholder-${ index }`}>
-                                    <td colSpan="6" className="empty-row">&nbsp;</td>
+                                    <td colSpan={ 6 } className="empty-row">&nbsp;</td>
                                 </tr>
                             )) }
                             </tbody>
@@ -511,7 +452,7 @@ const Events = () => {
                             <tfoot>
                             { /* Render pagination */}
                             <tr>
-                                <td colSpan="6">
+                                <td colSpan={ 6 }>
                                     <CustomPagination
                                         pageCount={ pageCount > 0 ? pageCount : 1 }
                                         page={ page > 0 ? page : 1 }

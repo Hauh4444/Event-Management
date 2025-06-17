@@ -18,6 +18,8 @@ Click to view:
 - [Dashboard Page Continued](./screenshots/dashboard-page2.png)
 - [Events Page](./screenshots/events-page1.png)
 - [Events Page Continued](./screenshots/events-page2.png)
+- [Attendees Page](./screenshots/attendees-page1.png)
+- [Attendees Page Continued](./screenshots/attendees-page2.png)
 
 ## Setup
 

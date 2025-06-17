@@ -1,10 +1,13 @@
 // External Libraries
 use serde::{Serialize, Deserialize};
 
+// Internal Models
+use crate::event::models::Event;
+
 
 /// Represents aggregated totals of various event-related metrics for a given year.
 #[derive(Serialize)]
-pub struct OverviewTotals {
+pub struct MonthlyTotals {
     /// Monthly totals of all events.
     pub events: Vec<i64>,
 
@@ -24,7 +27,7 @@ pub struct OverviewTotals {
 
 /// Query parameters for requesting overview totals.
 #[derive(Deserialize)]
-pub struct OverviewQuery {
+pub struct YearQuery {
     /// The year to retrieve totals for (e.g., 2025).
     pub year: i64,
 }
@@ -43,7 +46,7 @@ pub struct GetOverview {
 
 /// Represents aggregated totals for ticket metrics for a given year.
 #[derive(Serialize)]
-pub struct TicketsOverview {
+pub struct TicketTotals {
     /// Monthly totals of ticket sales.
     pub tickets: Vec<f64>,
 
@@ -54,15 +57,15 @@ pub struct TicketsOverview {
 
 /// Represents aggregated daily event counts for a given year.
 #[derive(Serialize)]
-pub struct EventsOverview {
+pub struct EventCounts {
     /// Daily totals of event counts.
-    pub event_counts: Vec<DateCount>,
+    pub event_counts: Vec<CountByDate>,
 }
 
 
 /// Represents the number of events on a specific date.
 #[derive(Serialize)]
-pub struct DateCount {
+pub struct CountByDate {
     /// Date in "YYYY-MM-DD" format.
     pub date: String,
 
@@ -73,10 +76,29 @@ pub struct DateCount {
 
 /// Represents aggregated totals for attendee metrics for a given year.
 #[derive(Serialize)]
-pub struct AttendeesOverview {
+pub struct AttendeeTotals {
     /// Monthly totals of attendees.
     pub attendees: Vec<f64>,
 
     /// Net profit.
     pub total: f64,
+}
+
+
+/// Represents the most and least attended completed events for a given year.
+#[derive(Serialize)]
+pub struct AttendanceExtremes {
+    /// List of the most attended events.
+    pub most: Vec<Event>,
+    
+    /// List of the least attended events.
+    pub least: Vec<Event>,
+}
+
+
+/// Represents aggregated daily attendee counts for a given year.
+#[derive(Serialize)]
+pub struct AttendeeCounts {
+    /// Daily totals of attendee counts.
+    pub attendee_counts: Vec<CountByDate>,
 }

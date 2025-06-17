@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
-// Internal Modules
+// Internal Components
 import { useAuth } from "@/ContextAPI/Auth/AuthContext.js";
 
 

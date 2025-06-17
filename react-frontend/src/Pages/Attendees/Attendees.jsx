@@ -6,73 +6,45 @@ import { areaElementClasses, LineChart, lineElementClasses } from "@mui/x-charts
 // External Icons
 import { AiOutlineExport } from "react-icons/ai";
 import { FaArrowDownLong, FaArrowUpLong, FaInfinity } from "react-icons/fa6";
+import { MdOutlineEventNote } from "react-icons/md";
 
-// Internal Modules
+// Internal Components
 import Sidebar from "@/Components/Sidebar/Sidebar.jsx";
 import TopNav from "@/Components/TopNav/TopNav.jsx";
 import YearPicker from "@/Components/YearPicker/YearPicker.jsx";
+import CalendarHeatmap from "@/Components/CalendarHeatmap/CalendarHeatmap.jsx";
+
+// Internal Utilities
 import axiosInstance from "@/API/axiosInstance.js";
+import handleExportPDF from "@/Utils/exportPDF.js";
 
 // Stylesheets
 import "./Attendees.css";
-import CalendarHeatmap from "@/Components/CalendarHeatmap/CalendarHeatmap.jsx";
 
 
 const Attendees = () => {
     // State variables
-    const [attendeesOverview, setAttendeesOverview] = useState({
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [attendeesMonthlyOverview, setAttendeesMonthlyOverview] = useState({
         seriesData: new Array(12).fill(0),
         xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
         total: 0,
         lastYearTotal: 0,
     });
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-    const [query, setQuery] = useState("");
+    const [dailyAttendeesOverview, setDailyAttendeesOverview] = useState([]);
+    const [attendanceExtremes, setAttendanceExtremes] = useState({
+        most: new Array(5).fill(0),
+        least: new Array(5).fill(0),
+    })
 
     // Derived constants
-    const isLastYearZero = attendeesOverview.lastYearTotal === 0;
-    const salesChange = isLastYearZero
+    const isLastYearZero = attendeesMonthlyOverview.lastYearTotal === 0;
+    const attendanceChange = isLastYearZero
         ? ""
-        : (((attendeesOverview.total - attendeesOverview.lastYearTotal) / attendeesOverview.lastYearTotal) * 100)
+        : (((attendeesMonthlyOverview.total - attendeesMonthlyOverview.lastYearTotal) /
+            attendeesMonthlyOverview.lastYearTotal) * 100)
             .toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const isIncrease = isLastYearZero || (parseFloat(salesChange) > 0);
-
-
-    /**
-     * Fetches attendee overview data from API and updates state.
-     * Uses Promise all to fetch current and previous year attendee data concurrently.
-     * 
-     * @param { number } year - The year selected.
-     * 
-     * @returns { Promise<void> }
-     */
-    const fetchData = async (year) => {
-        // Fetch attendee overview data for current year and last year in parallel
-        const [currentYearResponse, previousYearResponse] = await Promise.all([
-            axiosInstance.get("/overview/attendees/", { params: { year: year } }),
-            axiosInstance.get("/overview/attendees/", { params: { year: year - 1 } }),
-        ]);
-
-        // Extract last year attendees array, fallback to empty array if undefined
-        const lastYearAttendees = previousYearResponse.data.attendees || [];
-        // Sum all attendees sold last year
-        const lastYearTotal = lastYearAttendees.reduce((total, count) => total + count, 0);
-
-        // Extract current year attendees monthly data, fallback to zero array if undefined
-        const currentYearAttendees = currentYearResponse.data.attendees || new Array(12).fill(0);
-
-        // Generate month labels for x-axis for current year
-        const xAxisDates = Array.from({ length: 12 }, (_, monthIndex) =>
-            new Date(year, monthIndex, 1));
-
-        // Update attendees overview state
-        setAttendeesOverview({
-            seriesData: currentYearAttendees,
-            xAxisData: xAxisDates,
-            total: currentYearResponse.data.total,
-            lastYearTotal: lastYearTotal,
-        });
-    }
+    const isIncrease = isLastYearZero || (parseFloat(attendanceChange) > 0);
 
 
     /**
@@ -82,9 +54,60 @@ const Attendees = () => {
      */
     const onYearChange = (year) => {
         setSelectedYear(year);
-        setQuery("");
         fetchData(year).catch((err) => console.error(err));
     };
+
+
+    /**
+     * Fetches attendee overview data from API and updates state.
+     * Uses Promise all to fetch current and previous year attendee data concurrently.
+     *
+     * @param { number } year - The year selected.
+     *
+     * @returns { Promise<void> }
+     */
+    const fetchData = async (year) => {
+        // Fetch monthly attendee counts for current year and previous year concurrently
+        const [currentYearRes, previousYearRes] = await Promise.all([
+            axiosInstance.get("/overview/monthly-attendee-counts/", { params: { year: year } }),
+            axiosInstance.get("/overview/monthly-attendee-counts/", { params: { year: year - 1 } }),
+        ]);
+
+        // Extract last year's monthly attendees array; default to empty if missing
+        const lastYearAttendees = previousYearRes.data.attendees || [];
+        // Sum all last year's attendees for total count
+        const lastYearTotal = lastYearAttendees.reduce((total, count) => total + count, 0);
+
+        // Extract current year's monthly attendees; default to zero-filled array if missing
+        const currentYearAttendees = currentYearRes.data.attendees || new Array(12).fill(0);
+
+        // Generate an array of Date objects representing the first day of each month for x-axis labels
+        const xAxisDates = Array.from({ length: 12 }, (_, monthIndex) =>
+            new Date(year, monthIndex, 1)
+        );
+
+        // Update monthly attendees overview state with current year data and totals
+        setAttendeesMonthlyOverview({
+            seriesData: currentYearAttendees,
+            xAxisData: xAxisDates,
+            total: currentYearRes.data.total,
+            lastYearTotal: lastYearTotal,
+        });
+
+        // Fetch daily attendee counts for the current year
+        const dailyAttendeesRes = await axiosInstance.get("/overview/daily-attendee-counts/", {
+            params: { year }
+        });
+        // Update daily attendees overview state with fetched data
+        setDailyAttendeesOverview(dailyAttendeesRes.data["attendee_counts"]);
+
+        // Fetch attendance extremes (top and bottom attended events) for the current year
+        const attendanceExtremesRes = await axiosInstance.get("/overview/attendance-extremes/", {
+            params: { year }
+        });
+        // Update attendance extremes state with fetched data
+        setAttendanceExtremes(attendanceExtremesRes.data);
+    }
 
 
     /**
@@ -111,7 +134,8 @@ const Attendees = () => {
                             </h1>
 
                             <p>
-                                Track attendee growth and trends year over year—gain clear, visual insights into your events' performance.
+                                Track attendee growth and trends year over year—gain clear, visual insights into your events'
+                                performance.
                             </p>
                         </div>
 
@@ -140,14 +164,19 @@ const Attendees = () => {
                             />
 
                             { /* Export button triggers PDF export */ }
-                            { /* TODO export functionality */ }
-                            <Button className="btn">
+                            <Button
+                                className="btn"
+                                onClick={ async () => {
+                                    await handleExportPDF(document.querySelector(".content"))
+                                } }
+                            >
                                 <AiOutlineExport className="icon" />
                                 Export
                             </Button>
                         </span>
                     </div>
 
+                    { /* TODO Projection information */ }
                     <div className="overviewItem">
                         <div className="info">
                             <h2>
@@ -156,7 +185,7 @@ const Attendees = () => {
 
                             { /* Display total formatted */ }
                             <h1>
-                                { attendeesOverview.total.toLocaleString(undefined, 0) }
+                                { attendeesMonthlyOverview.total.toLocaleString(undefined, 0) }
                             </h1>
 
                             <p>
@@ -172,7 +201,7 @@ const Attendees = () => {
                                             ? <FaArrowUpLong className="icon" />
                                             : <FaArrowDownLong className="icon" />
                                     )}
-                                    { salesChange }%
+                                    { attendanceChange }%
                                 </span>
                                 &ensp;vs last year
                             </p>
@@ -186,7 +215,7 @@ const Attendees = () => {
                             series={[
                                 {
                                     area: true,
-                                    data: attendeesOverview.seriesData,
+                                    data: attendeesMonthlyOverview.seriesData,
                                     showMark: false,
                                     valueFormatter: (value) =>
                                         `${ value.toLocaleString(undefined, 0) }`,
@@ -195,7 +224,7 @@ const Attendees = () => {
                             xAxis={[
                                 {
                                     scaleType: "point",
-                                    data: attendeesOverview.xAxisData,
+                                    data: attendeesMonthlyOverview.xAxisData,
                                     valueFormatter: (value) => value.toLocaleString("default", { month: "short" }),
                                 },
                             ]}
@@ -245,7 +274,91 @@ const Attendees = () => {
                         </LineChart>
                     </div>
 
-                    { /* TODO Basic attendee info, action items, etc */ }
+                    <CalendarHeatmap
+                        values={ dailyAttendeesOverview }
+                        valueType="attendees"
+                        scaleValues={ [60, 120, 210] }
+                        startDate={ new Date(selectedYear, 0, 1) }
+                        endDate={ new Date(selectedYear, 11, 31) }
+                    />
+
+                    <div className="attendanceExtremes">
+                        <table>
+                            <colgroup>
+                                <col style={{ width: "40%" }} />
+                                <col style={{ width: "30%" }} />
+                                <col style={{ width: "15%" }} />
+                                <col style={{ width: "15%" }} />
+                            </colgroup>
+
+                            <thead>
+                            <tr>
+                                <th className="title most" colSpan={ 4 }>
+                                    <MdOutlineEventNote className="icon"/>Most Attended Events
+                                </th>
+                            </tr>
+                            </thead>
+
+                            <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Event Date</th>
+                                <th>Attendees</th>
+                                <th>Expected</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            { attendanceExtremes.most.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{ item.title }</td>
+                                    <td>{ item.event_date }</td>
+                                    <td>{ item.attendees }</td>
+                                    <td>{ item.tickets_sold }</td>
+                                </tr>
+                            )) }
+                            </tbody>
+                        </table>
+
+                        <table>
+                            <colgroup>
+                                <col style={{ width: "40%" }} />
+                                <col style={{ width: "30%" }} />
+                                <col style={{ width: "15%" }} />
+                                <col style={{ width: "15%" }} />
+                            </colgroup>
+
+                            <thead>
+                            <tr>
+                                <th className="title least" colSpan={ 4 }>
+                                    <MdOutlineEventNote className="icon"/>Least Attended Events
+                                </th>
+                            </tr>
+                            </thead>
+
+                            <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Event Date</th>
+                                <th>Attendees</th>
+                                <th>Expected</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            { attendanceExtremes.least.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{ item.title }</td>
+                                    <td>{ item.event_date }</td>
+                                    <td>{ item.attendees }</td>
+                                    <td>{ item.tickets_sold }</td>
+                                </tr>
+                            )) }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    { /* TODO Attendee basic information */ }
                 </div>
             </div>
         </div>

@@ -8,15 +8,14 @@ use std::env;
 use env_logger::Env;
 
 // Internal Routes
-use analytics::routes::configure_analytics_routes;
 use auth::routes::configure_auth_routes;
 use category::routes::configure_category_routes;
 use event::routes::configure_event_routes;
 use organizer::routes::configure_organizer_routes;
+use overview::routes::configure_overview_routes;
 
 // Internal Modules
 mod agenda;
-mod analytics;
 mod attachment;
 mod auth;
 mod category;
@@ -24,6 +23,7 @@ mod comment;
 mod event;
 mod faq;
 mod organizer;
+mod overview;
 mod speaker;
 
 
@@ -64,11 +64,11 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(pool.clone())) // Inject DB pool as app data
             .service(
                 web::scope("/api") // API route grouping
-                    .configure(configure_analytics_routes)
                     .configure(configure_auth_routes)
                     .configure(configure_category_routes)
                     .configure(configure_event_routes)
                     .configure(configure_organizer_routes)
+                    .configure(configure_overview_routes)
             )
             .service(Files::new("/static", "static").show_files_listing()) // Serve static files
     })

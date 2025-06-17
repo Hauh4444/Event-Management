@@ -40,6 +40,7 @@
                     margin-right: 5px;
                     vertical-align: middle;
                     font-size: 18px;
+                    transition: all 0.2s ease;
                 }
             }
         }
@@ -100,6 +101,86 @@
 
                     .icon {
                         fill: var(--mui-palette-red-dark);
+                    }
+                }
+            }
+        }
+
+        .attendanceExtremes {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+
+            table {
+                flex-basis: 45%;
+
+                tr:nth-child(1) {
+                    text-align: left;
+                }
+
+                tr > *:not(:first-child) {
+                    text-align: center;
+                }
+
+                thead {
+                    .title {
+                        font-weight: normal;
+                        text-align: center;
+
+                        .icon {
+                            margin: -2px 10px 0 0;
+                            vertical-align: middle;
+                            fill: var(--mui-palette-primary-main);
+                        }
+
+                        &.most {
+                            background-color: var(--mui-palette-green-light);
+                            color: var(--mui-palette-green-main);
+
+                            .icon {
+                                fill: var(--mui-palette-green-main);
+                            }
+                        }
+
+                        &.least {
+                            background-color: var(--mui-palette-red-light);
+                            color: var(--mui-palette-red-dark);
+
+                            .icon {
+                                fill: var(--mui-palette-red-dark);
+                            }
+                        }
+                    }
+
+                    th {
+                        padding: 10px 15px;
+                        border-bottom: 1px solid rgba(53, 54, 52, 0.1);
+                        font-size: 16px;
+                    }
+                }
+
+                tr {
+                    height: 45px !important;
+                    max-height: 45px;
+
+                    td {
+                        padding: 0 15px;
+                        font-size: 14px;
+
+                        .btn {
+                            height: 35px;
+                            margin: 0 5px;
+                            border-radius: 5px;
+                            color: var(--mui-palette-primary-main);
+                            text-transform: none;
+                            transition: all 0.2s ease;
+
+                            &:hover,
+                            &.focused {
+                                background-color: var(--mui-palette-secondary-light);
+                            }
+                        }
                     }
                 }
             }

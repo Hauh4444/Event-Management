@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 
-// Internal Modules
+// Internal Components
 import Sidebar from "@/Components/Sidebar/Sidebar.jsx";
 import TopNav from "@/Components/TopNav/TopNav.jsx";
+
+// Internal Utilities
 import axiosInstance from "@/API/axiosInstance.js";
 
 // Stylesheets

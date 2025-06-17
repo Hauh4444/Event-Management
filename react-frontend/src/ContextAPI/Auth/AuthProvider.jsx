@@ -2,8 +2,10 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 
-// Internal Modules
+// Internal Components
 import { AuthContext } from "./AuthContext.js";
+
+// Internal Utilities
 import axiosInstance from "@/API/axiosInstance.js";
 
 

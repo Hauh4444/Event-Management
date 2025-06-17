@@ -24,12 +24,13 @@ import "./CalendarHeatmap.css";
  */
 const CalendarHeatmap = ({
     values,
+    valueType,
     scaleValues,
     startDate,
     endDate,
     onClick = () => {},
     tooltipDataAttr = (value) =>
-        value.date ? `${ value.date }: ${ value.count } events` : "",
+        value.date ? `${ value.date }: ${ value.count } ${ valueType }` : "",
 }) => {
     return (
         <div className="calendarHeatmap">

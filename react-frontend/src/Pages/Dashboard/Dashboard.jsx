@@ -5,10 +5,12 @@ import { LineChart, areaElementClasses, lineElementClasses, markElementClasses }
 // External Icons
 import { MdOutlineEventNote } from "react-icons/md";
 
-// Internal Modules
+// Internal Components
 import Sidebar from "@/Components/Sidebar/Sidebar.jsx";
 import TopNav from "@/Components/TopNav/TopNav.jsx";
 import YearPicker from "@/Components/YearPicker/YearPicker.jsx";
+
+// Internal Utilities
 import axiosInstance from "@/API/axiosInstance.js";
 
 // Stylesheets

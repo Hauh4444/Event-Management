@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-// Internal Modules
+// Internal Components
 import { ThemeContext } from "./ThemeContext";
 import PropTypes from "prop-types";
 

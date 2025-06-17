@@ -40,6 +40,7 @@
                     margin-right: 5px;
                     vertical-align: middle;
                     font-size: 18px;
+                    transition: all 0.2s ease;
                 }
             }
         }
@@ -106,14 +107,6 @@
         }
 
         .events {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            align-items: center;
-            gap: 5%;
-            row-gap: 50px;
-
             table {
                 width: 100%;
                 border-radius: 10px;
@@ -132,7 +125,7 @@
                     .title {
                         font-weight: normal;
 
-                        .titleIcon {
+                        .icon {
                             margin: -2px 10px 0 0;
                             vertical-align: middle;
                             fill: var(--mui-palette-primary-main);
@@ -159,7 +152,7 @@
                             float: right;
                         }
 
-                        .filterBtn {
+                        .headBtn {
                             width: 125px;
                             height: 40px;
                             margin: 0 !important;
@@ -181,16 +174,18 @@
                             }
 
                             .icon {
+                                margin-right: 5px;
                                 vertical-align: middle;
                                 font-size: 18px;
+                                transition: all 0.2s ease;
                             }
                         }
                     }
                 }
 
                 tr {
-                    height: 55px !important;
-                    max-height: 55px;
+                    height: 60px !important;
+                    max-height: 60px;
 
                     td {
                         width: 15%;

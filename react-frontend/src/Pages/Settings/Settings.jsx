@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 
-// Internal Modules
+// Internal Components
 import Sidebar from "@/Components/Sidebar/Sidebar.jsx";
 import TopNav from "@/Components/TopNav/TopNav.jsx";
 import SettingsNav from "@/Components/SettingsNav/SettingsNav.jsx";
+
+// Internal Utilities
 import axiosInstance from "@/API/axiosInstance.js";
 
 // Internal Contexts

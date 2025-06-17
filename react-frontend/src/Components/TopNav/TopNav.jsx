@@ -5,7 +5,7 @@ import { Button } from "@mui/material";
 // External Icons
 import { PiCaretLeftBold, PiCaretRightBold } from "react-icons/pi";
 
-// Internal Modules
+// Internal Components
 import SearchBar from "@/Components/SearchBar/SearchBar.jsx";
 
 // Internal Contexts

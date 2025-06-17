@@ -20,9 +20,11 @@ import {
     FaRegClock,
 } from "react-icons/fa";
 
-// Internal Modules
+// Internal Components
 import Sidebar from "@/Components/Sidebar/Sidebar.jsx";
 import TopNav from "@/Components/TopNav/TopNav.jsx";
+
+// Internal Utilities
 import axiosInstance from "@/API/axiosInstance.js";
 
 // Stylesheets
@@ -40,6 +42,7 @@ import "./EventDetails.css";
  * @component
  * @returns { JSX.Element } The rendered EventDetails page component.
  */
+// TODO Display attendance and ticket sale information
 const EventDetails = () => {
     // React hooks
     const navigate = useNavigate();
