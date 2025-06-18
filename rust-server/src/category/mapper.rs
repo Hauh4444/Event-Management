@@ -1,7 +1,7 @@
 // External Libraries
 use sqlx::SqlitePool;
 
-// Internal Modules
+// Internal Models
 use crate::category::models::Category;
 
 

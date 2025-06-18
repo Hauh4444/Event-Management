@@ -2,13 +2,14 @@
 use serde::{Serialize, Deserialize};
 use chrono::{NaiveDate, NaiveDateTime};
 
-// Internal Modules
+// Internal Models
 use crate::organizer::models::{Organizer};
 use crate::agenda::models::{Agenda};
 use crate::speaker::models::{Speaker};
 use crate::faq::models::{Faq};
 use crate::attachment::models::{Attachment};
 use crate::comment::models::{Comment};
+use crate::overview::models::CountByDate;
 
 
 /// Represents an event in the system.
@@ -232,4 +233,23 @@ pub struct CreateEventDetails {
 
     /// List of attachments of the event.
     pub attachments: Vec<Attachment>,
+}
+
+
+/// Represents aggregated totals for ticket metrics for a given year.
+#[derive(Serialize)]
+pub struct TicketTotals {
+    /// Monthly totals of ticket sales.
+    pub tickets: Vec<f64>,
+
+    /// Net profit.
+    pub profit: f64,
+}
+
+
+/// Represents aggregated daily event counts for a given year.
+#[derive(Serialize)]
+pub struct EventCounts {
+    /// Daily totals of event counts.
+    pub event_counts: Vec<CountByDate>,
 }

@@ -1,7 +1,7 @@
 // External Libraries
 use sqlx::SqlitePool;
 
-// Internal Modules
+// Internal Models
 use crate::organizer::models::{Organizer, GetOrganizerData, DeleteOrganizerData};
 
 

@@ -93,34 +93,25 @@ const Events = () => {
      * @returns { Promise<void> }
      */
     const fetchData = async (year) => {
-        // Fetch ticket overview data for current year and last year in parallel
-        const [currentYearRes, previousYearRes] = await Promise.all([
-            axiosInstance.get("/overview/monthly-ticket-sales/", { params: { year: year } }),
-            axiosInstance.get("/overview/monthly-ticket-sales/", { params: { year: year - 1 } }),
-        ]);
-
-        // Extract last year tickets array, fallback to empty array if undefined
-        const lastYearTickets = previousYearRes.data.tickets || [];
-        // Sum all tickets sold last year
-        const lastYearTotal = lastYearTickets.reduce((total, count) => total + count, 0);
-
-        // Extract current year tickets monthly data, fallback to zero array if undefined
-        const currentYearTickets = currentYearRes.data.tickets || new Array(12).fill(0);
-
         // Generate month labels for x-axis for current year
         const xAxisDates = Array.from({ length: 12 }, (_, monthIndex) =>
             new Date(year, monthIndex, 1));
 
+        // Fetch ticket overview data for current year and last year in parallel
+        const [currentYearRes, previousYearRes] = await Promise.all([
+            axiosInstance.get("/events/sales/", { params: { year: year } }),
+            axiosInstance.get("/events/sales/", { params: { year: year - 1 } }),
+        ]);
         // Update tickets overview state
         setTicketsMonthlyOverview({
-            seriesData: currentYearTickets,
+            seriesData: currentYearRes.data.tickets || new Array(12).fill(0),
             xAxisData: xAxisDates,
             profit: currentYearRes.data.profit,
-            lastYearTotal: lastYearTotal,
+            lastYearTotal: previousYearRes.data.profit,
         });
 
         // Fetch event overview data for current year
-        const dailyEventsRes = await axiosInstance.get("/overview/daily-event-counts/", {
+        const dailyEventsRes = await axiosInstance.get("/events/counts/daily/", {
             params: { year }
         });
         // Set event overview state with response data
@@ -213,8 +204,8 @@ const Events = () => {
                         <span>
                             { /* Year select for event information */ }
                             <YearPicker
-                                startYear={ 2020 }
-                                endYear={ 2030 }
+                                startYear={ new Date().getFullYear() - 5 }
+                                endYear={ new Date().getFullYear() - 5 }
                                 value={ selectedYear }
                                 onChange={ (year) => onYearChange(year) }
                                 size="small"
@@ -449,8 +440,8 @@ const Events = () => {
                             )) }
                             </tbody>
 
-                            <tfoot>
                             { /* Render pagination */}
+                            <tfoot>
                             <tr>
                                 <td colSpan={ 6 }>
                                     <CustomPagination

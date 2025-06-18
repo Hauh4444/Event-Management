@@ -8,6 +8,7 @@ use std::env;
 use env_logger::Env;
 
 // Internal Routes
+use attendee::routes::configure_attendee_routes;
 use auth::routes::configure_auth_routes;
 use category::routes::configure_category_routes;
 use event::routes::configure_event_routes;
@@ -17,6 +18,7 @@ use overview::routes::configure_overview_routes;
 // Internal Modules
 mod agenda;
 mod attachment;
+mod attendee;
 mod auth;
 mod category;
 mod comment;
@@ -64,6 +66,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(pool.clone())) // Inject DB pool as app data
             .service(
                 web::scope("/api") // API route grouping
+                    .configure(configure_attendee_routes)
                     .configure(configure_auth_routes)
                     .configure(configure_category_routes)
                     .configure(configure_event_routes)

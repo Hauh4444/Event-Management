@@ -1,7 +1,7 @@
 // External Libraries
 use sqlx::SqlitePool;
 
-// Internal Modules
+// Internal Models
 use crate::auth::models::{User, AuthData, GetUserData, GetUserIDData, UpdatePasswordData, DeleteUserData, Session, SessionData, GetSessionData, DeleteSessionData};
 
 

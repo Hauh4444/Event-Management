@@ -7,8 +7,10 @@ use rand::{RngCore};
 use rand::rngs::OsRng;
 use sqlx::SqlitePool;
 
-// Internal Modules
+// Internal Mappers
 use crate::auth::mapper::fetch_session_by_token;
+
+// Internal Models
 use crate::auth::models::{
     GetSessionData,
     Session

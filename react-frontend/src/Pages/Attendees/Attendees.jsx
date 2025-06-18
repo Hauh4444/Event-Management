@@ -36,15 +36,31 @@ const Attendees = () => {
         most: new Array(5).fill(0),
         least: new Array(5).fill(0),
     })
+    const [noShowMonthlyOverview, setNoShowMonthlyOverview] = useState({
+        seriesData: new Array(12).fill(0),
+        xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
+        totalCount: 0,
+        totalRate: 0,
+        lastYearTotal: 0,
+        lastYearRate: 0,
+    });
 
     // Derived constants
-    const isLastYearZero = attendeesMonthlyOverview.lastYearTotal === 0;
-    const attendanceChange = isLastYearZero
+    const isLastYearAttendanceZero = attendeesMonthlyOverview.lastYearTotal === 0;
+    const attendanceChange = isLastYearAttendanceZero
         ? ""
         : (((attendeesMonthlyOverview.total - attendeesMonthlyOverview.lastYearTotal) /
             attendeesMonthlyOverview.lastYearTotal) * 100)
             .toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const isIncrease = isLastYearZero || (parseFloat(attendanceChange) > 0);
+    const isAttendanceIncrease = isLastYearAttendanceZero || (parseFloat(attendanceChange) > 0);
+
+    const isLastYearNoShowZero = noShowMonthlyOverview.lastYearTotal === 0;
+    const noShowChange = isLastYearNoShowZero
+        ? ""
+        : (((noShowMonthlyOverview.totalCount - noShowMonthlyOverview.lastYearTotal) /
+            noShowMonthlyOverview.lastYearTotal) * 100)
+            .toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const isNoShowIncrease = isLastYearNoShowZero || (parseFloat(noShowChange) > 0);
 
 
     /**
@@ -67,46 +83,53 @@ const Attendees = () => {
      * @returns { Promise<void> }
      */
     const fetchData = async (year) => {
-        // Fetch monthly attendee counts for current year and previous year concurrently
-        const [currentYearRes, previousYearRes] = await Promise.all([
-            axiosInstance.get("/overview/monthly-attendee-counts/", { params: { year: year } }),
-            axiosInstance.get("/overview/monthly-attendee-counts/", { params: { year: year - 1 } }),
-        ]);
-
-        // Extract last year's monthly attendees array; default to empty if missing
-        const lastYearAttendees = previousYearRes.data.attendees || [];
-        // Sum all last year's attendees for total count
-        const lastYearTotal = lastYearAttendees.reduce((total, count) => total + count, 0);
-
-        // Extract current year's monthly attendees; default to zero-filled array if missing
-        const currentYearAttendees = currentYearRes.data.attendees || new Array(12).fill(0);
-
         // Generate an array of Date objects representing the first day of each month for x-axis labels
         const xAxisDates = Array.from({ length: 12 }, (_, monthIndex) =>
             new Date(year, monthIndex, 1)
         );
 
+        // Fetch monthly attendee counts for current year and previous year concurrently
+        const [currentYearAttendanceRes, previousYearAttendanceRes] = await Promise.all([
+            axiosInstance.get("/attendees/counts/monthly/", { params: { year: year } }),
+            axiosInstance.get("/attendees/counts/monthly/", { params: { year: year - 1 } }),
+        ]);
         // Update monthly attendees overview state with current year data and totals
         setAttendeesMonthlyOverview({
-            seriesData: currentYearAttendees,
+            seriesData: currentYearAttendanceRes.data.attendees || new Array(12).fill(0),
             xAxisData: xAxisDates,
-            total: currentYearRes.data.total,
-            lastYearTotal: lastYearTotal,
+            total: currentYearAttendanceRes.data.total,
+            lastYearTotal: previousYearAttendanceRes.data.total,
         });
 
         // Fetch daily attendee counts for the current year
-        const dailyAttendeesRes = await axiosInstance.get("/overview/daily-attendee-counts/", {
+        const dailyAttendeesRes = await axiosInstance.get("/attendees/counts/daily/", {
             params: { year }
         });
         // Update daily attendees overview state with fetched data
         setDailyAttendeesOverview(dailyAttendeesRes.data["attendee_counts"]);
 
         // Fetch attendance extremes (top and bottom attended events) for the current year
-        const attendanceExtremesRes = await axiosInstance.get("/overview/attendance-extremes/", {
+        const attendanceExtremesRes = await axiosInstance.get("/attendees/extremes/", {
             params: { year }
         });
         // Update attendance extremes state with fetched data
         setAttendanceExtremes(attendanceExtremesRes.data);
+
+        // Fetch monthly no show counts for current year and previous year concurrently
+        const [currentYearNoShowRes, previousYearNoShowRes] = await Promise.all([
+            axiosInstance.get("/attendees/no-shows/monthly/", { params: { year: year } }),
+            axiosInstance.get("/attendees/no-shows/monthly/", { params: { year: year - 1 } }),
+        ]);
+        console.log(currentYearNoShowRes.data);
+        // Update monthly no shows overview state with current year data and totals
+        setNoShowMonthlyOverview({
+            seriesData: currentYearNoShowRes.data.no_show_rates || new Array(12).fill(0),
+            xAxisData: xAxisDates,
+            totalCount: currentYearNoShowRes.data.total_count,
+            totalRate: currentYearNoShowRes.data.total_rate,
+            lastYearTotal: previousYearNoShowRes.data.total_count,
+            lastYearRate: previousYearNoShowRes.data.total_rate,
+        });
     }
 
 
@@ -142,8 +165,8 @@ const Attendees = () => {
                         <span>
                             { /* Year select for attendee information */ }
                             <YearPicker
-                                startYear={ 2020 }
-                                endYear={ 2030 }
+                                startYear={ new Date().getFullYear() - 5 }
+                                endYear={ new Date().getFullYear() }
                                 value={ selectedYear }
                                 onChange={ (year) => onYearChange(year) }
                                 size="small"
@@ -189,15 +212,15 @@ const Attendees = () => {
                             </h1>
 
                             <p>
-                                <span className={ isIncrease ? "increase" : "decrease" }>
+                                <span className={ isAttendanceIncrease ? "increase" : "decrease" }>
                                     { /* Show up/down arrow or infinity if last year total is zero */ }
-                                    { isLastYearZero ? (
+                                    { isLastYearAttendanceZero ? (
                                         <>
                                             <FaArrowUpLong className="icon" />
                                             <FaInfinity className="icon" />
                                         </>
                                     ) : (
-                                        isIncrease
+                                        isAttendanceIncrease
                                             ? <FaArrowUpLong className="icon" />
                                             : <FaArrowDownLong className="icon" />
                                     )}
@@ -217,8 +240,7 @@ const Attendees = () => {
                                     area: true,
                                     data: attendeesMonthlyOverview.seriesData,
                                     showMark: false,
-                                    valueFormatter: (value) =>
-                                        `${ value.toLocaleString(undefined, 0) }`,
+                                    valueFormatter: (value) => `${ value.toLocaleString(undefined, 0) }`,
                                 },
                             ]}
                             xAxis={[
@@ -356,6 +378,102 @@ const Attendees = () => {
                             )) }
                             </tbody>
                         </table>
+                    </div>
+
+                    <div className="overviewItem">
+                        <div className="info">
+                            <h2>
+                                No Show Rates
+                            </h2>
+
+                            { /* Display total formatted */ }
+                            <h1>
+                                { noShowMonthlyOverview.totalRate.toLocaleString(undefined, 0) }%
+                            </h1>
+
+                            <p>
+                                <span className={ !isNoShowIncrease ? "increase" : "decrease" }>
+                                    { /* Show up/down arrow or infinity if last year total is zero */ }
+                                    { isLastYearNoShowZero ? (
+                                        <>
+                                            <FaArrowUpLong className="icon" />
+                                            <FaInfinity className="icon" />
+                                        </>
+                                    ) : (
+                                        isNoShowIncrease
+                                            ? <FaArrowUpLong className="icon" />
+                                            : <FaArrowDownLong className="icon" />
+                                    )}
+                                    { noShowChange }%
+                                </span>
+                                &ensp;vs last year
+                            </p>
+
+                        </div>
+
+                        { /* Line chart visualizing monthly attendees */ }
+                        <LineChart
+                            height={ 300 }
+                            margin={{ left: 0, right: 35 }}
+                            series={[
+                                {
+                                    area: true,
+                                    data: noShowMonthlyOverview.seriesData,
+                                    showMark: false,
+                                    valueFormatter: (value) =>
+                                        `${ value.toLocaleString(undefined, {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                    }) }%`,
+                                },
+                            ]}
+                            xAxis={[
+                                {
+                                    scaleType: "point",
+                                    data: noShowMonthlyOverview.xAxisData,
+                                    valueFormatter: (value) => value.toLocaleString("default", { month: "short" }),
+                                },
+                            ]}
+                            yAxis={[
+                                {
+                                    width: 75,
+                                    position: "left",
+                                    min: 0,
+                                    valueFormatter: (value) => `${ value }%`,
+                                },
+                            ]}
+                            grid={{ horizontal: true }}
+                            sx={{
+                                [`& .${ areaElementClasses.root }`]: {
+                                    fill: "url(#areaGradient)",
+                                },
+                                [`& .${ lineElementClasses.root }`]: {
+                                    stroke: "var(--mui-palette-primary-main)",
+                                    strokeWidth: 3,
+                                },
+                                "& .MuiChartsAxis-line": {
+                                    display: "none",
+                                },
+                                "& .MuiChartsAxis-tick": {
+                                    display: "none",
+                                },
+                                "& .MuiChartsAxis-bottom .MuiChartsAxis-tickLabel": {
+                                    transform: "translateY(15px)",
+                                },
+                                "& .MuiChartsGrid-line": {
+                                    stroke: "rgba(53, 54, 52,  0.1)",
+                                    strokeDasharray: "5 5",
+                                },
+                            }}
+                        >
+                            { /* Gradient fill for area chart */ }
+                            <defs>
+                                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stopColor="var(--mui-palette-primary-main)" stopOpacity="0.25" />
+                                    <stop offset="100%" stopColor="var(--mui-palette-primary-main)" stopOpacity="0" />
+                                </linearGradient>
+                            </defs>
+                        </LineChart>
                     </div>
 
                     { /* TODO Attendee basic information */ }

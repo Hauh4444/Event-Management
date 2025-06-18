@@ -2,7 +2,7 @@
 use actix_web::{web, HttpResponse, Responder};
 use sqlx::SqlitePool;
 
-// Internal Modules
+// Internal Mappers
 use crate::category::mapper::fetch_categories;
 
 

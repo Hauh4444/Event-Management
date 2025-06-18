@@ -3,7 +3,14 @@ use actix_web::{web, Responder, HttpResponse, HttpRequest};
 use sqlx::{SqlitePool};
 
 // Internal Mappers
-use crate::event::mapper::{fetch_events, fetch_event, create_event, update_event};
+use crate::event::mapper::{
+    fetch_events,
+    fetch_event,
+    create_event,
+    update_event,
+    fetch_monthly_ticket_sales,
+    fetch_daily_event_counts
+};
 use crate::organizer::mapper::fetch_organizer;
 use crate::agenda::mapper::{fetch_agenda, create_agenda, update_agenda};
 use crate::speaker::mapper::{fetch_speakers, create_speakers, update_speakers};
@@ -12,8 +19,19 @@ use crate::attachment::mapper::{fetch_attachments, create_attachments, update_at
 use crate::comment::mapper::fetch_comments;
 
 // Internal Models
-use crate::event::models::{Event, EventData, GetUserEventsQuery, GetUserEventsData, GetEventData, EventDetails, CreateEventDetails};
+use crate::event::models::{
+    Event,
+    EventData,
+    GetUserEventsQuery,
+    GetUserEventsData,
+    GetEventData,
+    EventDetails,
+    CreateEventDetails,
+    TicketTotals,
+    EventCounts
+};
 use crate::organizer::models::{Organizer, GetOrganizerData};
+use crate::overview::models::{GetOverview, YearQuery};
 use crate::agenda::models::GetAgendaData;
 use crate::speaker::models::GetSpeakerData;
 use crate::faq::models::GetFaqData;
@@ -22,6 +40,69 @@ use crate::comment::models::GetCommentData;
 
 // Internal Services
 use crate::auth::services::validate_session;
+
+
+/// Retrieves aggregated ticket sales data including monthly ticket counts and revenue
+/// for a specific organizer and year.
+///
+/// # Arguments
+///
+/// * `req` - The incoming HTTP request containing session data.
+/// * `query` - A query parameter containing the year to retrieve ticket data for.
+/// * `pool` - A reference to the SQLite database connection pool.
+///
+/// # Returns
+///
+/// A JSON response containing ticket sales data or an error message if the operation fails.
+pub async fn get_monthly_ticket_sales(
+    req: HttpRequest,
+    query: web::Query<YearQuery>,
+    pool: web::Data<SqlitePool>,
+) -> impl Responder {
+    let session = match validate_session(&req, &pool).await {
+        Ok(session) => session,
+        Err(response) => return response,
+    };
+
+    let year = query.year;
+    let organizer_id = session.user_id;
+
+    match fetch_monthly_ticket_sales(GetOverview {organizer_id, year}, &pool).await {
+        Ok(totals) => HttpResponse::Ok().json(TicketTotals {..totals}),
+        Err(e) => HttpResponse::InternalServerError().body(format!("Failed to fetch ticket sales data: {}", e)),
+    }
+}
+
+
+/// Retrieves daily event counts for a specific organizer and year.
+///
+/// # Arguments
+///
+/// * `req` - The incoming HTTP request containing session data.
+/// * `query` - A query parameter containing the year to retrieve data for.
+/// * `pool` - A reference to the SQLite database connection pool.
+///
+/// # Returns
+///
+/// A JSON response containing a list of daily events counts with dates or an error message if the operation fails.
+pub async fn get_daily_event_counts(
+    req: HttpRequest,
+    query: web::Query<YearQuery>,
+    pool: web::Data<SqlitePool>,
+) -> impl Responder {
+    let session = match validate_session(&req, &pool).await {
+        Ok(session) => session,
+        Err(response) => return response,
+    };
+
+    let year = query.year;
+    let organizer_id = session.user_id;
+
+    match fetch_daily_event_counts(GetOverview {organizer_id, year}, &pool).await {
+        Ok(totals) => HttpResponse::Ok().json(EventCounts {..totals}),
+        Err(e) => HttpResponse::InternalServerError().body(format!("Failed to fetch daily event counts: {}", e)),
+    }
+}
 
 
 /// Handles retrieving all events associated with the authenticated organizer.
@@ -331,6 +412,8 @@ pub async fn put_event_details(
 /// Adds all event-related routes to the Actix web application.
 pub fn configure_event_routes(cfg: &mut web::ServiceConfig) {
     cfg
+        .route("/events/sales/", web::get().to(get_monthly_ticket_sales))
+        .route("/events/counts/daily/", web::get().to(get_daily_event_counts))
         .route("/events/", web::get().to(get_events))
         .route("/events/{id}/", web::get().to(get_event))
         .route("/events/{id}/details/", web::get().to(get_event_details))
