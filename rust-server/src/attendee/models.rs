@@ -70,7 +70,7 @@ pub struct AttendeeCounts {
 pub struct NoShowTotals {
     /// Monthly totals of no shows.
     pub no_show_counts: Vec<i64>,
-    
+
     /// Monthly rates of no shows.
     pub no_show_rates: Vec<f64>,
 
@@ -79,4 +79,21 @@ pub struct NoShowTotals {
     
     /// Total rate of no shows.
     pub total_rate: f64,
+}
+
+
+/// Represents aggregated totals for attendee metrics by ticket type for a given year.
+#[derive(Serialize)]
+pub struct TicketTypeTotals {
+    /// Monthly totals of general ticket attendees.
+    pub general_counts: Vec<i64>,
+
+    /// Monthly totals of student ticket attendees.
+    pub student_counts: Vec<i64>,
+
+    /// Monthly totals of staff ticket attendees.
+    pub staff_counts: Vec<i64>,
+
+    /// Monthly totals of vip ticket attendees.
+    pub vip_counts: Vec<i64>,
 }

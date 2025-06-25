@@ -3,12 +3,26 @@ use actix_web::{web, Responder, HttpResponse, HttpRequest};
 use sqlx::SqlitePool;
 
 // Internal Mappers
-use crate::attendee::mapper::{fetch_attendees_by_event, fetch_monthly_attendees, fetch_daily_attendee_counts, fetch_attendance_extremes, fetch_monthly_no_shows};
-use crate::event::mapper::fetch_event;
+use crate::attendee::mapper::{
+    fetch_monthly_attendees,
+    fetch_daily_attendee_counts,
+    fetch_attendance_extremes,
+    fetch_monthly_no_shows,
+    fetch_monthly_attendees_by_ticket_type,
+    fetch_attendees_by_event
+};
+use crate::event::mapper::{fetch_event};
 
 // Internal Models
-use crate::attendee::models::{GetAttendeeData, AttendeeTotals, AttendanceExtremes, AttendeeCounts, NoShowTotals};
-use crate::event::models::GetEventData;
+use crate::attendee::models::{
+    GetAttendeeData,
+    AttendeeTotals,
+    AttendanceExtremes,
+    AttendeeCounts,
+    NoShowTotals,
+    TicketTypeTotals
+};
+use crate::event::models::{GetEventData};
 use crate::overview::models::{YearQuery, GetOverview};
 
 // Internal Services
@@ -142,6 +156,38 @@ pub async fn get_monthly_no_shows(
 }
 
 
+/// Retrieves monthly attendee counts by ticket type (General, Student, Staff, VIP)
+/// for a specific organizer and year.
+///
+/// # Arguments
+///
+/// * `req` - The incoming HTTP request containing session data.
+/// * `query` - A query parameter containing the year to retrieve ticket type data for.
+/// * `pool` - A reference to the SQLite database connection pool.
+///
+/// # Returns
+///
+/// A JSON response containing attendee counts by ticket type or an error message if the operation fails.
+pub async fn get_monthly_attendees_by_ticket_type(
+    req: HttpRequest,
+    query: web::Query<YearQuery>,
+    pool: web::Data<SqlitePool>,
+) -> impl Responder {
+    let session = match validate_session(&req, &pool).await {
+        Ok(session) => session,
+        Err(response) => return response,
+    };
+
+    let year = query.year;
+    let organizer_id = session.user_id;
+
+    match fetch_monthly_attendees_by_ticket_type(GetOverview {organizer_id, year}, &pool).await {
+        Ok(totals) => HttpResponse::Ok().json(TicketTypeTotals {..totals}),
+        Err(e) => HttpResponse::InternalServerError().body(format!("Failed to fetch monthly ticket type totals: {}", e)),
+    }
+}
+
+
 /// Handles retrieving a specific event's attendees by ID, ensuring the organizer owns the event.
 ///
 /// # Arguments
@@ -190,5 +236,6 @@ pub fn configure_attendee_routes(cfg: &mut web::ServiceConfig) {
         .route("/attendees/counts/daily/", web::get().to(get_daily_attendee_counts))
         .route("/attendees/extremes/", web::get().to(get_attendance_extremes))
         .route("/attendees/no-shows/monthly/", web::get().to(get_monthly_no_shows))
+        .route("/attendees/", web::get().to(get_monthly_attendees_by_ticket_type))
         .route("/attendees/{event_id}/", web::get().to(get_attendees_by_event));
 }

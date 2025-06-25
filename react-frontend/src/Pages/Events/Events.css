@@ -132,7 +132,6 @@
                     }
 
                     th {
-                        width: 15%;
                         padding: 15px 30px;
                         border-bottom: 1px solid rgba(53, 54, 52, 0.1);
                         font-size: 16px;
@@ -187,7 +186,6 @@
                     max-height: 60px;
 
                     td {
-                        width: 15%;
                         padding: 10px 30px;
                         font-size: 14px;
 

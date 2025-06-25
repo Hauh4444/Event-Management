@@ -47,7 +47,6 @@ const Events = () => {
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [ticketsMonthlyOverview, setTicketsMonthlyOverview] = useState({
         seriesData: new Array(12).fill(0),
-        xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
         profit: 0,
         lastYearTotal: 0,
     });
@@ -58,9 +57,14 @@ const Events = () => {
     const [query, setQuery] = useState("");
     
     // Derived constants
+    const xAxisDates = Array.from({ length: 12 }, (_, monthIndex) =>
+        new Date(new Date().getFullYear(), monthIndex, 1)
+    );
+
     const perPage = 6;
     const paginatedEvents = filteredEvents.slice((page - 1) * perPage, page * perPage);
     const pageCount = Math.ceil(filteredEvents.length / perPage);
+
     const isLastYearZero = ticketsMonthlyOverview.lastYearTotal === 0;
     const salesChange = isLastYearZero
         ? ""
@@ -77,26 +81,25 @@ const Events = () => {
      * @param { number } year - The year selected.
      *
      * @typedef { Object } TicketsOverviewRes
-     * @property { number[] } tickets
-     * @property { number } profit
+     * @property { number[] } tickets - Monthly ticket counts, one for each month (index 0 = Jan).
+     * @property { number } profit - Total profit for the current year.
      *
      * @typedef { Object } EventItem
-     * @property { string } title
-     * @property { string } event_date
-     * @property { string } location
-     * @property { string } status
-     * @property { number } tickets_sold
-     * @property { number } max_attendees
+     * @property { string } title - Event title.
+     * @property { string } event_date - Date of the event (ISO string).
+     * @property { string } location - Location of the event.
+     * @property { string } status - Status of the event (e.g., "upcoming", "completed").
+     * @property { number } tickets_sold - Number of tickets sold for the event.
+     * @property { number } max_attendees - Maximum number of attendees allowed.
+     *
+     * @typedef { Object.<string, number> } DailyEventsOverview
+     * @description Maps date strings (YYYY-MM-DD) to number of events on that day.
      *
      * @typedef { Array<EventItem> } EventsResData
      *
      * @returns { Promise<void> }
      */
     const fetchData = async (year) => {
-        // Generate month labels for x-axis for current year
-        const xAxisDates = Array.from({ length: 12 }, (_, monthIndex) =>
-            new Date(year, monthIndex, 1));
-
         // Fetch ticket overview data for current year and last year in parallel
         const [currentYearRes, previousYearRes] = await Promise.all([
             axiosInstance.get("/events/sales/", { params: { year: year } }),
@@ -105,7 +108,6 @@ const Events = () => {
         // Update tickets overview state
         setTicketsMonthlyOverview({
             seriesData: currentYearRes.data.tickets || new Array(12).fill(0),
-            xAxisData: xAxisDates,
             profit: currentYearRes.data.profit,
             lastYearTotal: previousYearRes.data.profit,
         });
@@ -121,6 +123,7 @@ const Events = () => {
         const eventsRes = await axiosInstance.get("/events/", {
             params: { year: year }
         });
+        // Set events and filtered events states with response data
         setEvents(eventsRes.data);
         setFilteredEvents(eventsRes.data);
     };
@@ -132,8 +135,13 @@ const Events = () => {
      * @param { number } year - The year selected.
      */
     const onYearChange = (year) => {
+        // Update selected year state
         setSelectedYear(year);
+        // Reset query filters and pagination
         setQuery("");
+        setPage(1);
+
+        // Fetch data for newly selected year
         fetchData(year).catch((err) => console.error(err));
     };
 
@@ -190,22 +198,20 @@ const Events = () => {
                 <TopNav />
 
                 <div className="content">
+                    { /* Header Section */ }
                     <div className="head">
                         <div>
-                            <h1>
-                                Event Tracking
-                            </h1>
-
+                            <h1>Event Tracking</h1>
                             <p>
                                 View, manage, and edit your events with ease—track trends and gain valuable insights at a glance.
                             </p>
                         </div>
 
                         <span>
-                            { /* Year select for event information */ }
+                            { /* Select year to filter event data */ }
                             <YearPicker
                                 startYear={ new Date().getFullYear() - 5 }
-                                endYear={ new Date().getFullYear() - 5 }
+                                endYear={ new Date().getFullYear() + 5 }
                                 value={ selectedYear }
                                 onChange={ (year) => onYearChange(year) }
                                 size="small"
@@ -225,7 +231,7 @@ const Events = () => {
                                 }}
                             />
 
-                            { /* Export button triggers PDF export */ }
+                            { /* Export full content as PDF */ }
                             <Button
                                 className="btn"
                                 onClick={ async () => {
@@ -238,19 +244,17 @@ const Events = () => {
                         </span>
                     </div>
 
+                    { /* Ticket Sales Overview */ }
                     <div className="overviewItem">
                         <div className="info">
-                            <h2>
-                                Total Ticket Sales
-                            </h2>
-
-                            { /* Display total profit formatted with 2 decimals */ }
+                            <h2>Total Ticket Sales</h2>
                             <h1>
                                 ${ ticketsMonthlyOverview.profit.toLocaleString(undefined,
                                 { minimumFractionDigits: 2, maximumFractionDigits: 2 }
-                            ) }
+                                ) }
                             </h1>
 
+                            { /* Year-over-year comparison */ }
                             <p>
                                 <span className={ isIncrease ? "increase" : "decrease" }>
                                     { /* Show up/down arrow or infinity if last year total is zero */ }
@@ -271,7 +275,7 @@ const Events = () => {
 
                         </div>
 
-                        { /* Line chart visualizing monthly ticket sales */ }
+                        { /* Line chart showing monthly ticket sales */ }
                         <LineChart
                             height={ 300 }
                             margin={{ left: 0, right: 35 }}
@@ -290,7 +294,7 @@ const Events = () => {
                             xAxis={[
                                 {
                                     scaleType: "point",
-                                    data: ticketsMonthlyOverview.xAxisData,
+                                    data: xAxisDates,
                                     valueFormatter: (value) => value.toLocaleString("default", { month: "short" }),
                                 },
                             ]}
@@ -340,6 +344,7 @@ const Events = () => {
                         </LineChart>
                     </div>
 
+                    { /* Daily Events Heatmap */ }
                     <CalendarHeatmap
                         values={ dailyEventsOverview }
                         valueType="events"
@@ -348,6 +353,7 @@ const Events = () => {
                         endDate={ new Date(selectedYear, 11, 31) }
                     />
 
+                    { /* Event List Table */ }
                     <div className="events">
                         <table>
                             <colgroup>
@@ -365,13 +371,13 @@ const Events = () => {
                                     <MdOutlineEventNote className="icon"/>Events
                                 </th>
                                 <th>
-                                    { /* Total number of events */}
+                                    { /* Total number of events */ }
                                     <div className="numEvents">
                                         { filteredEvents.length } Events
                                     </div>
                                 </th>
                                 <th colSpan={ 2 }>
-                                    { /* Search bar for event filtering */}
+                                    { /* Search bar for event filtering */ }
                                     <SearchBar
                                         onChange={ (val) => setQuery(val) }
                                         value={ query }
@@ -413,12 +419,13 @@ const Events = () => {
                             </thead>
 
                             <tbody>
+                            { /* Render paginated list of events */ }
                             { paginatedEvents.map((item, index) => (
                                 <tr key={ index }>
                                     <td>{ item.title }</td>
                                     <td>{ item.event_date }</td>
                                     <td>{ item.location }</td>
-                                    { /* Capitalize first letter of status */}
+                                    { /* Capitalize first letter of status */ }
                                     <td>{ item.status.charAt(0).toUpperCase() + item.status.slice(1) }</td>
                                     <td>{ item.tickets_sold } / { item.max_attendees }</td>
                                     <td className="btns">
@@ -432,7 +439,7 @@ const Events = () => {
                                 </tr>
                             )) }
 
-                            { /* Render empty rows to keep table height consistent */}
+                            { /* Render empty rows to keep table height consistent */ }
                             { Array.from({ length: perPage - paginatedEvents.length }).map((_, index) => (
                                 <tr key={`placeholder-${ index }`}>
                                     <td colSpan={ 6 } className="empty-row">&nbsp;</td>
@@ -440,7 +447,7 @@ const Events = () => {
                             )) }
                             </tbody>
 
-                            { /* Render pagination */}
+                            { /* Render pagination */ }
                             <tfoot>
                             <tr>
                                 <td colSpan={ 6 }>

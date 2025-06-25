@@ -32,7 +32,10 @@ use crate::overview::models::{
 /// # Errors
 ///
 /// Returns an error if the query to fetch events fails.
-pub async fn fetch_monthly_ticket_sales(data: GetOverview, pool: &SqlitePool) -> Result<TicketTotals, sqlx::Error> {
+pub async fn fetch_monthly_ticket_sales(
+    data: GetOverview, 
+    pool: &SqlitePool
+) -> Result<TicketTotals, sqlx::Error> {
     let year = data.year.to_string();
     let organizer_id = data.organizer_id;
 
@@ -80,7 +83,10 @@ pub async fn fetch_monthly_ticket_sales(data: GetOverview, pool: &SqlitePool) ->
 /// # Errors
 ///
 /// Returns an error if the query to fetch daily event counts fails.
-pub async fn fetch_daily_event_counts(data: GetOverview, pool: &SqlitePool) -> Result<EventCounts, sqlx::Error> {
+pub async fn fetch_daily_event_counts(
+    data: GetOverview, 
+    pool: &SqlitePool
+) -> Result<EventCounts, sqlx::Error> {
     let year = data.year.to_string();
     let organizer_id = data.organizer_id;
 
@@ -128,7 +134,10 @@ pub async fn fetch_daily_event_counts(data: GetOverview, pool: &SqlitePool) -> R
 /// # Errors
 ///
 /// Returns an error if the query fails or no event is found.
-pub async fn fetch_events(data: GetUserEventsData, pool: &SqlitePool) -> Result<Vec<Event>, sqlx::Error> {
+pub async fn fetch_events(
+    data: GetUserEventsData, 
+    pool: &SqlitePool
+) -> Result<Vec<Event>, sqlx::Error> {
     let year = data.year.to_string();
     let organizer_id = data.organizer_id;
 
@@ -161,7 +170,10 @@ pub async fn fetch_events(data: GetUserEventsData, pool: &SqlitePool) -> Result<
 /// # Errors
 ///
 /// Returns an error if the query fails or the event does not match the provided IDs.
-pub async fn fetch_event(data: GetEventData, pool: &SqlitePool) -> Result<Event, sqlx::Error> {
+pub async fn fetch_event(
+    data: GetEventData, 
+    pool: &SqlitePool
+) -> Result<Event, sqlx::Error> {
     let event_id = data.event_id;
     let organizer_id = data.organizer_id;
 
@@ -193,7 +205,10 @@ pub async fn fetch_event(data: GetEventData, pool: &SqlitePool) -> Result<Event,
 /// # Errors
 ///
 /// Returns an error if the query fails or any constraint is violated.
-pub async fn create_event(data: EventData, pool: &SqlitePool) -> Result<Event, sqlx::Error> {
+pub async fn create_event(
+    data: EventData, 
+    pool: &SqlitePool
+) -> Result<Event, sqlx::Error> {
     let rec = sqlx::query_as!(
         Event,
         "INSERT INTO events (title, description, event_date, start_time, end_time, location, category_id, status, organizer_id, 
@@ -230,7 +245,10 @@ pub async fn create_event(data: EventData, pool: &SqlitePool) -> Result<Event, s
 /// # Errors
 ///
 /// Returns an error if the query fails or any constraint is violated.
-pub async fn update_event(data: Event, pool: &SqlitePool) -> Result<(), sqlx::Error> {
+pub async fn update_event(
+    data: Event, 
+    pool: &SqlitePool
+) -> Result<(), sqlx::Error> {
     sqlx::query_as!(
         Event,
         "UPDATE events 

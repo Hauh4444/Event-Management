@@ -19,7 +19,10 @@ use crate::attachment::models::{Attachment, GetAttachmentData};
 /// # Errors
 ///
 /// Returns an error if the query fails or no attachment is found.
-pub async fn fetch_attachments(data: GetAttachmentData, pool: &SqlitePool) -> Result<Vec<Attachment>, sqlx::Error> {
+pub async fn fetch_attachments(
+    data: GetAttachmentData,
+    pool: &SqlitePool
+) -> Result<Vec<Attachment>, sqlx::Error> {
     let event_id = data.event_id;
 
     sqlx::query_as!(
@@ -48,7 +51,10 @@ pub async fn fetch_attachments(data: GetAttachmentData, pool: &SqlitePool) -> Re
 /// # Errors
 ///
 /// Returns an error if any of the creation queries fail during execution.
-pub async fn create_attachments(data: Vec<Attachment>, pool: &SqlitePool) -> Result<Vec<Attachment>, sqlx::Error> {
+pub async fn create_attachments(
+    data: Vec<Attachment>,
+    pool: &SqlitePool
+) -> Result<Vec<Attachment>, sqlx::Error> {
     let mut attachments = Vec::new();
     
     for attachment_item in data {
@@ -83,7 +89,10 @@ pub async fn create_attachments(data: Vec<Attachment>, pool: &SqlitePool) -> Res
 /// # Errors
 ///
 /// Returns an error if any of the update queries fail during execution.
-pub async fn update_attachments(data: Vec<Attachment>, pool: &SqlitePool) -> Result<(), sqlx::Error> {
+pub async fn update_attachments(
+    data: Vec<Attachment>, 
+    pool: &SqlitePool
+) -> Result<(), sqlx::Error> {
     for attachment_item in data {
         sqlx::query_as!(
             Attachment,

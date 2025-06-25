@@ -3,7 +3,15 @@ use chrono::Datelike;
 use sqlx::SqlitePool;
 
 // Internal Models
-use crate::attendee::models::{Attendee, GetAttendeeData, AttendeeTotals, AttendanceExtremes, AttendeeCounts, NoShowTotals};
+use crate::attendee::models::{
+    Attendee,
+    GetAttendeeData,
+    AttendeeTotals,
+    AttendanceExtremes,
+    AttendeeCounts,
+    NoShowTotals,
+    TicketTypeTotals
+};
 use crate::event::models::Event;
 use crate::overview::models::{CountByDate, GetOverview};
 
@@ -23,7 +31,10 @@ use crate::overview::models::{CountByDate, GetOverview};
 /// # Errors
 ///
 /// Returns an error if the query to fetch events fails.
-pub async fn fetch_monthly_attendees(data: GetOverview, pool: &SqlitePool) -> Result<AttendeeTotals, sqlx::Error> {
+pub async fn fetch_monthly_attendees(
+    data: GetOverview,
+    pool: &SqlitePool
+) -> Result<AttendeeTotals, sqlx::Error> {
     let year = data.year.to_string();
     let organizer_id = data.organizer_id;
 
@@ -71,7 +82,10 @@ pub async fn fetch_monthly_attendees(data: GetOverview, pool: &SqlitePool) -> Re
 /// # Errors
 ///
 /// Returns an error if the query to fetch daily attendee counts fails.
-pub async fn fetch_daily_attendee_counts(data: GetOverview, pool: &SqlitePool) -> Result<AttendeeCounts, sqlx::Error> {
+pub async fn fetch_daily_attendee_counts(
+    data: GetOverview,
+    pool: &SqlitePool
+) -> Result<AttendeeCounts, sqlx::Error> {
     let year = data.year.to_string();
     let organizer_id = data.organizer_id;
 
@@ -124,7 +138,10 @@ pub async fn fetch_daily_attendee_counts(data: GetOverview, pool: &SqlitePool) -
 /// # Errors
 ///
 /// Returns an error if either query to fetch the top or bottom attended events fails.
-pub async fn fetch_attendance_extremes(data: GetOverview, pool: &SqlitePool) -> Result<AttendanceExtremes, sqlx::Error> {
+pub async fn fetch_attendance_extremes(
+    data: GetOverview,
+    pool: &SqlitePool
+) -> Result<AttendanceExtremes, sqlx::Error> {
     let year = data.year.to_string();
     let organizer_id = data.organizer_id;
 
@@ -184,7 +201,10 @@ pub async fn fetch_attendance_extremes(data: GetOverview, pool: &SqlitePool) -> 
 /// # Errors
 ///
 /// Returns an error if the query to fetch events fails.
-pub async fn fetch_monthly_no_shows(data: GetOverview, pool: &SqlitePool) -> Result<NoShowTotals, sqlx::Error> {
+pub async fn fetch_monthly_no_shows(
+    data: GetOverview,
+    pool: &SqlitePool
+) -> Result<NoShowTotals, sqlx::Error> {
     let year = data.year.to_string();
     let organizer_id = data.organizer_id;
 
@@ -233,6 +253,67 @@ pub async fn fetch_monthly_no_shows(data: GetOverview, pool: &SqlitePool) -> Res
 }
 
 
+/// Fetches monthly attendee counts grouped by ticket type (General, Student, Staff, VIP)
+/// for a specific organizer and year.
+///
+/// # Arguments
+///
+/// * `data` - A struct containing the `year` and `organizer_id`.
+/// * `pool` - A reference to the SQLite connection pool.
+///
+/// # Returns
+///
+/// A `Result` containing a `TicketTypeTotals` struct with monthly counts per ticket type, or an `sqlx::Error` if the query fails.
+///
+/// # Errors
+///
+/// Returns an error if the query to fetch attendees or events fails.
+pub async fn fetch_monthly_attendees_by_ticket_type(
+    data: GetOverview,
+    pool: &SqlitePool
+) -> Result<TicketTypeTotals, sqlx::Error> {
+    let year = data.year.to_string();
+    let organizer_id = data.organizer_id;
+
+    let attendees = sqlx::query_as!(
+        Attendee,
+        "SELECT id, event_id, name, email, ticket_type, registration_date
+         FROM attendees
+         WHERE strftime('%Y', registration_date) = ? AND event_id IN (
+            SELECT id
+            FROM events
+            WHERE organizer_id = ?
+        )",
+        year, organizer_id
+    )
+        .fetch_all(pool)
+        .await?;
+
+    let mut general_counts = vec![0i64; 12];
+    let mut student_counts = vec![0i64; 12];
+    let mut staff_counts = vec![0i64; 12];
+    let mut vip_counts = vec![0i64; 12];
+
+    for attendee in attendees {
+        let month = attendee.registration_date.month() as usize - 1;
+        match attendee.ticket_type.as_str() {
+            "General" => general_counts[month] += 1,
+            "Student" => student_counts[month] += 1,
+            "Staff" => staff_counts[month] += 1,
+            "VIP" => vip_counts[month] += 1,
+            _ => {}
+        }
+    }
+
+    Ok(TicketTypeTotals {
+        general_counts,
+        student_counts,
+        staff_counts,
+        vip_counts,
+    })
+}
+
+
 /// Retrieves all attendees for a specific event.
 ///
 /// # Arguments
@@ -247,7 +328,10 @@ pub async fn fetch_monthly_no_shows(data: GetOverview, pool: &SqlitePool) -> Res
 /// # Errors
 ///
 /// Returns an error if the query fails or no attendee is found.
-pub async fn fetch_attendees_by_event(data: GetAttendeeData, pool: &SqlitePool) -> Result<Vec<Attendee>, sqlx::Error> {
+pub async fn fetch_attendees_by_event(
+    data: GetAttendeeData,
+    pool: &SqlitePool
+) -> Result<Vec<Attendee>, sqlx::Error> {
     let event_id = data.event_id;
 
     sqlx::query_as!(

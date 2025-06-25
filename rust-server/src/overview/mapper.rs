@@ -25,7 +25,10 @@ use crate::event::models::{Event};
 /// # Errors
 ///
 /// Returns an error if the query to fetch events fails.
-pub async fn fetch_monthly_totals(data: GetOverview, pool: &SqlitePool) -> Result<MonthlyTotals, sqlx::Error> {
+pub async fn fetch_monthly_totals(
+    data: GetOverview,
+    pool: &SqlitePool
+) -> Result<MonthlyTotals, sqlx::Error> {
     let year = data.year.to_string();
     let organizer_id = data.organizer_id;
 

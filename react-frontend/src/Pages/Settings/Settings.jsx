@@ -52,13 +52,16 @@ const Settings = () => {
      *
      * @param { string } settingsType
      *
+     * @typedef { Object } SettingsResponse
+     * @property { any } [key] - Settings data keys vary depending on settingsType.
+     *
      * @returns { Promise<void> }
      */
     const fetchData = async (settingsType) => {
         // Fetch settings
-        let res = await axiosInstance.get(`/${ settingsType }/`);
+        let response = await axiosInstance.get(`/${ settingsType }/`);
         // Set settings state with response data
-        setSettings(res.data);
+        setSettings(response.data);
     }
 
 

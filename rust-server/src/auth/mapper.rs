@@ -2,7 +2,18 @@
 use sqlx::SqlitePool;
 
 // Internal Models
-use crate::auth::models::{User, AuthData, GetUserData, GetUserIDData, UpdatePasswordData, DeleteUserData, Session, SessionData, GetSessionData, DeleteSessionData};
+use crate::auth::models::{
+    User,
+    AuthData,
+    GetUserData,
+    GetUserIDData,
+    UpdatePasswordData,
+    DeleteUserData,
+    Session,
+    SessionData,
+    GetSessionData,
+    DeleteSessionData
+};
 
 
 /// Fetches a user from the database by their username.
@@ -15,7 +26,10 @@ use crate::auth::models::{User, AuthData, GetUserData, GetUserIDData, UpdatePass
 /// # Returns
 ///
 /// A `Result` containing either the `User` struct if found, or an error if the query fails.
-pub async fn fetch_user_by_username(data: GetUserData, pool: &SqlitePool) -> Result<User, sqlx::Error> {
+pub async fn fetch_user_by_username(
+    data: GetUserData,
+    pool: &SqlitePool
+) -> Result<User, sqlx::Error> {
     sqlx::query_as!(
         User,
         "SELECT id, username, password FROM users WHERE username = ?",
@@ -36,7 +50,10 @@ pub async fn fetch_user_by_username(data: GetUserData, pool: &SqlitePool) -> Res
 /// # Returns
 ///
 /// A `Result` containing either the `User` struct if found, or an error if the query fails.
-pub async fn fetch_user_by_id(data: GetUserIDData, pool: &SqlitePool) -> Result<User, sqlx::Error> {
+pub async fn fetch_user_by_id(
+    data: GetUserIDData,
+    pool: &SqlitePool
+) -> Result<User, sqlx::Error> {
     sqlx::query_as!(
         User,
         "SELECT id, username, password FROM users WHERE id = ?",
@@ -57,7 +74,10 @@ pub async fn fetch_user_by_id(data: GetUserIDData, pool: &SqlitePool) -> Result<
 /// # Returns
 ///
 /// A `Result` containing the `User` struct representing the newly created user, or an error if the query fails.
-pub async fn create_user(data: AuthData, pool: &SqlitePool) -> Result<User, sqlx::Error> {
+pub async fn create_user(
+    data: AuthData,
+    pool: &SqlitePool
+) -> Result<User, sqlx::Error> {
     let rec = sqlx::query_as!(
         User,
         "INSERT INTO users (username, password) VALUES (?, ?) RETURNING *",
@@ -81,7 +101,10 @@ pub async fn create_user(data: AuthData, pool: &SqlitePool) -> Result<User, sqlx
 /// # Returns
 ///
 /// A `Result` indicating success or failure of the password update.
-pub async fn update_user_password(data: UpdatePasswordData, pool: &SqlitePool) -> Result<(), sqlx::Error> {
+pub async fn update_user_password(
+    data: UpdatePasswordData,
+    pool: &SqlitePool
+) -> Result<(), sqlx::Error> {
     sqlx::query!(
         "UPDATE users SET password = ? WHERE id = ?",
         data.new_password,
@@ -104,7 +127,10 @@ pub async fn update_user_password(data: UpdatePasswordData, pool: &SqlitePool) -
 /// # Returns
 ///
 /// A `Result` indicating success or failure of the user deletion.
-pub async fn delete_user(data: DeleteUserData, pool: &SqlitePool) -> Result<(), sqlx::Error> {
+pub async fn delete_user(
+    data: DeleteUserData,
+    pool: &SqlitePool
+) -> Result<(), sqlx::Error> {
     sqlx::query!(
         "DELETE FROM users WHERE id = ?",
         data.user_id
@@ -126,7 +152,10 @@ pub async fn delete_user(data: DeleteUserData, pool: &SqlitePool) -> Result<(), 
 /// # Returns
 ///
 /// A `Result` containing the `Session` struct if found, or an error if the query fails.
-pub async fn fetch_session_by_token(data: GetSessionData, pool: &SqlitePool) -> Result<Session, sqlx::Error> {
+pub async fn fetch_session_by_token(
+    data: GetSessionData,
+    pool: &SqlitePool
+) -> Result<Session, sqlx::Error> {
     sqlx::query_as!(
         Session,
         "SELECT id, user_id, token FROM sessions WHERE token = ?",
@@ -147,7 +176,10 @@ pub async fn fetch_session_by_token(data: GetSessionData, pool: &SqlitePool) -> 
 /// # Returns
 ///
 /// A `Result` containing the `Session` struct for the newly created session, or an error if the query fails.
-pub async fn create_session(data: SessionData, pool: &SqlitePool) -> Result<(), sqlx::Error> {
+pub async fn create_session(
+    data: SessionData,
+    pool: &SqlitePool
+) -> Result<(), sqlx::Error> {
     sqlx::query_as!(
         Session,
         "INSERT INTO sessions (user_id, token) VALUES (?, ?) RETURNING *;",
@@ -170,7 +202,10 @@ pub async fn create_session(data: SessionData, pool: &SqlitePool) -> Result<(), 
 /// # Returns
 ///
 /// A `Result` indicating success or failure of the session deletion.
-pub async fn delete_session(data: DeleteSessionData, pool: &SqlitePool) -> Result<(), sqlx::Error> {
+pub async fn delete_session(
+    data: DeleteSessionData,
+    pool: &SqlitePool
+) -> Result<(), sqlx::Error> {
     sqlx::query!(
         "DELETE FROM sessions WHERE token = ?",
         data.token

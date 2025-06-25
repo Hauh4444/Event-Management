@@ -97,18 +97,33 @@ const EventDetails = () => {
     /**
      * Fetches event detail data from API and updates states.
      *
+     * @typedef { Object } Event
+     * @property { number } id
+     * @property { string } title
+     * @property { string } description
+     * @property { string } event_date
+     * @property { string } location
+     * @property { string } status
+     * @property { number } tickets_sold
+     * @property { number } max_attendees
+     *
+     * @typedef { Object } EventDetails
+     * @property { string } organizer_name
+     * @property { string } organizer_email
+     * @property { string } contact_phone
+     *
      * @returns { Promise<void> }
      */
     const fetchData = async () => {
         // Fetch event overview details based on event id parameter
-        let res = await axiosInstance.get(`/events/${ eventId }/`);
+        const eventResponse = await axiosInstance.get(`/events/${ eventId }/`);
         // Set event state with response data
-        setEvent(res.data);
+        setEvent(eventResponse.data);
 
         // Fetch event organizer details based on event id parameter
-        res = await axiosInstance.get(`/events/${ eventId }/details/`);
+        const eventDetailsResponse = await axiosInstance.get(`/events/${ eventId }/details/`);
         // Set event state with response data
-        setEventDetails(res.data);
+        setEventDetails(eventDetailsResponse.data);
     }
 
 

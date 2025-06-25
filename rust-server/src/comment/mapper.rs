@@ -19,7 +19,10 @@ use crate::comment::models::{Comment, GetCommentData};
 /// # Errors
 ///
 /// Returns an error if the query fails or no comment is found.
-pub async fn fetch_comments(data: GetCommentData, pool: &SqlitePool) -> Result<Vec<Comment>, sqlx::Error> {
+pub async fn fetch_comments(
+    data: GetCommentData, 
+    pool: &SqlitePool
+) -> Result<Vec<Comment>, sqlx::Error> {
     let event_id = data.event_id;
 
     sqlx::query_as!(

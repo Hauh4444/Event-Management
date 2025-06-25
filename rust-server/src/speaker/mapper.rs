@@ -19,7 +19,10 @@ use crate::speaker::models::{Speaker, GetSpeakerData};
 /// # Errors
 ///
 /// Returns an error if the query fails or no speaker is found.
-pub async fn fetch_speakers(data: GetSpeakerData, pool: &SqlitePool) -> Result<Vec<Speaker>, sqlx::Error> {
+pub async fn fetch_speakers(
+    data: GetSpeakerData,
+    pool: &SqlitePool
+) -> Result<Vec<Speaker>, sqlx::Error> {
     let event_id = data.event_id;
 
     sqlx::query_as!(
@@ -48,7 +51,10 @@ pub async fn fetch_speakers(data: GetSpeakerData, pool: &SqlitePool) -> Result<V
 /// # Errors
 ///
 /// Returns an error if any of the creation queries fail during execution.
-pub async fn create_speakers(data: Vec<Speaker>, pool: &SqlitePool) -> Result<Vec<Speaker>, sqlx::Error> {
+pub async fn create_speakers(
+    data: Vec<Speaker>, 
+    pool: &SqlitePool
+) -> Result<Vec<Speaker>, sqlx::Error> {
     let mut speakers = Vec::new();
     
     for speaker_item in data {
@@ -83,7 +89,10 @@ pub async fn create_speakers(data: Vec<Speaker>, pool: &SqlitePool) -> Result<Ve
 /// # Errors
 ///
 /// Returns an error if any of the update queries fail during execution.
-pub async fn update_speakers(data: Vec<Speaker>, pool: &SqlitePool) -> Result<(), sqlx::Error> {
+pub async fn update_speakers(
+    data: Vec<Speaker>, 
+    pool: &SqlitePool
+) -> Result<(), sqlx::Error> {
     for speaker_item in data {
         sqlx::query_as!(
             Speaker,

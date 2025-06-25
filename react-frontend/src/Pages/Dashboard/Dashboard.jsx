@@ -35,7 +35,6 @@ const Dashboard = () => {
             iconColor: "var(--mui-palette-primary-main)",
             year: new Date().getFullYear(),
             seriesData: new Array(12).fill(0),
-            xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
             label: "events",
         },
         {
@@ -43,7 +42,6 @@ const Dashboard = () => {
             iconColor: "var(--mui-palette-primary-main)",
             year: new Date().getFullYear(),
             seriesData: new Array(12).fill(0),
-            xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
             label: "upcoming",
         },
         {
@@ -51,7 +49,6 @@ const Dashboard = () => {
             iconColor: "var(--mui-palette-red-primary)",
             year: new Date().getFullYear(),
             seriesData: new Array(12).fill(0),
-            xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
             label: "canceled",
         },
     ]);
@@ -61,17 +58,20 @@ const Dashboard = () => {
             title: "Events Tickets Sales",
             year: new Date().getFullYear(),
             seriesData: new Array(12).fill(0),
-            xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
             label: "tickets",
         },
         {
             title: "Attendees Trends",
             year: new Date().getFullYear(),
             seriesData: new Array(12).fill(0),
-            xAxisData: Array.from({ length: 12 }, (_, i) => new Date(2025, i, 1)),
             label: "attendees",
         }
     ]);
+
+    // Derived constants
+    const xAxisDates = Array.from({ length: 12 }, (_, monthIndex) =>
+        new Date(new Date().getFullYear(), monthIndex, 1)
+    );
 
 
     /**
@@ -79,28 +79,33 @@ const Dashboard = () => {
      *
      * @param { number } newYear - The year for which to fetch data.
      *
+     * @typedef { Object } OverviewTotalsResponse
+     * @property { number[] } events
+     * @property { number[] } upcoming
+     * @property { number[] } canceled
+     * @property { number[] } tickets
+     * @property { number[] } attendees
+     *
      * @returns { Promise<void> }
      */
     const fetchData = async (newYear) => {
         // Fetch summary data for the given year from API
-        const res = await axiosInstance.get("/overview/totals/", {
+        const response = await axiosInstance.get("/overview/totals/", {
             params: { year: newYear }
         });
-
         // Update graph items with the fetched data, defaulting to zeros if missing
         setGraphItems((prev) =>
             prev.map((item) =>
                 item.year === newYear
-                    ? { ...item, seriesData: res.data[item.label] || new Array(12).fill(0) }
+                    ? { ...item, seriesData: response.data[item.label] || new Array(12).fill(0) }
                     : item
             )
         );
-
         // Update overview items similarly with fetched data
         setOverviewItems((prev) =>
             prev.map((item) =>
                 item.year === newYear
-                    ? { ...item, seriesData: res.data[item.label] || new Array(12).fill(0) }
+                    ? { ...item, seriesData: response.data[item.label] || new Array(12).fill(0) }
                     : item
             )
         );
@@ -156,9 +161,7 @@ const Dashboard = () => {
                 <TopNav />
 
                 <div className="content">
-                    <h1>
-                        Overview
-                    </h1>
+                    <h1>Overview</h1>
 
                     { /* Render line charts for event-related graph items */ }
                     <div className="graphs">
@@ -167,6 +170,7 @@ const Dashboard = () => {
                                 <h3>
                                     <MdOutlineEventNote className="icon" style={{ fill: item.iconColor }} />
                                     { item.title }
+                                    { /* YearPicker to select year for this graph */ }
                                     <YearPicker
                                         startYear={ 2020 }
                                         endYear={ 2030 }
@@ -174,12 +178,10 @@ const Dashboard = () => {
                                         onChange={ (year) => onYearChange(index, year, true) }
                                     />
                                 </h3>
+                                { /* Display total count/sum for the selected year */ }
+                                <h2>{ item.seriesData.reduce((sum, val) => sum + val, 0) }</h2>
 
-                                { /* Display total sum of the series data */ }
-                                <h2>
-                                    { item.seriesData.reduce((sum, val) => sum + val, 0) }
-                                </h2>
-
+                                { /* LineChart showing monthly data for this item */ }
                                 <div className="chart">
                                     <LineChart
                                         height={ 175 }
@@ -194,7 +196,7 @@ const Dashboard = () => {
                                         xAxis={[
                                             {
                                                 scaleType: "band",
-                                                data: item.xAxisData,
+                                                data: xAxisDates,
                                                 valueFormatter: (value) => value.toLocaleString("default", { month: "short" }),
                                             }
                                         ]}
@@ -234,6 +236,7 @@ const Dashboard = () => {
                                             },
                                         }}
                                     >
+                                        { /* Gradient fill for hovered axis highlight */ }
                                         <defs>
                                             <linearGradient id="bandGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                                                 <stop offset="0%" stopColor="var(--mui-palette-primary-main)" stopOpacity="1" />
@@ -246,12 +249,13 @@ const Dashboard = () => {
                         )) }
                     </div>
 
-                    { /* Render line charts for overview items with area charts */ }
+                    { /* Render overview line charts (Tickets Sales, Attendees Trends) with area fill */ }
                     { overviewItems.map((item, index) => (
                         <div className="overviewItem" key={ index }>
                             <h2>
                                 { item.title }
 
+                                { /* YearPicker to select year for this overview chart */ }
                                 <YearPicker
                                     startYear={ 2020 }
                                     endYear={ 2030 }
@@ -260,6 +264,7 @@ const Dashboard = () => {
                                 />
                             </h2>
 
+                            { /* Area LineChart for monthly overview data */ }
                             <LineChart
                                 height={ 300 }
                                 margin={{ left: 0, right: 35 }}
@@ -274,7 +279,7 @@ const Dashboard = () => {
                                 xAxis={[
                                     {
                                         scaleType: "point",
-                                        data: item.xAxisData,
+                                        data: xAxisDates,
                                         valueFormatter: (value) => value.toLocaleString("default", { month: "short" }),
                                     }
                                 ]}
@@ -308,6 +313,7 @@ const Dashboard = () => {
                                     },
                                 }}
                             >
+                                { /* Gradient fill for the area chart */ }
                                 <defs>
                                     <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                                         <stop offset="0%" stopColor="var(--mui-palette-primary-main)" stopOpacity="0.25" />

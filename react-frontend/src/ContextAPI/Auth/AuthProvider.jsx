@@ -34,8 +34,8 @@ const AuthProvider = ({ children }) => {
      */
     const checkAuthStatus = async () => {
         try {
-            const res = await axiosInstance.get("/check_auth_status/");
-            setUser(res.data);
+            const response = await axiosInstance.get("/check_auth_status/");
+            setUser(response.data);
         } catch (err) {
             console.error(err);
             setUser(null);

@@ -19,7 +19,9 @@ use crate::category::models::Category;
 /// # Errors
 ///
 /// Returns an error if the query fails or no category is found.
-pub async fn fetch_categories(pool: &SqlitePool) -> Result<Vec<Category>, sqlx::Error> {
+pub async fn fetch_categories(
+    pool: &SqlitePool
+) -> Result<Vec<Category>, sqlx::Error> {
     sqlx::query_as!(
         Category,
         "SELECT id, name, description FROM categories"

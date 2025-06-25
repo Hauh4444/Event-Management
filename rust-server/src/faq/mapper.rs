@@ -19,7 +19,10 @@ use crate::faq::models::{Faq, GetFaqData};
 /// # Errors
 ///
 /// Returns an error if the query fails or no faq is found.
-pub async fn fetch_faqs(data: GetFaqData, pool: &SqlitePool) -> Result<Vec<Faq>, sqlx::Error> {
+pub async fn fetch_faqs(
+    data: GetFaqData, 
+    pool: &SqlitePool
+) -> Result<Vec<Faq>, sqlx::Error> {
     let event_id = data.event_id;
 
     sqlx::query_as!(
@@ -48,7 +51,10 @@ pub async fn fetch_faqs(data: GetFaqData, pool: &SqlitePool) -> Result<Vec<Faq>,
 /// # Errors
 ///
 /// Returns an error if any of the creation queries fail during execution.
-pub async fn create_faqs(data: Vec<Faq>, pool: &SqlitePool) -> Result<Vec<Faq>, sqlx::Error> {
+pub async fn create_faqs(
+    data: Vec<Faq>, 
+    pool: &SqlitePool
+) -> Result<Vec<Faq>, sqlx::Error> {
     let mut faqs = Vec::new();
     
     for faq_item in data {
@@ -83,7 +89,10 @@ pub async fn create_faqs(data: Vec<Faq>, pool: &SqlitePool) -> Result<Vec<Faq>, 
 /// # Errors
 ///
 /// Returns an error if any of the update queries fail during execution.
-pub async fn update_faqs(data: Vec<Faq>, pool: &SqlitePool) -> Result<(), sqlx::Error> {
+pub async fn update_faqs(
+    data: Vec<Faq>, 
+    pool: &SqlitePool
+) -> Result<(), sqlx::Error> {
     for faq_item in data {
         sqlx::query_as!(
             Faq,

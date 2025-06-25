@@ -19,7 +19,10 @@ use crate::organizer::models::{Organizer, GetOrganizerData, DeleteOrganizerData}
 /// # Errors
 ///
 /// Returns an error if the query fails.
-pub async fn fetch_organizer(data: GetOrganizerData, pool: &SqlitePool) -> Result<Organizer, sqlx::Error> {
+pub async fn fetch_organizer(
+    data: GetOrganizerData, 
+    pool: &SqlitePool
+) -> Result<Organizer, sqlx::Error> {
     sqlx::query_as!(
         Organizer,
         "SELECT id, name, logo, website
@@ -46,7 +49,10 @@ pub async fn fetch_organizer(data: GetOrganizerData, pool: &SqlitePool) -> Resul
 /// # Errors
 ///
 /// Returns an error if the query fails or any constraint is violated.
-pub async fn create_organizer(data: Organizer, pool: &SqlitePool) -> Result<Organizer, sqlx::Error> {
+pub async fn create_organizer(
+    data: Organizer,
+    pool: &SqlitePool
+) -> Result<Organizer, sqlx::Error> {
     let rec = sqlx::query_as!(
         Organizer,
         "INSERT INTO organizers (id, name, logo, website)
@@ -75,7 +81,10 @@ pub async fn create_organizer(data: Organizer, pool: &SqlitePool) -> Result<Orga
 /// # Errors
 ///
 /// Returns an error if the query fails or any constraint is violated.
-pub async fn update_organizer(data: Organizer, pool: &SqlitePool) -> Result<(), sqlx::Error> {
+pub async fn update_organizer(
+    data: Organizer,
+    pool: &SqlitePool
+) -> Result<(), sqlx::Error> {
     sqlx::query_as!(
         Organizer,
         "UPDATE organizers
@@ -104,7 +113,10 @@ pub async fn update_organizer(data: Organizer, pool: &SqlitePool) -> Result<(), 
 /// # Errors
 ///
 /// Returns an error if the query fails.
-pub async fn delete_organizer(data: DeleteOrganizerData, pool: &SqlitePool) -> Result<(), sqlx::Error> {
+pub async fn delete_organizer(
+    data: DeleteOrganizerData,
+    pool: &SqlitePool
+) -> Result<(), sqlx::Error> {
     sqlx::query!(
         "DELETE FROM organizers WHERE id = ?",
         data.organizer_id

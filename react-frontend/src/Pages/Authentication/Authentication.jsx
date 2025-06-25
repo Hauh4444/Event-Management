@@ -61,13 +61,17 @@ const Authentication = () => {
     // Component JSX
     return (
         <div className="authPage page">
+            { /* Main auth container */ }
             <div className="auth">
+                { /* Logo and heading */ }
                 <span className="logo">
                     <img src={ momentix } alt="Momentix" />
                     <h1>Momentix</h1>
                 </span>
 
+                { /* Card container for form */ }
                 <Card className="card">
+                    { /* Card header shows Sign In or Sign Up title */ }
                     <CardHeader
                         className="head"
                         title={ isSignIn ? "Sign In to Momentix" : "Sign Up to Momentix" }
@@ -78,11 +82,13 @@ const Authentication = () => {
                         }}
                     />
 
+                    { /* Card content wraps the form */ }
                     <CardContent className="content">
                         <form
                             className="form"
                             onSubmit={ handleSubmit }
                         >
+                            { /* Dynamically render fields */ }
                             { formItems.map(({ label, name, type }, index) => (
                                 <TextField
                                     className="input"
@@ -97,6 +103,7 @@ const Authentication = () => {
                                 />
                             )) }
 
+                            { /* Submit button text changes based on auth mode */ }
                             <Button className="btn" type="submit">
                                 { isSignIn ? "Sign In" : "Sign Up" }
                             </Button>
@@ -104,6 +111,7 @@ const Authentication = () => {
                     </CardContent>
                 </Card>
 
+                { /* Toggle between Sign In and Sign Up modes */ }
                 <span className="switch">
                     <p>
                         { isSignIn ? "Don't have an account?" : "Have an account?" }
@@ -118,6 +126,7 @@ const Authentication = () => {
                 </span>
             </div>
 
+            { /* Background cityscape image */ }
             <img src={ cityscape } alt="Cityscape" />
         </div>
     );

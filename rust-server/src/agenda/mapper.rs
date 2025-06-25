@@ -19,7 +19,10 @@ use crate::agenda::models::{Agenda, GetAgendaData};
 /// # Errors
 ///
 /// Returns an error if the query fails or no agenda is found.
-pub async fn fetch_agenda(data: GetAgendaData, pool: &SqlitePool) -> Result<Vec<Agenda>, sqlx::Error> {
+pub async fn fetch_agenda(
+    data: GetAgendaData, 
+    pool: &SqlitePool
+) -> Result<Vec<Agenda>, sqlx::Error> {
     let event_id = data.event_id;
 
     sqlx::query_as!(
@@ -48,7 +51,10 @@ pub async fn fetch_agenda(data: GetAgendaData, pool: &SqlitePool) -> Result<Vec<
 /// # Errors
 ///
 /// Returns an error if any of the creation queries fail during execution.
-pub async fn create_agenda(data: Vec<Agenda>, pool: &SqlitePool) -> Result<Vec<Agenda>, sqlx::Error> {
+pub async fn create_agenda(
+    data: Vec<Agenda>,
+    pool: &SqlitePool
+) -> Result<Vec<Agenda>, sqlx::Error> {
     let mut agendas = Vec::new();
 
     for agenda_item in data {
@@ -83,7 +89,10 @@ pub async fn create_agenda(data: Vec<Agenda>, pool: &SqlitePool) -> Result<Vec<A
 /// # Errors
 ///
 /// Returns an error if any of the update queries fail during execution.
-pub async fn update_agenda(data: Vec<Agenda>, pool: &SqlitePool) -> Result<(), sqlx::Error> {
+pub async fn update_agenda(
+    data: Vec<Agenda>, 
+    pool: &SqlitePool
+) -> Result<(), sqlx::Error> {
     for agenda_item in data {
         sqlx::query_as!(
             Agenda,

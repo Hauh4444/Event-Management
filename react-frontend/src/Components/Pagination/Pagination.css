@@ -27,11 +27,11 @@
         }
 
         &:disabled {
-            opacity: 0.6;
+            opacity: 0.4;
             color: var(--mui-palette-text-disabled);
 
             .icon {
-                opacity: 0.6;
+                opacity: 0.4;
                 fill: currentColor;
             }
         }
