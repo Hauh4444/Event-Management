@@ -634,7 +634,6 @@ const Attendees = () => {
                     </div>
 
                     <div className="ticketTypeOverview">
-                        <h2>Attendees by Ticket Type</h2>
                         <div className="info">
                             { ticketTypes.map((item, index) => (
                                 <div key={ index } className={ item.className }>

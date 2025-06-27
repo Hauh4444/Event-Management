@@ -127,7 +127,7 @@ const Authentication = () => {
             </div>
 
             { /* Background cityscape image */ }
-            <img src={ cityscape } alt="Cityscape" />
+            <img className="image" src={ cityscape } alt="Cityscape" />
         </div>
     );
 }

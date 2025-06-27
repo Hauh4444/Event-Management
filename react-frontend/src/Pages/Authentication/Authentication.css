@@ -1,6 +1,26 @@
 .authPage {
-    display: flex;
-    flex-direction: row;
+    @media (max-width: 1250px) {
+        display: block !important;
+        background: none !important;
+
+        .auth,
+        .image {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    }
+
+    @media (min-width: 1251px) {
+        display: flex;
+        flex-direction: row;
+    }
 
     .auth {
         display: flex;
@@ -36,9 +56,11 @@
             height: fit-content;
             align-self: center;
             box-shadow: none;
+            border-radius: 10px;
 
             .head {
-                margin: 0 0 10px 10px;
+                margin-bottom: 10px;
+                text-align: center;
             }
 
             .input {
@@ -81,7 +103,7 @@
         }
     }
 
-    img {
+    .image {
         height: 100vh;
         flex-basis: 50%;
         overflow: hidden;

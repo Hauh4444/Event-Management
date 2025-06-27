@@ -2,7 +2,9 @@
     width: 35%;
     margin-left: 25px !important;
     background-color: var(--mui-palette-background-paper);
+    border-radius: 10px;
     border-color: var(--mui-palette-background-paper);
+    overflow: hidden;
 
     .btn {
         min-width: 40px;
@@ -15,7 +17,7 @@
         .icon {
             margin: 0 !important;
             font-size: 24px !important;
-            color: var(--mui-palette-text-primary);
+            fill: var(--mui-palette-text-primary);
         }
     }
 }
