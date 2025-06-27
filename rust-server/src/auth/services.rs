@@ -67,7 +67,9 @@ pub fn generate_session_token() -> String {
 ///
 /// A `Result<String, password_hash::Error>` which contains the hashed password string on success,
 /// or a password hashing error on failure.
-pub fn hash_password(password: &str) -> Result<String, password_hash::Error> {
+pub fn hash_password(
+    password: &str
+) -> Result<String, password_hash::Error> {
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
     let hash = argon2.hash_password(password.as_bytes(), &salt)?;
@@ -87,7 +89,10 @@ pub fn hash_password(password: &str) -> Result<String, password_hash::Error> {
 ///
 /// A `Result<(), password_hash::Error>` indicating whether the password is valid.
 /// Returns `Ok(())` if the password matches, or an error if it does not.
-pub fn verify_password(hash: &str, password: &str) -> password_hash::Result<()> {
+pub fn verify_password(
+    hash: &str,
+    password: &str
+) -> password_hash::Result<()> {
     let hash = PasswordHash::new(hash)?;
     let argon2 = Argon2::default();
     argon2.verify_password(password.as_bytes(), &hash)

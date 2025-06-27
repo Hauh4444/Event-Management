@@ -22,11 +22,21 @@ A full-stack platform for managing events, built with React (frontend) and Rust 
 
 ## Screenshots
 
+### Light Theme
+
 Click to view:
-- [Auth Page](./screenshots/auth-page.png)
-- [Dashboard Page](./screenshots/dashboard-page.png)
-- [Events Page](./screenshots/events-page.png)
-- [Attendees Page](./screenshots/attendees-page.png)
+- [Auth Page](./screenshots/light-theme/auth-page.png)
+- [Dashboard Page](./screenshots/light-theme/dashboard-page.png)
+- [Events Page](./screenshots/light-theme/events-page.png)
+- [Attendees Page](./screenshots/light-theme/attendees-page.png)
+
+### Dark Theme
+
+Click to view:
+- [Auth Page](./screenshots/dark-theme/auth-page.png)
+- [Dashboard Page](./screenshots/dark-theme/dashboard-page.png)
+- [Events Page](./screenshots/dark-theme/events-page.png)
+- [Attendees Page](./screenshots/dark-theme/attendees-page.png)
 
 ## Prerequisites
 

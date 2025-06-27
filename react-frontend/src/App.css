@@ -9,14 +9,14 @@
     background-color: var(--mui-palette-background-default);
 
     .mainPage {
-        max-width: calc(100vw - 250px);
-        flex-basis: calc(100vw - 250px);
+        max-width: calc(100% - 250px);
+        flex-basis: calc(100% - 250px);
         background-color: var(--mui-palette-background-paper);
 
         .content {
-            max-width: calc(100vw - 350px);
+            max-width: calc(100% - 100px);
             padding: 50px;
-            flex-basis: calc(100vw - 350px);
+            flex-basis: calc(100% - 100px);
             background-color: var(--mui-palette-background-paper);
         }
     }
